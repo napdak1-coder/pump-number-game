@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<title>PUMP NUMBER - Theme Mockups</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Arial Black', 'Helvetica Neue', sans-serif;
+    overflow-x: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    transition: background 0.5s;
+  }
+
+  /* === 테마 선택 바 === */
+  .theme-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 999;
+    display: flex;
+    gap: 0;
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .theme-tab {
+    flex: 1;
+    padding: 12px 4px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.4);
+    transition: all 0.3s;
+    -webkit-tap-highlight-color: transparent;
+    border-bottom: 3px solid transparent;
+  }
+
+  .theme-tab.active {
+    color: #fff;
+  }
+
+  .theme-tab[data-theme="midnight"].active { border-bottom-color: #ff6ec7; }
+  .theme-tab[data-theme="arctic"].active { border-bottom-color: #4cc9f0; }
+  .theme-tab[data-theme="sunset"].active { border-bottom-color: #ff6d00; }
+  .theme-tab[data-theme="sakura"].active { border-bottom-color: #ff85a1; }
+
+  /* === 게임 화면 컨테이너 === */
+  .game-wrap {
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding-top: 42px;
+    transition: background 0.5s;
+  }
+
+  /* === 상단 영역 40% === */
+  .top-area {
+    height: calc((100dvh - 42px) * 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s;
+  }
+
+  .score-bar {
+    position: absolute;
+    top: 8px;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: space-around;
+    padding: 0 15px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    z-index: 10;
+    transition: color 0.5s;
+  }
+
+  .score-val {
+    font-weight: 900;
+    font-size: 13px;
+    transition: color 0.5s;
+  }
+
+  .target-label {
+    font-size: 10px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    transition: color 0.5s;
+  }
+
+  .target-number {
+    font-size: min(28vw, 130px);
+    font-weight: 900;
+    line-height: 1;
+    transition: all 0.5s;
+  }
+
+  .timer-bar-wrap {
+    width: 65%;
+    max-width: 280px;
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
+    transition: background 0.5s;
+  }
+
+  .timer-bar {
+    height: 100%;
+    width: 72%;
+    border-radius: 2px;
+    transition: background 0.5s;
+  }
+
+  .tap-info {
+    position: absolute;
+    bottom: 40px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    transition: color 0.5s;
+  }
+
+  .rank-hint {
+    position: absolute;
+    bottom: 14px;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    transition: color 0.5s;
+  }
+
+  /* === 하단 키패드 60% === */
+  .bottom-area {
+    height: calc((100dvh - 42px) * 0.6);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    gap: 4px;
+  }
+
+  .keypad-row {
+    flex: 1;
+    display: flex;
+    gap: 4px;
+  }
+
+  .key-btn {
+    flex: 1;
+    border-radius: 12px;
+    font-size: min(12vw, 48px);
+    font-weight: 900;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.5s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .key-btn:active {
+    transform: scale(0.95);
+    filter: brightness(1.2);
+  }
+
+  /* ============================================
+     THEME 1: MIDNIGHT (다크)
+     ============================================ */
+  [data-current-theme="midnight"] .game-wrap {
+    background: #0a0a0a;
+  }
+  [data-current-theme="midnight"] .score-bar { color: #555; }
+  [data-current-theme="midnight"] .score-val { color: #ffd700; }
+  [data-current-theme="midnight"] .target-label { color: rgba(255,110,199,0.6); }
+  [data-current-theme="midnight"] .target-number {
+    color: #fff;
+    text-shadow: 0 0 30px rgba(255,110,199,0.8), 0 0 60px rgba(255,110,199,0.4);
+  }
+  [data-current-theme="midnight"] .timer-bar-wrap { background: rgba(255,255,255,0.06); }
+  [data-current-theme="midnight"] .timer-bar { background: linear-gradient(90deg, #ff6ec7, #ffd700); }
+  [data-current-theme="midnight"] .tap-info { color: rgba(255,255,255,0.2); }
+  [data-current-theme="midnight"] .rank-hint { color: #00ff88; }
+  [data-current-theme="midnight"] .key-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.85);
+  }
+
+  /* ============================================
+     THEME 2: ARCTIC (밝은 블루-화이트)
+     ============================================ */
+  [data-current-theme="arctic"] .game-wrap {
+    background: #f0f4f8;
+  }
+  [data-current-theme="arctic"] .score-bar { color: #94a3b8; }
+  [data-current-theme="arctic"] .score-val { color: #0077b6; }
+  [data-current-theme="arctic"] .target-label { color: #60a5fa; }
+  [data-current-theme="arctic"] .target-number {
+    color: #1e293b;
+    text-shadow: 0 0 30px rgba(59,130,246,0.3), 0 0 60px rgba(59,130,246,0.15);
+  }
+  [data-current-theme="arctic"] .timer-bar-wrap { background: #dde5ed; }
+  [data-current-theme="arctic"] .timer-bar { background: linear-gradient(90deg, #3b82f6, #06b6d4); }
+  [data-current-theme="arctic"] .tap-info { color: rgba(30,41,59,0.3); }
+  [data-current-theme="arctic"] .rank-hint { color: #059669; }
+  [data-current-theme="arctic"] .key-btn {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  [data-current-theme="arctic"] .key-btn:active {
+    background: #e0f2fe;
+  }
+
+  /* ============================================
+     THEME 3: SUNSET (웜 그라데이션)
+     ============================================ */
+  [data-current-theme="sunset"] .game-wrap {
+    background: linear-gradient(180deg, #1a0a2e 0%, #2d1b4e 30%, #5c2d6e 70%, #b44d2d 100%);
+  }
+  [data-current-theme="sunset"] .score-bar { color: rgba(255,200,150,0.5); }
+  [data-current-theme="sunset"] .score-val { color: #fbbf24; }
+  [data-current-theme="sunset"] .target-label { color: rgba(251,191,36,0.6); }
+  [data-current-theme="sunset"] .target-number {
+    color: #fff;
+    text-shadow: 0 0 30px rgba(251,146,60,0.8), 0 0 60px rgba(251,146,60,0.4);
+  }
+  [data-current-theme="sunset"] .timer-bar-wrap { background: rgba(255,255,255,0.08); }
+  [data-current-theme="sunset"] .timer-bar { background: linear-gradient(90deg, #fbbf24, #ef4444); }
+  [data-current-theme="sunset"] .tap-info { color: rgba(255,255,255,0.2); }
+  [data-current-theme="sunset"] .rank-hint { color: #fbbf24; }
+  [data-current-theme="sunset"] .key-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,200,150,0.12);
+    color: rgba(255,240,220,0.9);
+    backdrop-filter: blur(4px);
+  }
+  [data-current-theme="sunset"] .key-btn:active {
+    background: rgba(251,191,36,0.2);
+  }
+
+  /* ============================================
+     THEME 4: SAKURA (파스텔 핑크)
+     ============================================ */
+  [data-current-theme="sakura"] .game-wrap {
+    background: #fff5f7;
+  }
+  [data-current-theme="sakura"] .score-bar { color: #d4a0aa; }
+  [data-current-theme="sakura"] .score-val { color: #e11d48; }
+  [data-current-theme="sakura"] .target-label { color: #f472b6; }
+  [data-current-theme="sakura"] .target-number {
+    color: #881337;
+    text-shadow: 0 0 30px rgba(244,114,182,0.4), 0 0 60px rgba(244,114,182,0.2);
+  }
+  [data-current-theme="sakura"] .timer-bar-wrap { background: #fce7f3; }
+  [data-current-theme="sakura"] .timer-bar { background: linear-gradient(90deg, #f472b6, #fb7185); }
+  [data-current-theme="sakura"] .tap-info { color: rgba(136,19,55,0.25); }
+  [data-current-theme="sakura"] .rank-hint { color: #059669; }
+  [data-current-theme="sakura"] .key-btn {
+    background: #fff;
+    border: 1px solid #fecdd3;
+    color: #881337;
+    box-shadow: 0 2px 8px rgba(244,114,182,0.12);
+  }
+  [data-current-theme="sakura"] .key-btn:active {
+    background: #ffe4e6;
+  }
+</style>
+</head>
+<body data-current-theme="midnight">
+
+<!-- 테마 선택 바 -->
+<div class="theme-bar">
+  <button class="theme-tab active" data-theme="midnight" onclick="setTheme('midnight')">MIDNIGHT</button>
+  <button class="theme-tab" data-theme="arctic" onclick="setTheme('arctic')">ARCTIC</button>
+  <button class="theme-tab" data-theme="sunset" onclick="setTheme('sunset')">SUNSET</button>
+  <button class="theme-tab" data-theme="sakura" onclick="setTheme('sakura')">SAKURA</button>
+</div>
+
+<!-- 게임 화면 (목업) -->
+<div class="game-wrap">
+  <!-- 상단 40% -->
+  <div class="top-area">
+    <div class="score-bar">
+      <span>SCORE <span class="score-val">1,280</span></span>
+      <span>LV <span class="score-val">3</span></span>
+      <span>COMBO <span class="score-val">5</span></span>
+    </div>
+    <div class="target-label">T A R G E T</div>
+    <div class="target-number">17</div>
+    <div class="timer-bar-wrap">
+      <div class="timer-bar"></div>
+    </div>
+    <div class="tap-info">MIN 2 TAPS</div>
+    <div class="rank-hint">GENIUS!</div>
+  </div>
+
+  <!-- 하단 60% -->
+  <div class="bottom-area">
+    <div class="keypad-row">
+      <button class="key-btn">1</button>
+      <button class="key-btn">2</button>
+      <button class="key-btn">3</button>
+    </div>
+    <div class="keypad-row">
+      <button class="key-btn">4</button>
+      <button class="key-btn">5</button>
+      <button class="key-btn">6</button>
+    </div>
+    <div class="keypad-row">
+      <button class="key-btn">7</button>
+      <button class="key-btn">8</button>
+      <button class="key-btn">9</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setTheme(name) {
+    document.body.setAttribute('data-current-theme', name);
+    document.querySelectorAll('.theme-tab').forEach(tab => {
+      tab.classList.toggle('active', tab.dataset.theme === name);
+    });
+
+    // 테마 바 색상도 동적 변경
+    const bar = document.querySelector('.theme-bar');
+    if (name === 'arctic' || name === 'sakura') {
+      bar.style.background = 'rgba(255,255,255,0.92)';
+      bar.style.borderBottomColor = 'rgba(0,0,0,0.08)';
+      document.querySelectorAll('.theme-tab').forEach(t => {
+        t.style.color = t.classList.contains('active') ? '#111' : 'rgba(0,0,0,0.3)';
+      });
+    } else {
+      bar.style.background = 'rgba(0,0,0,0.9)';
+      bar.style.borderBottomColor = 'rgba(255,255,255,0.1)';
+      document.querySelectorAll('.theme-tab').forEach(t => {
+        t.style.color = t.classList.contains('active') ? '#fff' : 'rgba(255,255,255,0.4)';
+      });
+    }
+  }
+</script>
+</body>
+</html>

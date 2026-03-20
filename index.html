@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<title>PUMP NUMBER</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Arial Black', 'Helvetica Neue', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    background: linear-gradient(160deg, #0a0a0a 0%, #0f0520 40%, #1a0a2e 70%, #2d1020 100%);
+    background-size: 200% 200%;
+    animation: bgShift 20s ease infinite;
+  }
+
+  @keyframes bgShift {
+    0%, 100% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+  }
+
+  /* === 부유 파티클 배경 === */
+  .bg-particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .bg-dot {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,110,199,0.08);
+    animation: floatDot linear infinite;
+  }
+
+  @keyframes floatDot {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+  }
+
+  /* === 상단 영역 40% === */
+  .top-area {
+    height: 40vh;
+    height: 40dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .score-bar {
+    position: absolute;
+    top: 8px;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: space-around;
+    padding: 0 15px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 1px;
+    z-index: 10;
+  }
+
+  .score-val {
+    color: #ffd700;
+    font-weight: 900;
+    font-size: 13px;
+  }
+
+  /* 설정 버튼 */
+  .settings-btn {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.25);
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 20;
+    padding: 4px;
+    -webkit-tap-highlight-color: transparent;
+    letter-spacing: 2px;
+  }
+
+  .target-label {
+    font-size: 10px;
+    color: rgba(255,110,199,0.5);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .target-number {
+    font-size: min(28vw, 130px);
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 30px rgba(255,110,199,0.7), 0 0 60px rgba(255,110,199,0.3);
+    line-height: 1;
+    transition: color 0.2s, text-shadow 0.2s;
+  }
+
+  .target-number.shake { animation: shake 0.35s ease; }
+  .target-number.success {
+    color: #00ff88;
+    text-shadow: 0 0 30px #00ff88, 0 0 60px rgba(0,255,136,0.4);
+  }
+  .target-number.fail {
+    color: #ff2244;
+    text-shadow: 0 0 30px #ff2244, 0 0 60px rgba(255,34,68,0.4);
+  }
+
+  .timer-bar-wrap {
+    width: 65%;
+    max-width: 280px;
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+
+  .timer-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6ec7, #ffd700);
+    border-radius: 2px;
+    transition: width 0.1s linear;
+  }
+
+  .timer-bar.danger {
+    background: linear-gradient(90deg, #ff2244, #ff6600);
+    animation: timerPulse 0.4s infinite;
+  }
+
+  .tap-info {
+    position: absolute;
+    bottom: 38px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 1px;
+  }
+
+  .combo-text {
+    font-size: 15px;
+    color: #ffd700;
+    letter-spacing: 2px;
+    margin-top: 4px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .combo-text.show {
+    opacity: 1;
+    animation: comboPulse 0.4s ease;
+  }
+
+  .message {
+    position: absolute;
+    bottom: 12px;
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    opacity: 0;
+  }
+
+  .message.show { opacity: 1; animation: messageIn 0.4s ease; }
+  .message.genius { color: #00ff88; text-shadow: 0 0 20px #00ff88, 0 0 40px rgba(0,255,136,0.4); }
+  .message.great { color: #ffd700; text-shadow: 0 0 15px #ffd700; }
+  .message.good { color: #4cc9f0; text-shadow: 0 0 15px #4cc9f0; }
+  .message.ok-rank { color: #888; text-shadow: 0 0 10px #888; }
+  .message.fail-msg { color: #ff2244; text-shadow: 0 0 15px #ff2244; }
+
+  /* === 하단 키패드 60% === */
+  .bottom-area {
+    height: 60vh;
+    height: 60dvh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    gap: 4px;
+    z-index: 1;
+  }
+
+  .keypad-row {
+    flex: 1;
+    display: flex;
+    gap: 4px;
+  }
+
+  .key-btn {
+    flex: 1;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.035);
+    color: rgba(255,255,255,0.8);
+    font-size: min(12vw, 50px);
+    font-weight: 900;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.1s;
+  }
+
+  .key-btn:active {
+    background: rgba(255,255,255,0.15);
+    transform: scale(0.96);
+  }
+
+  .key-btn.pressed { animation: btnFlash 0.25s ease; }
+  .key-btn.disabled { opacity: 0.2; pointer-events: none; }
+
+  /* === 폭발 숫자 (화면 50%) === */
+  .explode-number {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: min(55vw, 300px);
+    font-weight: 900;
+    pointer-events: none;
+    z-index: 150;
+    animation: numberExplode 0.55s ease-out forwards;
+    line-height: 1;
+  }
+
+  /* === 등급 팝업 === */
+  .rank-popup {
+    position: fixed;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: min(16vw, 72px);
+    font-weight: 900;
+    pointer-events: none;
+    z-index: 160;
+    letter-spacing: 4px;
+    animation: rankPop 0.8s ease-out forwards;
+  }
+
+  /* === 파티클 === */
+  .particle-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particleFly 0.65s ease-out forwards;
+  }
+
+  .star-particle {
+    position: absolute;
+    pointer-events: none;
+    animation: starFly 0.75s ease-out forwards;
+  }
+
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.5);
+    pointer-events: none;
+    animation: rippleGrow 0.45s ease-out forwards;
+  }
+
+  .screen-flash {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 99;
+    animation: flash 0.15s ease-out forwards;
+  }
+
+  /* === 숨고르기 팝업 === */
+  .breathe-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.88);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .breathe-overlay.show { opacity: 1; pointer-events: auto; }
+
+  .breathe-stage {
+    font-size: 14px;
+    color: #ffd700;
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+  }
+
+  .breathe-text {
+    font-size: min(10vw, 48px);
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 30px rgba(255,110,199,0.8);
+    margin-bottom: 20px;
+    animation: breathePulse 1s ease infinite;
+  }
+
+  .breathe-countdown {
+    font-size: min(25vw, 120px);
+    font-weight: 900;
+    color: #ff6ec7;
+    text-shadow: 0 0 40px #ff6ec7, 0 0 80px rgba(255,45,149,0.5);
+    animation: countdownPop 1s ease;
+  }
+
+  /* === 설정 패널 === */
+  .settings-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 400;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    backdrop-filter: blur(6px);
+  }
+
+  .settings-overlay.show { opacity: 1; pointer-events: auto; }
+
+  .settings-panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 85%;
+    max-width: 340px;
+    background: rgba(20,15,30,0.95);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 28px 24px;
+    color: #fff;
+  }
+
+  .settings-title {
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-align: center;
+    margin-bottom: 24px;
+    color: rgba(255,255,255,0.8);
+  }
+
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .setting-row:last-child { border-bottom: none; }
+
+  .setting-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.5px;
+  }
+
+  .setting-sub {
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 2px;
+  }
+
+  /* 토글 스위치 */
+  .toggle {
+    width: 44px;
+    height: 24px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s;
+    border: none;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+  }
+
+  .toggle.on {
+    background: rgba(255,110,199,0.5);
+  }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.3s;
+  }
+
+  .toggle.on::after {
+    transform: translateX(20px);
+  }
+
+  /* 3단 선택 */
+  .seg-control {
+    display: flex;
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .seg-btn {
+    padding: 6px 12px;
+    font-size: 10px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.35);
+    background: none;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.3s;
+  }
+
+  .seg-btn.active {
+    background: rgba(255,110,199,0.3);
+    color: #fff;
+  }
+
+  .settings-close {
+    display: block;
+    margin: 20px auto 0;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 25px;
+    padding: 10px 40px;
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* === 게임오버 화면 === */
+  .gameover-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.92);
+    z-index: 350;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+
+  .gameover-overlay.show { opacity: 1; pointer-events: auto; }
+
+  .go-title {
+    font-size: min(14vw, 56px);
+    font-weight: 900;
+    color: #ff2244;
+    text-shadow: 0 0 30px rgba(255,34,68,0.6);
+    letter-spacing: 5px;
+    margin-bottom: 30px;
+  }
+
+  .go-stats {
+    width: 80%;
+    max-width: 280px;
+  }
+
+  .go-stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .go-stat-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 1px;
+  }
+
+  .go-stat-val {
+    font-size: 14px;
+    font-weight: 900;
+    color: #ffd700;
+  }
+
+  .go-stat-val.best { color: #ff6ec7; }
+
+  .go-retry {
+    margin-top: 30px;
+    background: rgba(255,110,199,0.15);
+    border: 1px solid rgba(255,110,199,0.3);
+    border-radius: 30px;
+    padding: 14px 50px;
+    font-size: 16px;
+    font-weight: 900;
+    color: #ff6ec7;
+    letter-spacing: 3px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* === 시작 화면 === */
+  .start-screen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(160deg, #0a0a0a 0%, #0f0520 40%, #1a0a2e 70%, #2d1020 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    transition: opacity 0.5s;
+  }
+
+  .start-screen.hidden { opacity: 0; pointer-events: none; }
+
+  .game-title {
+    font-size: min(18vw, 72px);
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 30px #ff6ec7, 0 0 60px #ff2d95;
+    letter-spacing: 8px;
+  }
+
+  .game-subtitle {
+    font-size: 13px;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 6px;
+    margin-bottom: 8px;
+  }
+
+  .best-score-display {
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+  }
+
+  .start-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,110,199,0.3);
+    border-radius: 50px;
+    padding: 16px 55px;
+    font-size: 18px;
+    font-weight: 900;
+    color: #ff6ec7;
+    letter-spacing: 4px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .start-btn:active { background: rgba(255,110,199,0.12); transform: scale(0.95); }
+
+  /* === 애니메이션 === */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-12px) rotate(-1.5deg); }
+    40% { transform: translateX(12px) rotate(1.5deg); }
+    60% { transform: translateX(-8px); }
+    80% { transform: translateX(8px); }
+  }
+
+  @keyframes btnFlash {
+    0% { background: rgba(255,255,255,0.035); }
+    30% { background: rgba(255,255,255,0.22); }
+    100% { background: rgba(255,255,255,0.035); }
+  }
+
+  @keyframes numberExplode {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    35% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; }
+  }
+
+  @keyframes rankPop {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    35% { transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+    65% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    100% { transform: translate(-50%, -60%) scale(0.9); opacity: 0; }
+  }
+
+  @keyframes particleFly {
+    0% { transform: translate(0,0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+  }
+
+  @keyframes starFly {
+    0% { transform: translate(0,0) scale(1) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(0) rotate(360deg); opacity: 0; }
+  }
+
+  @keyframes rippleGrow {
+    0% { width: 0; height: 0; opacity: 0.8; }
+    100% { width: 200px; height: 200px; margin-left: -100px; margin-top: -100px; opacity: 0; }
+  }
+
+  @keyframes flash {
+    0% { background: rgba(255,255,255,0.2); }
+    100% { background: transparent; }
+  }
+
+  @keyframes comboPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes messageIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    60% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes breathePulse {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.05); opacity: 1; }
+  }
+
+  @keyframes countdownPop {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes timerPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 부유 파티클 배경 -->
+<div class="bg-particles" id="bgParticles"></div>
+
+<!-- 시작 화면 -->
+<div class="start-screen" id="startScreen">
+  <div class="game-title">PUMP</div>
+  <div class="game-subtitle">N U M B E R</div>
+  <div class="best-score-display" id="bestScoreStart">BEST 0</div>
+  <button class="start-btn" onclick="startGame()">S T A R T</button>
+</div>
+
+<!-- 숨고르기 팝업 -->
+<div class="breathe-overlay" id="breatheOverlay">
+  <div class="breathe-stage" id="breatheStage">STAGE 2</div>
+  <div class="breathe-text">숨 고르기!</div>
+  <div class="breathe-countdown" id="breatheCount">1</div>
+</div>
+
+<!-- 게임오버 -->
+<div class="gameover-overlay" id="gameoverOverlay">
+  <div class="go-title">GAME OVER</div>
+  <div class="go-stats">
+    <div class="go-stat-row">
+      <span class="go-stat-label">SCORE</span>
+      <span class="go-stat-val" id="goScore">0</span>
+    </div>
+    <div class="go-stat-row">
+      <span class="go-stat-label">BEST</span>
+      <span class="go-stat-val best" id="goBest">0</span>
+    </div>
+    <div class="go-stat-row">
+      <span class="go-stat-label">STAGE</span>
+      <span class="go-stat-val" id="goStage">0</span>
+    </div>
+    <div class="go-stat-row">
+      <span class="go-stat-label">MAX COMBO</span>
+      <span class="go-stat-val" id="goCombo">0</span>
+    </div>
+    <div class="go-stat-row">
+      <span class="go-stat-label">GENIUS</span>
+      <span class="go-stat-val" id="goGenius">0</span>
+    </div>
+  </div>
+  <button class="go-retry" onclick="startGame()">R E T R Y</button>
+</div>
+
+<!-- 설정 패널 -->
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-panel">
+    <div class="settings-title">S E T T I N G S</div>
+
+    <div class="setting-row">
+      <div>
+        <div class="setting-label">파티클 이펙트</div>
+        <div class="setting-sub">버튼 터치 시 파티클</div>
+      </div>
+      <button class="toggle on" id="togParticle" onclick="toggleSetting('particle')"></button>
+    </div>
+
+    <div class="setting-row">
+      <div>
+        <div class="setting-label">화면 플래시</div>
+        <div class="setting-sub">터치 시 화면 번쩍</div>
+      </div>
+      <button class="toggle on" id="togFlash" onclick="toggleSetting('flash')"></button>
+    </div>
+
+    <div class="setting-row">
+      <div>
+        <div class="setting-label">폭발 숫자</div>
+        <div class="setting-sub">누른 숫자 크게 표시</div>
+      </div>
+      <button class="toggle on" id="togExplode" onclick="toggleSetting('explode')"></button>
+    </div>
+
+    <div class="setting-row">
+      <div>
+        <div class="setting-label">진동</div>
+        <div class="setting-sub">모바일 햅틱 피드백</div>
+      </div>
+      <button class="toggle on" id="togVibrate" onclick="toggleSetting('vibrate')"></button>
+    </div>
+
+    <div class="setting-row">
+      <div>
+        <div class="setting-label">파티클 양</div>
+      </div>
+      <div class="seg-control">
+        <button class="seg-btn" data-val="low" onclick="setParticleAmount('low')">적음</button>
+        <button class="seg-btn active" data-val="mid" onclick="setParticleAmount('mid')">보통</button>
+        <button class="seg-btn" data-val="high" onclick="setParticleAmount('high')">많음</button>
+      </div>
+    </div>
+
+    <button class="settings-close" onclick="closeSettings()">닫기</button>
+  </div>
+</div>
+
+<!-- 상단 40% -->
+<div class="top-area">
+  <div class="score-bar">
+    <span>SCORE <span class="score-val" id="score">0</span></span>
+    <span>LV <span class="score-val" id="level">1</span></span>
+    <span>COMBO <span class="score-val" id="combo">0</span></span>
+  </div>
+  <button class="settings-btn" onclick="openSettings()">⋮</button>
+  <div class="target-label">T A R G E T</div>
+  <div class="target-number" id="targetNum">0</div>
+  <div class="timer-bar-wrap">
+    <div class="timer-bar" id="timerBar"></div>
+  </div>
+  <div class="tap-info" id="tapInfo"></div>
+  <div class="combo-text" id="comboText"></div>
+  <div class="message" id="message"></div>
+</div>
+
+<!-- 하단 60% -->
+<div class="bottom-area">
+  <div class="keypad-row">
+    <button class="key-btn" data-num="1">1</button>
+    <button class="key-btn" data-num="2">2</button>
+    <button class="key-btn" data-num="3">3</button>
+  </div>
+  <div class="keypad-row">
+    <button class="key-btn" data-num="4">4</button>
+    <button class="key-btn" data-num="5">5</button>
+    <button class="key-btn" data-num="6">6</button>
+  </div>
+  <div class="keypad-row">
+    <button class="key-btn" data-num="7">7</button>
+    <button class="key-btn" data-num="8">8</button>
+    <button class="key-btn" data-num="9">9</button>
+  </div>
+</div>
+
+<!-- 파티클 컨테이너 -->
+<div class="particle-container" id="particles"></div>
+
+<script>
+  // === 설정 상태 ===
+  const settings = {
+    particle: true,
+    flash: true,
+    explode: true,
+    vibrate: true,
+    particleAmount: 'mid' // low, mid, high
+  };
+
+  const particleCounts = { low: 6, mid: 14, high: 28 };
+  const particleCountsBig = { low: 10, mid: 24, high: 40 };
+
+  // === 게임 상태 ===
+  let target = 0;
+  let originalTarget = 0;
+  let score = 0;
+  let comboCount = 0;
+  let maxCombo = 0;
+  let currentLevel = 1;
+  let timeLeft = 100;
+  let timerInterval = null;
+  let isPlaying = false;
+  let stageCount = 0;
+  let tapCount = 0;
+  let minTaps = 0;
+  let lives = 3;
+  let geniusCount = 0;
+  let bestScore = parseInt(localStorage.getItem('pumpBest') || '0');
+
+  const targetEl = document.getElementById('targetNum');
+  const scoreEl = document.getElementById('score');
+  const levelEl = document.getElementById('level');
+  const comboEl = document.getElementById('combo');
+  const comboTextEl = document.getElementById('comboText');
+  const messageEl = document.getElementById('message');
+  const timerBar = document.getElementById('timerBar');
+  const tapInfoEl = document.getElementById('tapInfo');
+  const particleContainer = document.getElementById('particles');
+  const breatheOverlay = document.getElementById('breatheOverlay');
+  const breatheStage = document.getElementById('breatheStage');
+  const breatheCount = document.getElementById('breatheCount');
+  const gameoverOverlay = document.getElementById('gameoverOverlay');
+  const buttons = document.querySelectorAll('.key-btn');
+
+  // 시작화면 베스트 표시
+  document.getElementById('bestScoreStart').textContent = 'BEST ' + bestScore;
+
+  // === 배경 부유 파티클 생성 ===
+  (function initBgParticles() {
+    const container = document.getElementById('bgParticles');
+    for (let i = 0; i < 15; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'bg-dot';
+      const size = Math.random() * 4 + 2;
+      dot.style.cssText = `
+        left: ${Math.random() * 100}%;
+        width: ${size}px; height: ${size}px;
+        animation-duration: ${Math.random() * 15 + 10}s;
+        animation-delay: ${Math.random() * 10}s;
+      `;
+      container.appendChild(dot);
+    }
+  })();
+
+  const neonColors = [
+    '#ff6ec7','#ff2d95','#ffd700','#00ff88',
+    '#4cc9f0','#e040fb','#ff4d6d','#80ffdb',
+    '#f9c74f','#7209b7','#ff006e','#00b4d8'
+  ];
+
+  function randColor() {
+    return neonColors[Math.floor(Math.random() * neonColors.length)];
+  }
+
+  function vibrate(ms) {
+    if (settings.vibrate && navigator.vibrate) navigator.vibrate(ms);
+  }
+
+  // === 설정 함수 ===
+  function openSettings() {
+    if (timerInterval) clearInterval(timerInterval);
+    document.getElementById('settingsOverlay').classList.add('show');
+  }
+
+  function closeSettings() {
+    document.getElementById('settingsOverlay').classList.remove('show');
+    if (isPlaying && target > 0) {
+      // 타이머 재개
+      const speed = Math.max(25, 75 - currentLevel * 4);
+      timerInterval = setInterval(() => {
+        timeLeft -= 1;
+        timerBar.style.width = timeLeft + '%';
+        if (timeLeft <= 25) timerBar.classList.add('danger');
+        if (timeLeft <= 0) { clearInterval(timerInterval); handleFail('TIME UP!'); }
+      }, speed);
+    }
+  }
+
+  function toggleSetting(key) {
+    settings[key] = !settings[key];
+    document.getElementById('tog' + key.charAt(0).toUpperCase() + key.slice(1))
+      .classList.toggle('on', settings[key]);
+  }
+
+  function setParticleAmount(val) {
+    settings.particleAmount = val;
+    document.querySelectorAll('.seg-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.val === val);
+    });
+  }
+
+  // === 게임 시작 ===
+  function startGame() {
+    document.getElementById('startScreen').classList.add('hidden');
+    gameoverOverlay.classList.remove('show');
+    score = 0; comboCount = 0; maxCombo = 0; currentLevel = 1;
+    stageCount = 0; lives = 3; geniusCount = 0;
+    scoreEl.textContent = score;
+    levelEl.textContent = currentLevel;
+    comboEl.textContent = comboCount;
+    isPlaying = true;
+    nextRound();
+  }
+
+  // === 다음 라운드 ===
+  function nextRound() {
+    const min = currentLevel * 3;
+    const max = min + currentLevel * 5;
+    target = Math.floor(Math.random() * (max - min + 1)) + min;
+    originalTarget = target;
+    tapCount = 0;
+    minTaps = Math.ceil(target / 9);
+
+    targetEl.textContent = target;
+    targetEl.className = 'target-number';
+    messageEl.className = 'message';
+    tapInfoEl.textContent = 'MIN ' + minTaps + ' TAP' + (minTaps > 1 ? 'S' : '');
+    buttons.forEach(btn => btn.classList.remove('disabled'));
+
+    timeLeft = 100;
+    timerBar.style.width = '100%';
+    timerBar.classList.remove('danger');
+    clearInterval(timerInterval);
+
+    const speed = Math.max(25, 75 - currentLevel * 4);
+    timerInterval = setInterval(() => {
+      timeLeft -= 1;
+      timerBar.style.width = timeLeft + '%';
+      if (timeLeft <= 25) timerBar.classList.add('danger');
+      if (timeLeft <= 0) { clearInterval(timerInterval); handleFail('TIME UP!'); }
+    }, speed);
+  }
+
+  // === 등급 판정 ===
+  function getRank(taps, minRequired) {
+    const diff = taps - minRequired;
+    if (diff === 0) return { rank: 'GENIUS!', cls: 'genius', mult: 3.0, color: '#00ff88' };
+    if (diff === 1) return { rank: 'GREAT!', cls: 'great', mult: 2.0, color: '#ffd700' };
+    if (diff <= 3) return { rank: 'GOOD', cls: 'good', mult: 1.2, color: '#4cc9f0' };
+    return { rank: 'OK', cls: 'ok-rank', mult: 1.0, color: '#888' };
+  }
+
+  // === 버튼 클릭 ===
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!isPlaying) return;
+
+      const num = parseInt(btn.dataset.num);
+      const rect = btn.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+
+      tapCount++;
+
+      // 버튼 플래시
+      btn.classList.remove('pressed');
+      void btn.offsetWidth;
+      btn.classList.add('pressed');
+
+      // 진동
+      vibrate(20);
+
+      // 이펙트 (설정에 따라)
+      if (settings.explode) spawnExplodeNumber(num);
+      if (settings.particle) spawnParticles(cx, cy, false);
+      if (settings.flash) spawnFlash();
+      spawnRipple(cx, cy);
+
+      target -= num;
+
+      if (target < 0) {
+        targetEl.textContent = target;
+        vibrate([50, 30, 50]);
+        handleFail('FAIL!');
+      } else if (target === 0) {
+        targetEl.textContent = '0';
+        vibrate([30, 20, 30, 20, 50]);
+        handleSuccess();
+      } else {
+        targetEl.textContent = target;
+        targetEl.classList.add('shake');
+        setTimeout(() => targetEl.classList.remove('shake'), 350);
+      }
+    });
+
+    btn.addEventListener('touchstart', () => {}, { passive: true });
+  });
+
+  // === 화면 50% 폭발 숫자 ===
+  function spawnExplodeNumber(num) {
+    const el = document.createElement('div');
+    el.className = 'explode-number';
+    el.textContent = num;
+    const color = randColor();
+    el.style.color = color;
+    el.style.textShadow = `0 0 40px ${color}, 0 0 80px ${color}, 0 0 120px ${color}`;
+    document.body.appendChild(el);
+
+    if (settings.particle) {
+      setTimeout(() => {
+        spawnParticles(window.innerWidth / 2, window.innerHeight / 2, true);
+      }, 80);
+    }
+
+    setTimeout(() => el.remove(), 550);
+  }
+
+  // === 등급 팝업 표시 ===
+  function spawnRankPopup(rank, color) {
+    const el = document.createElement('div');
+    el.className = 'rank-popup';
+    el.textContent = rank;
+    el.style.color = color;
+    el.style.textShadow = `0 0 30px ${color}, 0 0 60px ${color}`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 800);
+  }
+
+  // === 성공 처리 ===
+  function handleSuccess() {
+    clearInterval(timerInterval);
+    stageCount++;
+    comboCount++;
+    if (comboCount > maxCombo) maxCombo = comboCount;
+
+    // 등급 판정
+    const { rank, cls, mult, color } = getRank(tapCount, minTaps);
+    if (cls === 'genius') geniusCount++;
+
+    // 점수 계산: 기본 + 콤보보너스 + 시간보너스 × 등급배율
+    const basePoints = 50 + currentLevel * 10;
+    const comboBonus = comboCount * 15;
+    const timeBonus = Math.ceil(timeLeft / 5);
+    const totalBonus = Math.round((basePoints + comboBonus + timeBonus) * mult);
+    score += totalBonus;
+
+    scoreEl.textContent = score;
+    comboEl.textContent = comboCount;
+    targetEl.className = 'target-number success';
+    tapInfoEl.textContent = tapCount + ' TAP' + (tapCount > 1 ? 'S' : '') + ' (MIN ' + minTaps + ')';
+
+    // 등급 메시지
+    showMessage(rank + ' +' + totalBonus, cls);
+
+    // 등급 팝업
+    setTimeout(() => spawnRankPopup(rank, color), 150);
+
+    // 콤보 표시
+    if (comboCount >= 2) {
+      comboTextEl.textContent = 'COMBO x' + comboCount;
+      comboTextEl.classList.add('show');
+      setTimeout(() => comboTextEl.classList.remove('show'), 1200);
+    }
+
+    // 대형 폭발
+    if (settings.particle) {
+      const burstCount = cls === 'genius' ? 5 : 3;
+      for (let i = 0; i < burstCount; i++) {
+        setTimeout(() => {
+          const rx = window.innerWidth * (0.15 + Math.random() * 0.7);
+          const ry = window.innerHeight * (0.1 + Math.random() * 0.4);
+          spawnParticles(rx, ry, true);
+        }, i * 100);
+      }
+    }
+
+    buttons.forEach(btn => btn.classList.add('disabled'));
+
+    // 레벨업
+    if (comboCount % 3 === 0) {
+      currentLevel++;
+      levelEl.textContent = currentLevel;
+    }
+
+    setTimeout(() => showBreathe(), 700);
+  }
+
+  // === 실패 처리 ===
+  function handleFail(msg) {
+    clearInterval(timerInterval);
+    comboCount = 0;
+    lives--;
+    comboEl.textContent = comboCount;
+    targetEl.className = 'target-number fail shake';
+    showMessage(msg + ' (' + lives + ' LEFT)', 'fail-msg');
+    buttons.forEach(btn => btn.classList.add('disabled'));
+
+    if (lives <= 0) {
+      setTimeout(showGameOver, 1200);
+    } else {
+      setTimeout(nextRound, 1500);
+    }
+  }
+
+  // === 게임오버 ===
+  function showGameOver() {
+    isPlaying = false;
+    if (score > bestScore) {
+      bestScore = score;
+      localStorage.setItem('pumpBest', bestScore);
+    }
+
+    document.getElementById('goScore').textContent = score;
+    document.getElementById('goBest').textContent = bestScore;
+    document.getElementById('goStage').textContent = stageCount;
+    document.getElementById('goCombo').textContent = maxCombo;
+    document.getElementById('goGenius').textContent = geniusCount;
+    document.getElementById('bestScoreStart').textContent = 'BEST ' + bestScore;
+
+    gameoverOverlay.classList.add('show');
+  }
+
+  // === 숨고르기 팝업 ===
+  function showBreathe() {
+    breatheStage.textContent = 'STAGE ' + (stageCount + 1);
+    breatheCount.textContent = '1';
+    breatheOverlay.classList.add('show');
+    setTimeout(() => {
+      breatheOverlay.classList.remove('show');
+      setTimeout(nextRound, 200);
+    }, 1000);
+  }
+
+  // === 메시지 ===
+  function showMessage(text, cls) {
+    messageEl.textContent = text;
+    messageEl.className = 'message ' + cls + ' show';
+    setTimeout(() => { messageEl.className = 'message'; }, 1500);
+  }
+
+  // === 파티클 폭발 ===
+  function spawnParticles(x, y, big) {
+    const count = big
+      ? particleCountsBig[settings.particleAmount]
+      : particleCounts[settings.particleAmount];
+
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = big ? Math.random() * 16 + 6 : Math.random() * 12 + 4;
+      const angle = (Math.PI * 2 / count) * i + Math.random() * 0.5;
+      const dist = big ? Math.random() * 180 + 80 : Math.random() * 120 + 40;
+      const color = randColor();
+      p.style.cssText = `
+        left:${x}px; top:${y}px;
+        width:${size}px; height:${size}px;
+        background:${color};
+        --tx:${Math.cos(angle)*dist}px; --ty:${Math.sin(angle)*dist}px;
+        box-shadow: 0 0 ${size+4}px ${color};
+      `;
+      particleContainer.appendChild(p);
+      setTimeout(() => p.remove(), 650);
+    }
+
+    const emojis = big ? ['✨','💥','🌟','💫','⚡'] : ['✨','💥'];
+    const emojiCount = big ? Math.ceil(count / 4) : Math.ceil(count / 5);
+    for (let i = 0; i < emojiCount; i++) {
+      const s = document.createElement('div');
+      s.className = 'star-particle';
+      const angle = Math.random() * Math.PI * 2;
+      const dist = Math.random() * 140 + 60;
+      s.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      s.style.cssText = `
+        left:${x}px; top:${y}px;
+        --tx:${Math.cos(angle)*dist}px; --ty:${Math.sin(angle)*dist}px;
+        font-size:${big ? 28 : 20}px;
+      `;
+      particleContainer.appendChild(s);
+      setTimeout(() => s.remove(), 750);
+    }
+  }
+
+  function spawnRipple(x, y) {
+    const r = document.createElement('div');
+    r.className = 'ripple';
+    r.style.left = x + 'px';
+    r.style.top = y + 'px';
+    particleContainer.appendChild(r);
+    setTimeout(() => r.remove(), 450);
+  }
+
+  function spawnFlash() {
+    const f = document.createElement('div');
+    f.className = 'screen-flash';
+    document.body.appendChild(f);
+    setTimeout(() => f.remove(), 150);
+  }
+</script>
+</body>
+</html>
