@@ -286,6 +286,13 @@
   .heartbeat-vignette{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:94;background:radial-gradient(ellipse at center,transparent 40%,rgba(255,34,68,.18) 100%);opacity:0;transition:opacity .3s}
   .heartbeat-vignette.show{opacity:1}
   .heartbeat-active{animation:heartBeat .5s ease infinite}
+
+  /* === ALL CLEAR === */
+  .allclear-overlay{position:fixed;inset:0;background:rgba(10,10,20,.95);z-index:360;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .5s}
+  .allclear-overlay.show{opacity:1;pointer-events:auto}
+  .allclear-title{font-size:min(16vw,68px);font-weight:900;letter-spacing:6px;background:linear-gradient(90deg,#ff44aa,#cc88ff,#44ddff,#44ffaa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:allclearShine 2s linear infinite}
+  .allclear-sub{font-size:14px;color:rgba(255,255,255,.5);letter-spacing:3px;margin-top:8px;margin-bottom:25px}
+  @keyframes allclearShine{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
   @keyframes heartBeat{0%,100%{transform:scale(1);filter:brightness(1)}30%{transform:scale(1.008);filter:brightness(.7)}60%{transform:scale(1);filter:brightness(1)}80%{filter:brightness(.75)}}</style>
 </head>
 <body>
@@ -303,6 +310,7 @@
 <div class="start-screen hidden" id="startScreen"><div class="game-title">۹�봐영</div><div class="game-subtitle">숨 자 빼 기 게 임</div><div class="best-score-display" id="bestScoreStart">BEST 0</div><button class="start-btn" onclick="startGame()">S T A R T</button></div>
 <div class="breathe-overlay" id="breatheOverlay"><div class="breathe-stage" id="breatheStage">STAGE 2</div><div class="breathe-text">숨 고르기!</div><div class="breathe-sub" id="breatheSub"></div><div class="breathe-countdown" id="breatheCount">1</div></div>
 <div class="gameover-overlay" id="gameoverOverlay"><div class="go-title">GAME OVER</div><div class="go-new-best" id="goNewBest">★ NEW BEST ★</div><div class="go-stats"><div class="go-stat-row"><span class="go-stat-label">SCORE</span><span class="go-stat-val" id="goScore">0</span></div><div class="go-stat-row"><span class="go-stat-label">BEST</span><span class="go-stat-val best" id="goBest">0</span></div><div class="go-stat-row"><span class="go-stat-label">STAGE</span><span class="go-stat-val" id="goStage">0</span></div><div class="go-stat-row"><span class="go-stat-label">MAX COMBO</span><span class="go-stat-val" id="goCombo">0</span></div><div class="go-stat-row"><span class="go-stat-label">GENIUS</span><span class="go-stat-val" id="goGenius">0</span></div><div class="go-stat-row"><span class="go-stat-label">REVERSE CLEAR</span><span class="go-stat-val" id="goReverse">0</span></div></div><button class="go-retry" onclick="startGame()">R E T R Y</button></div>
+<div class="allclear-overlay" id="allclearOverlay"><div class="allclear-title">ALL CLEAR!</div><div class="allclear-sub">30 스테이지 클리어!</div><div class="go-stats"><div class="go-stat-row"><span class="go-stat-label">FINAL SCORE</span><span class="go-stat-val" id="acScore">0</span></div><div class="go-stat-row"><span class="go-stat-label">BEST</span><span class="go-stat-val best" id="acBest">0</span></div><div class="go-stat-row"><span class="go-stat-label">MAX COMBO</span><span class="go-stat-val" id="acCombo">0</span></div><div class="go-stat-row"><span class="go-stat-label">GENIUS</span><span class="go-stat-val" id="acGenius">0</span></div></div><button class="go-retry" onclick="closeAllClearAndRestart()" style="margin-top:20px">다시 도전</button></div>
 <div class="settings-overlay" id="settingsOverlay"><div class="settings-panel"><div class="settings-title">S E T T I N G S</div><div class="setting-row"><div><div class="setting-label">파티클 이펙트</div><div class="setting-sub">터치 시 파티클</div></div><button class="toggle on" id="togParticle" onclick="toggleSetting('particle')"></button></div><div class="setting-row"><div><div class="setting-label">화면 플래시</div><div class="setting-sub">터치 시 번쩍</div></div><button class="toggle on" id="togFlash" onclick="toggleSetting('flash')"></button></div><div class="setting-row"><div><div class="setting-label">폭발 숫자</div><div class="setting-sub">누른 숫자 크게 표시</div></div><button class="toggle on" id="togExplode" onclick="toggleSetting('explode')"></button></div><div class="setting-row"><div><div class="setting-label">진동</div><div class="setting-sub">모바일 향틱</div></div><button class="toggle on" id="togVibrate" onclick="toggleSetting('vibrate')"></button></div><div class="setting-row"><div><div class="setting-label">사운드</div><div class="setting-sub">효과음</div></div><button class="toggle on" id="togSound" onclick="toggleSetting('sound')"></button></div><div class="setting-row"><div><div class="setting-label">파티클 양</div></div><div class="seg-control"><button class="seg-btn" data-val="low" onclick="setParticleAmount('low')">적음</button><button class="seg-btn active" data-val="mid" onclick="setParticleAmount('mid')">보통</button><button class="seg-btn" data-val="high" onclick="setParticleAmount('high')">많음</button></div></div><button class="settings-close" onclick="closeSettings()">닫기</button></div></div>
 <!-- Info Bar (separated) -->
 <div class="info-bar">
@@ -391,15 +399,22 @@ function randColor(){return neonColors[Math.floor(Math.random()*neonColors.lengt
 function vibrate(ms){if(settings.vibrate&&navigator.vibrate&&!isDemoMode)navigator.vibrate(ms)}
 
 /* === 8단계 난이도 티어 (스테이지 기반) === */
+/* === 난이도: 초급(1~10) / 중급(11~20) / 고급(21~30) === */
 function getDifficulty(stage){
-  if(stage<=3)  return{tier:'워밍업',color:'#4cc9f0',min:3,max:10,timerSpeed:100,forbidCount:0,reverseChance:0};
-  if(stage<=6)  return{tier:'초급',color:'#00ff88',min:6,max:18,timerSpeed:85,forbidCount:0,reverseChance:0};
-  if(stage<=10) return{tier:'중급',color:'#ffd700',min:10,max:28,timerSpeed:70,forbidCount:0,reverseChance:.1};
-  if(stage<=15) return{tier:'상급',color:'#ff6ec7',min:14,max:38,timerSpeed:58,forbidCount:1,reverseChance:.18};
-  if(stage<=20) return{tier:'고수',color:'#e040fb',min:18,max:48,timerSpeed:48,forbidCount:1,reverseChance:.25};
-  if(stage<=27) return{tier:'달인',color:'#ff4d6d',min:22,max:55,timerSpeed:40,forbidCount:2,reverseChance:.3};
-  if(stage<=35) return{tier:'마스터',color:'#ff2244',min:26,max:62,timerSpeed:33,forbidCount:2,reverseChance:.35};
-  return{tier:'레전드',color:'#ffd700',min:30,max:70,timerSpeed:26,forbidCount:3,reverseChance:.4};
+  // 초급: 스테이지 1~10 | 숫자 3~49
+  if(stage<=3)  return{tier:'초급',color:'#44ffaa',min:3,max:15,timerSpeed:100,forbidCount:0,reverseChance:0};
+  if(stage<=6)  return{tier:'초급',color:'#44ffaa',min:8,max:25,timerSpeed:90,forbidCount:0,reverseChance:0};
+  if(stage<=10) return{tier:'초급',color:'#44ffaa',min:15,max:49,timerSpeed:80,forbidCount:1,reverseChance:0};
+  // 중급: 스테이지 11~20 | 숫자 50~100
+  if(stage<=13) return{tier:'중급',color:'#ffd700',min:50,max:65,timerSpeed:72,forbidCount:0,reverseChance:.1};
+  if(stage<=16) return{tier:'중급',color:'#ffd700',min:55,max:80,timerSpeed:64,forbidCount:1,reverseChance:.15};
+  if(stage<=20) return{tier:'중급',color:'#ffd700',min:60,max:100,timerSpeed:56,forbidCount:1,reverseChance:.2};
+  // 고급: 스테이지 21~30 | 숫자 100~200
+  if(stage<=23) return{tier:'고급',color:'#ff44aa',min:100,max:130,timerSpeed:50,forbidCount:1,reverseChance:.2};
+  if(stage<=26) return{tier:'고급',color:'#ff44aa',min:120,max:160,timerSpeed:44,forbidCount:2,reverseChance:.25};
+  if(stage<=30) return{tier:'고급',color:'#ff44aa',min:150,max:200,timerSpeed:38,forbidCount:2,reverseChance:.3};
+  // 30 이후: 무한 모드 (고급+)
+  return{tier:'∞ 고급+',color:'#ff2244',min:150+Math.floor((stage-30)*5),max:200+Math.floor((stage-30)*8),timerSpeed:Math.max(25,38-Math.floor((stage-30)*1.5)),forbidCount:Math.min(3,2+Math.floor((stage-30)/5)),reverseChance:Math.min(.4,.3+(stage-30)*.01)};
 }
 let prevTier='';
 
@@ -411,7 +426,7 @@ function setParticleAmount(v){settings.particleAmount=v;document.querySelectorAl
 function startGame(){
   initAudio();$('startScreen').classList.add('hidden');gameoverOverlay.classList.remove('show');
   score=0;comboCount=0;maxCombo=0;currentLevel=1;stageCount=0;lives=3;geniusCount=0;reverseClears=0;prevTier='';
-  scoreEl.textContent=score;levelEl.textContent='워밍업';comboEl.textContent=comboCount;updateLives();
+  scoreEl.textContent=score;levelEl.textContent='초급 0/30';comboEl.textContent=comboCount;updateLives();
   isPlaying=true;nextRound();
 }
 
@@ -497,10 +512,13 @@ function handleSuccess(){
   if(settings.particle){const bc=cls==='genius'?5:3;for(let i=0;i<bc;i++)setTimeout(()=>spawnParticles(window.innerWidth*(.15+Math.random()*.7),window.innerHeight*(.1+Math.random()*.4),true),i*100)}
   buttons.forEach(b=>b.classList.add('disabled'));
   const newCfg=getDifficulty(stageCount+1);
-  levelEl.textContent=newCfg.tier;
+  levelEl.textContent=newCfg.tier+' '+(stageCount<=30?stageCount+'/30':'');
   if(prevTier&&prevTier!==newCfg.tier){
     setTimeout(()=>showTierUp(newCfg.tier,newCfg.color),200);
     setTimeout(()=>showBreathe(),1800);
+  }else if(stageCount===30&&!isDemoMode){
+    // ALL CLEAR!
+    setTimeout(()=>showAllClear(),300);
   }else{
     setTimeout(()=>showBreathe(),700);
   }
@@ -517,7 +535,7 @@ function handleFail(msg){
     setTimeout(()=>{
       if(!isDemoMode)return;
       score=0;comboCount=0;maxCombo=0;currentLevel=1;stageCount=0;lives=3;geniusCount=0;reverseClears=0;prevTier='';
-      scoreEl.textContent=score;levelEl.textContent='워밍업';comboEl.textContent=comboCount;updateLives();
+      scoreEl.textContent=score;levelEl.textContent='초급 0/30';comboEl.textContent=comboCount;updateLives();
       nextRound();
     },1800);
   }else if(lives<=0){setTimeout(showGameOver,1200)}
@@ -529,7 +547,7 @@ function showGameOver(){
   if(isNew&&!isDemoMode){bestScore=score;localStorage.setItem('pumpBest',bestScore)}
   $('goScore').textContent=score;$('goBest').textContent=bestScore;
   const finalTier=getDifficulty(stageCount).tier;
-  $('goStage').textContent=stageCount+' ('+finalTier+')';
+  $('goStage').textContent=stageCount+'/30 ('+finalTier+')';
   $('goCombo').textContent=maxCombo;$('goGenius').textContent=geniusCount;$('goReverse').textContent=reverseClears;
   $('goNewBest').classList.toggle('show',isNew);$('bestScoreStart').textContent='BEST '+bestScore;
   gameoverOverlay.classList.add('show');
@@ -537,9 +555,9 @@ function showGameOver(){
 
 function showBreathe(){
   if(demoStopping)return;
-  breatheStage.textContent='STAGE '+(stageCount+1);
+  breatheStage.textContent='STAGE '+(stageCount+1)+(stageCount<30?' / 30':'');
   const nextCfg=getDifficulty(stageCount+1);
-  breatheSub.textContent=nextCfg.tier;
+  breatheSub.textContent=nextCfg.tier+(stageCount+1<=30?' ('+(stageCount+1)+'/30)':'');
   breatheSub.style.color=nextCfg.color;
   breatheCount.textContent='1';breatheOverlay.classList.add('show');
   setTimeout(()=>{breatheOverlay.classList.remove('show');setTimeout(()=>{if(!demoStopping)nextRound()},200)},1000);
@@ -553,6 +571,20 @@ function showTierUp(tierName,tierColor){
   if(settings.particle){for(let i=0;i<5;i++)setTimeout(()=>spawnParticles(window.innerWidth*(.1+Math.random()*.8),window.innerHeight*(.2+Math.random()*.3),true),i*120)}
   setTimeout(()=>el.remove(),1500);
 }
+
+function showAllClear(){
+  clearInterval(timerInterval);isPlaying=false;
+  const isNew=score>bestScore;
+  if(isNew){bestScore=score;localStorage.setItem('pumpBest',bestScore)}
+  $('acScore').textContent=score;$('acBest').textContent=bestScore;
+  $('acCombo').textContent=maxCombo;$('acGenius').textContent=geniusCount;
+  $('bestScoreStart').textContent='BEST '+bestScore;
+  $('allclearOverlay').classList.add('show');
+  // 화려한 파티클
+  if(settings.particle){for(let i=0;i<10;i++)setTimeout(()=>spawnParticles(window.innerWidth*(.05+Math.random()*.9),window.innerHeight*(.1+Math.random()*.5),true),i*150)}
+  sfxGenius();setTimeout(sfxGenius,300);setTimeout(sfxGenius,600);
+}
+function closeAllClearAndRestart(){$('allclearOverlay').classList.remove('show');startGame()}
 
 function showMessage(t,c){messageEl.textContent=t;messageEl.className='message '+c+' show';setTimeout(()=>{messageEl.className='message'},1500)}
 function spawnRankPopup(r,c){const e=document.createElement('div');e.className='rank-popup';e.textContent=r;e.style.color=c;e.style.textShadow=`0 0 30px ${c},0 0 60px ${c}`;document.body.appendChild(e);setTimeout(()=>e.remove(),800)}
@@ -671,7 +703,7 @@ function startDemo(){
 
   // Reset game state
   score=0;comboCount=0;maxCombo=0;currentLevel=1;stageCount=0;lives=3;geniusCount=0;reverseClears=0;prevTier='';
-  scoreEl.textContent=score;levelEl.textContent='워밍업';comboEl.textContent=comboCount;updateLives();
+  scoreEl.textContent=score;levelEl.textContent='초급 0/30';comboEl.textContent=comboCount;updateLives();
   isPlaying=true;
   nextRound();
 }
@@ -690,6 +722,7 @@ function stopDemoAndPlay(){
   // Clean up any overlays
   breatheOverlay.classList.remove('show');
   gameoverOverlay.classList.remove('show');
+  $('allclearOverlay').classList.remove('show');
 
   // Reset visual state
   targetEl.textContent='0';targetEl.className='target-number';
