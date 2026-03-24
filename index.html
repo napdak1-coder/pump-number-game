@@ -12,9 +12,9 @@
   .bg-dot{position:absolute;border-radius:50%;background:rgba(204,136,255,0.08);animation:floatDot linear infinite}
   @keyframes floatDot{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-20vh) scale(1);opacity:0}}
   .info-bar{
-    flex-shrink:0;height:54px;
+    flex-shrink:0;height:64px;
     display:flex;align-items:center;justify-content:space-between;
-    padding:0 16px;
+    padding:0 18px;
     background:rgba(255,255,255,.03);
     border-bottom:1px solid rgba(204,136,255,.08);
     z-index:10;
@@ -22,15 +22,15 @@
   .info-left,.info-center,.info-right{display:flex;flex-direction:column;align-items:center}
   .info-left{align-items:flex-start}
   .info-right{align-items:flex-end}
-  .info-label{font-size:9px;color:rgba(255,255,255,.35);letter-spacing:2px;margin-bottom:2px}
-  .info-value{font-size:18px;font-weight:900;color:#dd99ff;transition:transform .15s,color .15s}
-  .info-value.combo{color:#44ddff;font-size:20px}
-  .info-value.tier{font-size:12px;letter-spacing:2px}
-  .info-value.score-pop{transform:scale(1.4);color:#ffdd44}
-  .info-value.combo-pop{transform:scale(1.5);color:#44ffaa}
-  .lives{font-size:12px;color:rgba(255,100,100,.6);letter-spacing:1px;margin-top:1px}
-  .score-float{position:fixed;font-size:22px;font-weight:900;color:#ffdd44;pointer-events:none;z-index:999;
-    text-shadow:0 0 8px rgba(255,221,68,.6),0 2px 4px rgba(0,0,0,.5);
+  .info-label{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:3px;margin-bottom:3px;font-weight:700}
+  .info-value{font-size:26px;font-weight:900;color:#dd99ff;transition:transform .15s,color .15s;text-shadow:0 0 10px rgba(221,153,255,.3)}
+  .info-value.combo{color:#44ddff;font-size:28px;text-shadow:0 0 10px rgba(68,221,255,.3)}
+  .info-value.tier{font-size:14px;letter-spacing:2px}
+  .info-value.score-pop{transform:scale(1.5);color:#ffdd44;text-shadow:0 0 16px rgba(255,221,68,.6)}
+  .info-value.combo-pop{transform:scale(1.6);color:#44ffaa;text-shadow:0 0 16px rgba(68,255,170,.6)}
+  .lives{font-size:13px;color:rgba(255,100,100,.65);letter-spacing:2px;margin-top:2px}
+  .score-float{position:fixed;font-size:24px;font-weight:900;color:#ffdd44;pointer-events:none;z-index:999;
+    text-shadow:0 0 10px rgba(255,221,68,.7),0 2px 4px rgba(0,0,0,.5);
     animation:scoreFloat .8s ease-out forwards}
   @keyframes scoreFloat{0%{opacity:1;transform:translateY(0) scale(1)}50%{opacity:.9;transform:translateY(-30px) scale(1.1)}100%{opacity:0;transform:translateY(-60px) scale(.8)}}
   .target-area{
@@ -322,7 +322,22 @@
   .key-btn.golden{border-color:rgba(255,215,0,.5);box-shadow:0 4px 0 rgba(0,0,0,.3),0 6px 12px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.08),0 0 15px rgba(255,215,0,.2);color:rgba(255,215,0,.9);text-shadow:0 0 10px rgba(255,215,0,.3),0 2px 4px rgba(0,0,0,.3)}
   .key-btn.golden::before{content:'';position:absolute;inset:0;border-radius:13px;background:radial-gradient(ellipse at 50% 30%,rgba(255,215,0,.08),transparent 60%);pointer-events:none}
   .golden-bonus{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:min(12vw,52px);font-weight:900;color:#ffd700;text-shadow:0 0 30px #ffd700,0 0 60px rgba(255,215,0,.3);pointer-events:none;z-index:170;animation:goldenPop .8s ease forwards;letter-spacing:4px}
-  @keyframes goldenPop{0%{transform:translate(-50%,-50%) scale(0);opacity:0}30%{transform:translate(-50%,-50%) scale(1.2);opacity:1}60%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{transform:translate(-50%,-50%) scale(.9) translateY(-20px);opacity:0}}</style>
+  @keyframes goldenPop{0%{transform:translate(-50%,-50%) scale(0);opacity:0}30%{transform:translate(-50%,-50%) scale(1.2);opacity:1}60%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{transform:translate(-50%,-50%) scale(.9) translateY(-20px);opacity:0}}
+  .golden-hint{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
+    background:rgba(0,0,0,.85);border:2px solid rgba(255,215,0,.5);border-radius:16px;
+    padding:16px 28px;text-align:center;pointer-events:none;z-index:180;
+    animation:goldenHintIn 1.6s ease forwards;backdrop-filter:blur(6px)}
+  .golden-hint .gh-icon{font-size:36px;margin-bottom:6px}
+  .golden-hint .gh-title{font-size:18px;font-weight:900;color:#ffd700;letter-spacing:2px;margin-bottom:4px;
+    text-shadow:0 0 12px rgba(255,215,0,.4)}
+  .golden-hint .gh-desc{font-size:13px;color:rgba(255,255,255,.7);line-height:1.4}
+  .golden-hint .gh-num{font-size:32px;font-weight:900;color:#ffd700;margin:6px 0;
+    text-shadow:0 0 20px rgba(255,215,0,.5)}
+  @keyframes goldenHintIn{0%{transform:translate(-50%,-50%) scale(0);opacity:0}
+    12%{transform:translate(-50%,-50%) scale(1.05);opacity:1}
+    20%{transform:translate(-50%,-50%) scale(1);opacity:1}
+    80%{transform:translate(-50%,-50%) scale(1);opacity:1}
+    100%{transform:translate(-50%,-50%) scale(.9);opacity:0}}</style>
 </head>
 <body>
 <div class="bg-particles" id="bgParticles"></div>
@@ -498,6 +513,7 @@ function nextRound(){
     goldenNum=availableNums[Math.floor(Math.random()*availableNums.length)];
     const goldenBtn=document.querySelector(`.key-btn[data-num="${goldenNum}"]`);
     if(goldenBtn)goldenBtn.classList.add('golden');
+    showGoldenHint(goldenNum);
   }
 
   timeLeft=100;timerBar.style.width='100%';timerBar.classList.remove('danger');clearInterval(timerInterval);
@@ -562,20 +578,20 @@ function pressKey(num){
   const rect=btn.getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
   tapCount++;btn.classList.remove('pressed');void btn.offsetWidth;btn.classList.add('pressed');
   if(isDemoMode){btn.classList.add('demo-highlight');setTimeout(()=>btn.classList.remove('demo-highlight'),200)}
-  vibrate(20);sfxTap(num);
+  vibrate(35);sfxTap(num);
   lastTappedNum=num;
   if(settings.explode)spawnExplodeNumber(num);if(settings.particle)spawnParticles(cx,cy,false);if(settings.flash)spawnFlash();spawnRipple(cx,cy);
 
   const oldDisplay=targetEl.textContent;
   if(isReverse){
     currentValue+=num;
-    if(currentValue>originalTarget){spawnAfterimage(oldDisplay);targetEl.textContent=currentValue;vibrate([50,30,50]);handleFail('OVER!')}
-    else if(currentValue===originalTarget){spawnAfterimage(oldDisplay);targetEl.textContent=currentValue;vibrate([30,20,30,20,50]);handleSuccess()}
+    if(currentValue>originalTarget){spawnAfterimage(oldDisplay);targetEl.textContent=currentValue;vibrate([80,40,80]);handleFail('OVER!')}
+    else if(currentValue===originalTarget){spawnAfterimage(oldDisplay);targetEl.textContent=currentValue;vibrate([40,25,40,25,60]);handleSuccess()}
     else{spawnAfterimage(oldDisplay);targetEl.textContent=currentValue;targetEl.classList.add('shake');setTimeout(()=>targetEl.classList.remove('shake'),350)}
   }else{
     target-=num;
-    if(target<0){spawnAfterimage(oldDisplay);targetEl.textContent=target;vibrate([50,30,50]);handleFail('FAIL!')}
-    else if(target===0){spawnAfterimage(oldDisplay);targetEl.textContent='0';vibrate([30,20,30,20,50]);handleSuccess()}
+    if(target<0){spawnAfterimage(oldDisplay);targetEl.textContent=target;vibrate([80,40,80]);handleFail('FAIL!')}
+    else if(target===0){spawnAfterimage(oldDisplay);targetEl.textContent='0';vibrate([40,25,40,25,60]);handleSuccess()}
     else{spawnAfterimage(oldDisplay);targetEl.textContent=target;targetEl.classList.add('shake');setTimeout(()=>targetEl.classList.remove('shake'),350)}
   }
 }
@@ -694,6 +710,12 @@ function showAllClear(){
 function closeAllClearAndRestart(){$('allclearOverlay').classList.remove('show');startGame()}
 
 function showMessage(t,c){messageEl.textContent=t;messageEl.className='message '+c+' show';setTimeout(()=>{messageEl.className='message'},1500)}
+function showGoldenHint(num){
+  document.querySelectorAll('.golden-hint').forEach(e=>e.remove());
+  const el=document.createElement('div');el.className='golden-hint';
+  el.innerHTML=`<div class="gh-icon">⭐</div><div class="gh-title">GOLDEN NUMBER</div><div class="gh-num">${num}</div><div class="gh-desc">${num}번으로 마무리하면<br>점수 <b style="color:#ffd700">x5배</b>!</div>`;
+  document.body.appendChild(el);vibrate([30,20,30]);setTimeout(()=>el.remove(),1700);
+}
 function spawnScoreFloat(text){
   const el=document.createElement('div');el.className='score-float';el.textContent=text;
   const rect=document.getElementById('score').getBoundingClientRect();
