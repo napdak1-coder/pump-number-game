@@ -307,7 +307,7 @@
   <button class="demo-play-btn" onclick="stopDemoAndPlay()">직접 플레이</button>
 </div>
 
-<div class="start-screen hidden" id="startScreen"><div class="game-title">۹�봐영</div><div class="game-subtitle">숨 자 빼 기 게 임</div><div class="best-score-display" id="bestScoreStart">BEST 0</div><button class="start-btn" onclick="startGame()">S T A R T</button></div>
+<div class="start-screen" id="startScreen"><div class="game-title">빼봐영</div><div class="game-subtitle">숨 자 빼 기 게 임</div><div class="best-score-display" id="bestScoreStart">BEST 0</div><button class="start-btn" onclick="startGame()">S T A R T</button></div>
 <div class="breathe-overlay" id="breatheOverlay"><div class="breathe-stage" id="breatheStage">STAGE 2</div><div class="breathe-text">숨 고르기!</div><div class="breathe-sub" id="breatheSub"></div><div class="breathe-countdown" id="breatheCount">1</div></div>
 <div class="gameover-overlay" id="gameoverOverlay"><div class="go-title">GAME OVER</div><div class="go-new-best" id="goNewBest">★ NEW BEST ★</div><div class="go-stats"><div class="go-stat-row"><span class="go-stat-label">SCORE</span><span class="go-stat-val" id="goScore">0</span></div><div class="go-stat-row"><span class="go-stat-label">BEST</span><span class="go-stat-val best" id="goBest">0</span></div><div class="go-stat-row"><span class="go-stat-label">STAGE</span><span class="go-stat-val" id="goStage">0</span></div><div class="go-stat-row"><span class="go-stat-label">MAX COMBO</span><span class="go-stat-val" id="goCombo">0</span></div><div class="go-stat-row"><span class="go-stat-label">GENIUS</span><span class="go-stat-val" id="goGenius">0</span></div><div class="go-stat-row"><span class="go-stat-label">REVERSE CLEAR</span><span class="go-stat-val" id="goReverse">0</span></div></div><button class="go-retry" onclick="startGame()">R E T R Y</button></div>
 <div class="allclear-overlay" id="allclearOverlay"><div class="allclear-title">ALL CLEAR!</div><div class="allclear-sub">30 스테이지 클리어!</div><div class="go-stats"><div class="go-stat-row"><span class="go-stat-label">FINAL SCORE</span><span class="go-stat-val" id="acScore">0</span></div><div class="go-stat-row"><span class="go-stat-label">BEST</span><span class="go-stat-val best" id="acBest">0</span></div><div class="go-stat-row"><span class="go-stat-label">MAX COMBO</span><span class="go-stat-val" id="acCombo">0</span></div><div class="go-stat-row"><span class="go-stat-label">GENIUS</span><span class="go-stat-val" id="acGenius">0</span></div></div><button class="go-retry" onclick="closeAllClearAndRestart()" style="margin-top:20px">다시 도전</button></div>
@@ -738,8 +738,8 @@ function stopDemoAndPlay(){
   demoStopping=false;
 }
 
-/* === AUTO-START DEMO ON PAGE LOAD === */
-setTimeout(startDemo,300);
+/* === PAGE LOAD: 시작화면 표시 (시연모드 제거) === */
+demoBanner.classList.add('hidden');
 </script>
 </body>
 </html>
