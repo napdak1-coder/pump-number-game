@@ -120,6 +120,81 @@
   @keyframes breathePulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.05);opacity:1}}
   @keyframes countdownPop{0%{transform:scale(0);opacity:0}50%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
   @keyframes timerPulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+  /* === THEME TOGGLE BUTTON === */
+  .theme-toggle{position:absolute;top:6px;left:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px;cursor:pointer;z-index:20;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:0;width:52px;height:26px;transition:all .3s ease}
+  .theme-toggle-track{width:100%;height:100%;border-radius:13px;position:relative;display:flex;align-items:center}
+  .theme-toggle-thumb{width:20px;height:20px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;transition:transform .3s ease,background .3s;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+  .theme-toggle-label{position:absolute;font-size:10px;font-weight:700;letter-spacing:0.5px;transition:opacity .3s}
+  .theme-toggle-label.dark-label{right:6px;color:rgba(255,255,255,0.4)}
+  .theme-toggle-label.light-label{left:6px;color:rgba(171,71,188,0.6);opacity:0}
+
+  /* === LAVENDER DREAM THEME === */
+  body.lavender{background:linear-gradient(135deg,#f3e5f5 0%,#ede7f6 50%,#e8eaf6 100%)!important;animation:none!important}
+  body.lavender .bg-dot{background:rgba(171,71,188,0.1)}
+  body.lavender .theme-toggle{background:rgba(171,71,188,0.15);border-color:rgba(171,71,188,0.25)}
+  body.lavender .theme-toggle-thumb{transform:translateX(26px);background:linear-gradient(135deg,#ce93d8,#ab47bc)}
+  body.lavender .theme-toggle-label.dark-label{opacity:0}
+  body.lavender .theme-toggle-label.light-label{opacity:1}
+  body.lavender .score-bar{color:rgba(90,50,120,0.5)}
+  body.lavender .score-val{color:#7b1fa2}
+  body.lavender .lives-display{color:rgba(233,30,99,0.6)}
+  body.lavender .settings-btn{color:rgba(90,50,120,0.4)}
+  body.lavender .mode-badge.normal{color:rgba(171,71,188,0.7)}
+  body.lavender .mode-badge.reverse{color:#7b1fa2;background:rgba(123,31,162,0.1);border-color:rgba(123,31,162,0.2)}
+  body.lavender .mode-badge.forbidden{color:#c62828;background:rgba(198,40,40,0.08);border-color:rgba(198,40,40,0.15)}
+  body.lavender .target-label{color:rgba(171,71,188,0.6)}
+  body.lavender .target-number{color:#333;text-shadow:0 4px 20px rgba(171,71,188,0.25)}
+  body.lavender .target-number.reverse-color{color:#7b1fa2;text-shadow:0 0 20px rgba(123,31,162,0.4)}
+  body.lavender .timer-bar-wrap{background:rgba(171,71,188,0.1)}
+  body.lavender .timer-bar{background:linear-gradient(90deg,#ab47bc,#7c4dff)}
+  body.lavender .tap-info{color:rgba(90,50,120,0.3)}
+  body.lavender .combo-text{color:#7b1fa2}
+  body.lavender .message.genius{color:#00c853;text-shadow:0 0 15px rgba(0,200,83,0.4)}
+  body.lavender .message.great{color:#7b1fa2;text-shadow:0 0 12px rgba(123,31,162,0.3)}
+  body.lavender .message.good{color:#42a5f5;text-shadow:0 0 12px rgba(66,165,245,0.3)}
+  body.lavender .key-btn{background:rgba(255,255,255,0.55);backdrop-filter:blur(12px);border-color:rgba(171,71,188,0.15);color:#333;box-shadow:0 2px 12px rgba(171,71,188,0.06)}
+  body.lavender .key-btn:active{background:rgba(171,71,188,0.15)}
+  body.lavender .key-btn.forbidden{background:rgba(198,40,40,0.06);border-color:rgba(198,40,40,0.2);color:rgba(198,40,40,0.3)}
+  body.lavender .key-btn.forbidden::after{color:rgba(198,40,40,0.2)}
+  body.lavender .key-btn.demo-highlight{background:rgba(171,71,188,0.2);border-color:rgba(171,71,188,0.4)}
+  body.lavender .bottom-area{background:rgba(255,255,255,0.08)}
+  body.lavender .start-screen{background:linear-gradient(135deg,#f3e5f5 0%,#ede7f6 50%,#e8eaf6 100%)!important}
+  body.lavender .game-title{color:#4a148c;text-shadow:0 4px 20px rgba(171,71,188,0.4)}
+  body.lavender .game-subtitle{color:rgba(90,50,120,0.35)}
+  body.lavender .best-score-display{color:rgba(90,50,120,0.3)}
+  body.lavender .start-btn{background:rgba(171,71,188,0.08);border-color:rgba(171,71,188,0.3);color:#ab47bc}
+  body.lavender .start-btn:active{background:rgba(171,71,188,0.18)}
+  body.lavender .breathe-overlay{background:rgba(243,229,245,0.95)}
+  body.lavender .breathe-stage{color:#7b1fa2}
+  body.lavender .breathe-text{color:#333;text-shadow:0 0 20px rgba(171,71,188,0.4)}
+  body.lavender .breathe-sub{color:rgba(90,50,120,0.4)}
+  body.lavender .breathe-countdown{color:#ab47bc;text-shadow:0 0 30px rgba(171,71,188,0.5)}
+  body.lavender .gameover-overlay{background:rgba(243,229,245,0.95)}
+  body.lavender .go-title{color:#c62828}
+  body.lavender .go-new-best{color:#7b1fa2}
+  body.lavender .go-stat-label{color:rgba(90,50,120,0.5)}
+  body.lavender .go-stat-val{color:#7b1fa2}
+  body.lavender .go-stat-val.best{color:#ab47bc}
+  body.lavender .go-stat-row{border-bottom-color:rgba(171,71,188,0.08)}
+  body.lavender .go-retry{background:rgba(171,71,188,0.1);border-color:rgba(171,71,188,0.3);color:#ab47bc}
+  body.lavender .settings-panel{background:rgba(243,229,245,0.97);border-color:rgba(171,71,188,0.15)}
+  body.lavender .settings-title{color:rgba(90,50,120,0.8)}
+  body.lavender .setting-label{color:rgba(60,30,80,0.8)}
+  body.lavender .setting-sub{color:rgba(90,50,120,0.4)}
+  body.lavender .setting-row{border-bottom-color:rgba(171,71,188,0.08)}
+  body.lavender .toggle.on{background:rgba(171,71,188,0.5)}
+  body.lavender .seg-btn{color:rgba(90,50,120,0.4)}
+  body.lavender .seg-btn.active{background:rgba(171,71,188,0.25);color:#4a148c}
+  body.lavender .settings-close{background:rgba(171,71,188,0.08);border-color:rgba(171,71,188,0.15);color:rgba(90,50,120,0.6)}
+  body.lavender .demo-banner{background:linear-gradient(135deg,rgba(171,71,188,0.15),rgba(124,77,255,0.12));border-bottom-color:rgba(171,71,188,0.2)}
+  body.lavender .demo-banner-title{color:#333}
+  body.lavender .demo-banner-sub{color:rgba(90,50,120,0.5)}
+  body.lavender .demo-play-btn{background:rgba(171,71,188,0.15);border-color:rgba(171,71,188,0.4);color:#ab47bc}
+  body.lavender .explode-number{filter:hue-rotate(280deg)}
+  body.lavender .screen-flash{background:rgba(171,71,188,0.08)!important}
+  @keyframes btnFlashLav{0%{background:rgba(255,255,255,0.55)}30%{background:rgba(171,71,188,0.2)}100%{background:rgba(255,255,255,0.55)}}
+  body.lavender .key-btn.pressed{animation:btnFlashLav .25s ease}
 </style>
 </head>
 <body>
@@ -134,14 +209,25 @@
   <button class="demo-play-btn" onclick="stopDemoAndPlay()">직접 플레이</button>
 </div>
 
-<div class="start-screen hidden" id="startScreen"><div class="game-title">PUMP</div><div class="game-subtitle">N U M B E R</div><div class="best-score-display" id="bestScoreStart">BEST 0</div><button class="start-btn" onclick="startGame()">S T A R T</button></div>
+<div class="start-screen hidden" id="startScreen"><div class="game-title">۹�봐영</div><div class="game-subtitle">숨 자 빼 기 게 임</div><div class="best-score-display" id="bestScoreStart">BEST 0</div><button class="start-btn" onclick="startGame()">S T A R T</button></div>
 <div class="breathe-overlay" id="breatheOverlay"><div class="breathe-stage" id="breatheStage">STAGE 2</div><div class="breathe-text">숨 고르기!</div><div class="breathe-sub" id="breatheSub"></div><div class="breathe-countdown" id="breatheCount">1</div></div>
 <div class="gameover-overlay" id="gameoverOverlay"><div class="go-title">GAME OVER</div><div class="go-new-best" id="goNewBest">★ NEW BEST ★</div><div class="go-stats"><div class="go-stat-row"><span class="go-stat-label">SCORE</span><span class="go-stat-val" id="goScore">0</span></div><div class="go-stat-row"><span class="go-stat-label">BEST</span><span class="go-stat-val best" id="goBest">0</span></div><div class="go-stat-row"><span class="go-stat-label">STAGE</span><span class="go-stat-val" id="goStage">0</span></div><div class="go-stat-row"><span class="go-stat-label">MAX COMBO</span><span class="go-stat-val" id="goCombo">0</span></div><div class="go-stat-row"><span class="go-stat-label">GENIUS</span><span class="go-stat-val" id="goGenius">0</span></div><div class="go-stat-row"><span class="go-stat-label">REVERSE CLEAR</span><span class="go-stat-val" id="goReverse">0</span></div></div><button class="go-retry" onclick="startGame()">R E T R Y</button></div>
-<div class="settings-overlay" id="settingsOverlay"><div class="settings-panel"><div class="settings-title">S E T T I N G S</div><div class="setting-row"><div><div class="setting-label">파티클 이펙트</div><div class="setting-sub">터치 시 파티클</div></div><button class="toggle on" id="togParticle" onclick="toggleSetting('particle')"></button></div><div class="setting-row"><div><div class="setting-label">화면 플래시</div><div class="setting-sub">터치 시 번쩍</div></div><button class="toggle on" id="togFlash" onclick="toggleSetting('flash')"></button></div><div class="setting-row"><div><div class="setting-label">폭발 숫자</div><div class="setting-sub">누른 숫자 크게 표시</div></div><button class="toggle on" id="togExplode" onclick="toggleSetting('explode')"></button></div><div class="setting-row"><div><div class="setting-label">진동</div><div class="setting-sub">모바일 햅틱</div></div><button class="toggle on" id="togVibrate" onclick="toggleSetting('vibrate')"></button></div><div class="setting-row"><div><div class="setting-label">사운드</div><div class="setting-sub">효과음</div></div><button class="toggle on" id="togSound" onclick="toggleSetting('sound')"></button></div><div class="setting-row"><div><div class="setting-label">파티클 양</div></div><div class="seg-control"><button class="seg-btn" data-val="low" onclick="setParticleAmount('low')">적음</button><button class="seg-btn active" data-val="mid" onclick="setParticleAmount('mid')">보통</button><button class="seg-btn" data-val="high" onclick="setParticleAmount('high')">많음</button></div></div><button class="settings-close" onclick="closeSettings()">닫기</button></div></div>
-<div class="top-area"><div class="score-bar"><span>SCORE <span class="score-val" id="score">0</span></span><span>LV <span class="score-val" id="level">1</span></span><span>COMBO <span class="score-val" id="combo">0</span></span></div><div class="lives-display" id="livesDisplay">♥ ♥ ♥</div><button class="settings-btn" onclick="openSettings()">⋮</button><div class="mode-badge normal" id="modeBadge">T A R G E T</div><div class="target-number" id="targetNum">0</div><div class="timer-bar-wrap"><div class="timer-bar" id="timerBar"></div></div><div class="tap-info" id="tapInfo"></div><div class="combo-text" id="comboText"></div><div class="message" id="message"></div></div>
+<div class="settings-overlay" id="settingsOverlay"><div class="settings-panel"><div class="settings-title">S E T T I N G S</div><div class="setting-row"><div><div class="setting-label">파티클 이펙트</div><div class="setting-sub">터치 시 파티클</div></div><button class="toggle on" id="togParticle" onclick="toggleSetting('particle')"></button></div><div class="setting-row"><div><div class="setting-label">화면 플래시</div><div class="setting-sub">터치 시 번쩍</div></div><button class="toggle on" id="togFlash" onclick="toggleSetting('flash')"></button></div><div class="setting-row"><div><div class="setting-label">폭발 숫자</div><div class="setting-sub">누른 숫자 크게 표시</div></div><button class="toggle on" id="togExplode" onclick="toggleSetting('explode')"></button></div><div class="setting-row"><div><div class="setting-label">진동</div><div class="setting-sub">모바일 향틱</div></div><button class="toggle on" id="togVibrate" onclick="toggleSetting('vibrate')"></button></div><div class="setting-row"><div><div class="setting-label">사운드</div><div class="setting-sub">효과음</div></div><button class="toggle on" id="togSound" onclick="toggleSetting('sound')"></button></div><div class="setting-row"><div><div class="setting-label">파티클 양</div></div><div class="seg-control"><button class="seg-btn" data-val="low" onclick="setParticleAmount('low')">적음</button><button class="seg-btn active" data-val="mid" onclick="setParticleAmount('mid')">보통</button><button class="seg-btn" data-val="high" onclick="setParticleAmount('high')">많음</button></div></div><button class="settings-close" onclick="closeSettings()">닫기</button></div></div>
+<div class="top-area"><div class="score-bar"><span>SCORE <span class="score-val" id="score">0</span></span><span>LV <span class="score-val" id="level">1</span></span><span>COMBO <span class="score-val" id="combo">0</span></span></div><div class="lives-display" id="livesDisplay">♥ ♥ ♥</div><button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><div class="theme-toggle-track"><div class="theme-toggle-thumb">🌙</div><span class="theme-toggle-label dark-label">다크</span><span class="theme-toggle-label light-label">라벤더</span></div></button><button class="settings-btn" onclick="openSettings()">⋾</button><div class="mode-badge normal" id="modeBadge">T A R G E T</div><div class="target-number" id="targetNum">0</div><div class="timer-bar-wrap"><div class="timer-bar" id="timerBar"></div></div><div class="tap-info" id="tapInfo"></div><div class="combo-text" id="comboText"></div><div class="message" id="message"></div></div>
 <div class="bottom-area" id="keypadArea"><div class="keypad-row"><button class="key-btn" data-num="1">1</button><button class="key-btn" data-num="2">2</button><button class="key-btn" data-num="3">3</button></div><div class="keypad-row"><button class="key-btn" data-num="4">4</button><button class="key-btn" data-num="5">5</button><button class="key-btn" data-num="6">6</button></div><div class="keypad-row"><button class="key-btn" data-num="7">7</button><button class="key-btn" data-num="8">8</button><button class="key-btn" data-num="9">9</button></div></div>
 <div class="particle-container" id="particles"></div>
 <script>
+/* === THEME SYSTEM === */
+let currentTheme=localStorage.getItem('pumpTheme')||'dark';
+function applyTheme(t){
+  currentTheme=t;localStorage.setItem('pumpTheme',t);
+  const thumb=document.querySelector('.theme-toggle-thumb');
+  if(t==='lavender'){document.body.classList.add('lavender');if(thumb)thumb.textContent='🌸'}
+  else{document.body.classList.remove('lavender');if(thumb)thumb.textContent='🌙'}
+}
+function toggleTheme(){applyTheme(currentTheme==='dark'?'lavender':'dark')}
+applyTheme(currentTheme);
+
 const AudioCtx=window.AudioContext||window.webkitAudioContext;let audioCtx;
 function initAudio(){if(!audioCtx)audioCtx=new AudioCtx()}
 function playTone(f,d,t,v){if(!settings.sound||!audioCtx)return;try{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||.15,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}catch(e){}}
