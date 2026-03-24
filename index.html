@@ -11,6 +11,27 @@
   .bg-particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
   .bg-dot{position:absolute;border-radius:50%;background:rgba(204,136,255,0.08);animation:floatDot linear infinite}
   @keyframes floatDot{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-20vh) scale(1);opacity:0}}
+  .info-bar{
+    flex-shrink:0;height:44px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 14px;
+    background:rgba(255,255,255,.02);
+    border-bottom:1px solid rgba(204,136,255,.06);
+    z-index:10;
+  }
+  .info-left,.info-center,.info-right{display:flex;flex-direction:column;align-items:center}
+  .info-left{align-items:flex-start}
+  .info-right{align-items:flex-end}
+  .info-label{font-size:8px;color:rgba(255,255,255,.25);letter-spacing:2px}
+  .info-value{font-size:14px;font-weight:900;color:#dd99ff}
+  .info-value.combo{color:#44ddff}
+  .info-value.tier{font-size:11px;letter-spacing:2px}
+  .lives{font-size:11px;color:rgba(255,100,100,.5);letter-spacing:1px;margin-top:1px}
+  .target-area{
+    flex:0 0 auto;height:calc(40dvh - 44px);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;z-index:1;
+  }
   .top-area{height:40vh;height:40dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;position:relative;overflow:hidden;z-index:1}
   .score-bar{position:absolute;top:8px;left:0;right:0;display:flex;justify-content:space-around;padding:0 15px;font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:1px;z-index:10}
   .score-val{color:#dd99ff;font-weight:900;font-size:13px}
@@ -30,25 +51,50 @@
   .timer-bar-wrap{width:65%;max-width:280px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;margin-top:10px;overflow:hidden}
   .timer-bar{height:100%;background:linear-gradient(90deg,#ff44aa,#44ddff);border-radius:2px;transition:width .1s linear}
   .timer-bar.danger{background:linear-gradient(90deg,#ff2244,#ff6600);animation:timerPulse .4s infinite}
-  .tap-info{position:absolute;bottom:38px;font-size:10px;color:rgba(255,255,255,0.2);letter-spacing:1px}
-  .combo-text{font-size:15px;color:#dd99ff;letter-spacing:2px;margin-top:4px;opacity:0;transition:opacity .3s}
+  .message-slot{
+    flex-shrink:0;height:32px;
+    display:flex;align-items:center;justify-content:center;gap:12px;z-index:1;
+  }
+  .tap-info{font-size:9px;color:rgba(255,255,255,.2);letter-spacing:1px}
+  .combo-text{font-size:13px;color:#44ddff;letter-spacing:1px;opacity:0;transition:opacity .3s}
   .combo-text.show{opacity:1;animation:comboPulse .4s ease}
-  .message{position:absolute;bottom:10px;font-size:20px;font-weight:900;letter-spacing:3px;opacity:0}
+  .message{font-size:16px;font-weight:900;letter-spacing:2px;opacity:0;transition:opacity .3s}
   .message.show{opacity:1;animation:messageIn .4s ease}
   .message.genius{color:#44ffaa;text-shadow:0 0 20px #44ffaa,0 0 40px rgba(68,255,170,0.4)}
   .message.great{color:#dd99ff;text-shadow:0 0 15px #dd99ff,0 0 30px rgba(221,153,255,0.3)}
   .message.good{color:#4cc9f0;text-shadow:0 0 15px #4cc9f0}
   .message.ok-rank{color:#888;text-shadow:0 0 10px #888}
   .message.fail-msg{color:#ff2244;text-shadow:0 0 15px #ff2244}
-  .bottom-area{height:60vh;height:60dvh;width:100%;display:flex;flex-direction:column;padding:4px;gap:4px;z-index:1}
-  .keypad-row{flex:1;display:flex;gap:4px}
-  .key-btn{flex:1;border:1px solid rgba(255,200,255,0.1);border-radius:12px;background:rgba(255,255,255,0.03);color:rgba(200,220,255,0.7);font-size:min(12vw,50px);font-weight:900;cursor:pointer;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;transition:background .1s,border-color .3s,opacity .3s}
-  .key-btn:active{background:rgba(255,255,255,0.15);transform:scale(0.96)}
-  .key-btn.pressed{animation:btnFlash .25s ease}
+  .bottom-area{height:60vh;height:60dvh;width:100%;display:flex;flex-direction:column;padding:5px;gap:5px;z-index:1}
+  .keypad-row{flex:1;display:flex;gap:5px}
+  .key-btn{flex:1;border:1px solid rgba(255,200,255,.12);border-radius:14px;
+    background:linear-gradient(180deg,rgba(255,255,255,.06) 0%,rgba(255,255,255,.02) 100%);
+    color:rgba(220,240,255,.85);
+    font-size:min(14vw,60px);font-weight:900;
+    cursor:pointer;position:relative;overflow:hidden;
+    -webkit-tap-highlight-color:transparent;
+    transition:all .08s ease;
+    box-shadow:0 4px 0 rgba(0,0,0,.3),0 6px 12px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.08);
+    text-shadow:0 2px 4px rgba(0,0,0,.3);
+  }
+  .key-btn:active{
+    background:linear-gradient(180deg,rgba(204,136,255,.12) 0%,rgba(204,136,255,.06) 100%);
+    transform:translateY(3px) scale(0.97);
+    box-shadow:0 1px 0 rgba(0,0,0,.3),0 2px 4px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.04);
+    color:rgba(220,240,255,1);
+    text-shadow:0 0 12px rgba(204,136,255,.4),0 2px 4px rgba(0,0,0,.3);
+  }
+  .key-btn.pressed{animation:btnPress3d .25s ease}
   .key-btn.disabled{opacity:0.15;pointer-events:none}
-  .key-btn.forbidden{background:rgba(255,34,68,0.08);border-color:rgba(255,34,68,0.25);color:rgba(255,34,68,0.3);pointer-events:none}
+  .key-btn.forbidden{background:rgba(255,34,68,.05);border-color:rgba(255,34,68,.2);color:rgba(255,34,68,.25);pointer-events:none;box-shadow:0 4px 0 rgba(0,0,0,.2),0 4px 8px rgba(0,0,0,.1)}
   .key-btn.forbidden::after{content:'✕';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:min(8vw,36px);color:rgba(255,34,68,0.2)}
-  .key-btn.demo-highlight{background:rgba(204,136,255,0.25);border-color:rgba(204,136,255,0.5);transform:scale(0.94);transition:all .1s}
+  .key-btn.demo-highlight{
+    background:linear-gradient(180deg,rgba(204,136,255,.18) 0%,rgba(204,136,255,.08) 100%);
+    border-color:rgba(204,136,255,.4);
+    transform:translateY(3px);
+    box-shadow:0 1px 0 rgba(0,0,0,.3),0 2px 4px rgba(0,0,0,.1);
+    text-shadow:0 0 15px rgba(204,136,255,.5);
+  }
   .explode-number{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:min(55vw,300px);font-weight:900;pointer-events:none;z-index:150;animation:numberExplode .55s ease-out forwards;line-height:1}
   .rank-popup{position:fixed;top:45%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:min(16vw,72px);font-weight:900;pointer-events:none;z-index:160;letter-spacing:4px;animation:rankPop .8s ease-out forwards}
   .particle-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:100}
@@ -108,7 +154,12 @@
   @keyframes demoBtnPulse{0%,100%{box-shadow:0 0 0 0 rgba(204,136,255,0.3)}50%{box-shadow:0 0 0 8px rgba(204,136,255,0)}}
 
   @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-12px) rotate(-1.5deg)}40%{transform:translateX(12px) rotate(1.5deg)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
-  @keyframes btnFlash{0%{background:rgba(255,255,255,0.035)}30%{background:rgba(255,255,255,0.22)}100%{background:rgba(255,255,255,0.035)}}
+  @keyframes btnPress3d{
+    0%{transform:translateY(0);box-shadow:0 4px 0 rgba(0,0,0,.3),0 6px 12px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.08)}
+    40%{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.3),0 2px 4px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.04)}
+    70%{transform:translateY(-1px);box-shadow:0 5px 0 rgba(0,0,0,.3),0 7px 14px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.08)}
+    100%{transform:translateY(0);box-shadow:0 4px 0 rgba(0,0,0,.3),0 6px 12px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.08)}
+  }
   @keyframes numberExplode{0%{transform:translate(-50%,-50%) scale(0);opacity:1}35%{transform:translate(-50%,-50%) scale(1.15);opacity:1}100%{transform:translate(-50%,-50%) scale(1.4);opacity:0}}
   @keyframes rankPop{0%{transform:translate(-50%,-50%) scale(0);opacity:1}35%{transform:translate(-50%,-50%) scale(1.25);opacity:1}65%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{transform:translate(-50%,-60%) scale(0.9);opacity:0}}
   @keyframes particleFly{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0}}
@@ -153,8 +204,23 @@
   body.lavender .message.genius{color:#00c853;text-shadow:0 0 15px rgba(0,200,83,0.4)}
   body.lavender .message.great{color:#7b1fa2;text-shadow:0 0 12px rgba(123,31,162,0.3)}
   body.lavender .message.good{color:#42a5f5;text-shadow:0 0 12px rgba(66,165,245,0.3)}
-  body.lavender .key-btn{background:rgba(255,255,255,0.55);backdrop-filter:blur(12px);border-color:rgba(171,71,188,0.15);color:#333;box-shadow:0 2px 12px rgba(171,71,188,0.06)}
-  body.lavender .key-btn:active{background:rgba(171,71,188,0.15)}
+  body.lavender .info-bar{background:rgba(171,71,188,.04);border-bottom-color:rgba(171,71,188,.08)}
+  body.lavender .info-label{color:rgba(90,50,120,.4)}
+  body.lavender .info-value{color:#7b1fa2}
+  body.lavender .info-value.combo{color:#42a5f5}
+  body.lavender .lives{color:rgba(233,30,99,.5)}
+  body.lavender .target-area{background:transparent}
+  body.lavender .message-slot{background:transparent}
+  body.lavender .key-btn{
+    background:linear-gradient(180deg,rgba(255,255,255,.6) 0%,rgba(255,255,255,.5) 100%);
+    border-color:rgba(171,71,188,.15);color:#333;
+    box-shadow:0 4px 0 rgba(171,71,188,.12),0 6px 12px rgba(0,0,0,.04),inset 0 1px 0 rgba(255,255,255,.8);
+    text-shadow:none;
+  }
+  body.lavender .key-btn:active{
+    background:linear-gradient(180deg,rgba(171,71,188,.12) 0%,rgba(171,71,188,.08) 100%);
+    box-shadow:0 1px 0 rgba(171,71,188,.1),0 2px 4px rgba(0,0,0,.03);
+  }
   body.lavender .key-btn.forbidden{background:rgba(198,40,40,0.06);border-color:rgba(198,40,40,0.2);color:rgba(198,40,40,0.3)}
   body.lavender .key-btn.forbidden::after{color:rgba(198,40,40,0.2)}
   body.lavender .key-btn.demo-highlight{background:rgba(171,71,188,0.2);border-color:rgba(171,71,188,0.4)}
@@ -193,8 +259,7 @@
   body.lavender .demo-play-btn{background:rgba(171,71,188,0.15);border-color:rgba(171,71,188,0.4);color:#ab47bc}
   body.lavender .explode-number{filter:hue-rotate(280deg)}
   body.lavender .screen-flash{background:rgba(171,71,188,0.08)!important}
-  @keyframes btnFlashLav{0%{background:rgba(255,255,255,0.55)}30%{background:rgba(171,71,188,0.2)}100%{background:rgba(255,255,255,0.55)}}
-  body.lavender .key-btn.pressed{animation:btnFlashLav .25s ease}
+  body.lavender .key-btn.pressed{animation:btnPress3d .25s ease}
 
   /* === TIER UP POPUP === */
   .tier-up-popup{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;pointer-events:none;animation:tierUpFade 1.5s ease forwards}
@@ -239,7 +304,35 @@
 <div class="breathe-overlay" id="breatheOverlay"><div class="breathe-stage" id="breatheStage">STAGE 2</div><div class="breathe-text">숨 고르기!</div><div class="breathe-sub" id="breatheSub"></div><div class="breathe-countdown" id="breatheCount">1</div></div>
 <div class="gameover-overlay" id="gameoverOverlay"><div class="go-title">GAME OVER</div><div class="go-new-best" id="goNewBest">★ NEW BEST ★</div><div class="go-stats"><div class="go-stat-row"><span class="go-stat-label">SCORE</span><span class="go-stat-val" id="goScore">0</span></div><div class="go-stat-row"><span class="go-stat-label">BEST</span><span class="go-stat-val best" id="goBest">0</span></div><div class="go-stat-row"><span class="go-stat-label">STAGE</span><span class="go-stat-val" id="goStage">0</span></div><div class="go-stat-row"><span class="go-stat-label">MAX COMBO</span><span class="go-stat-val" id="goCombo">0</span></div><div class="go-stat-row"><span class="go-stat-label">GENIUS</span><span class="go-stat-val" id="goGenius">0</span></div><div class="go-stat-row"><span class="go-stat-label">REVERSE CLEAR</span><span class="go-stat-val" id="goReverse">0</span></div></div><button class="go-retry" onclick="startGame()">R E T R Y</button></div>
 <div class="settings-overlay" id="settingsOverlay"><div class="settings-panel"><div class="settings-title">S E T T I N G S</div><div class="setting-row"><div><div class="setting-label">파티클 이펙트</div><div class="setting-sub">터치 시 파티클</div></div><button class="toggle on" id="togParticle" onclick="toggleSetting('particle')"></button></div><div class="setting-row"><div><div class="setting-label">화면 플래시</div><div class="setting-sub">터치 시 번쩍</div></div><button class="toggle on" id="togFlash" onclick="toggleSetting('flash')"></button></div><div class="setting-row"><div><div class="setting-label">폭발 숫자</div><div class="setting-sub">누른 숫자 크게 표시</div></div><button class="toggle on" id="togExplode" onclick="toggleSetting('explode')"></button></div><div class="setting-row"><div><div class="setting-label">진동</div><div class="setting-sub">모바일 향틱</div></div><button class="toggle on" id="togVibrate" onclick="toggleSetting('vibrate')"></button></div><div class="setting-row"><div><div class="setting-label">사운드</div><div class="setting-sub">효과음</div></div><button class="toggle on" id="togSound" onclick="toggleSetting('sound')"></button></div><div class="setting-row"><div><div class="setting-label">파티클 양</div></div><div class="seg-control"><button class="seg-btn" data-val="low" onclick="setParticleAmount('low')">적음</button><button class="seg-btn active" data-val="mid" onclick="setParticleAmount('mid')">보통</button><button class="seg-btn" data-val="high" onclick="setParticleAmount('high')">많음</button></div></div><button class="settings-close" onclick="closeSettings()">닫기</button></div></div>
-<div class="top-area"><div class="score-bar"><span>SCORE <span class="score-val" id="score">0</span></span><span><span class="score-val" id="level">워밍업</span></span><span>COMBO <span class="score-val" id="combo">0</span></span></div><div class="lives-display" id="livesDisplay">♥ ♥ ♥</div><button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><div class="theme-toggle-track"><div class="theme-toggle-thumb">🌙</div><span class="theme-toggle-label dark-label">홀로</span><span class="theme-toggle-label light-label">라벤더</span></div></button><button class="settings-btn" onclick="openSettings()">⋾</button><div class="mode-badge normal" id="modeBadge">T A R G E T</div><div class="target-number" id="targetNum">0</div><div class="timer-bar-wrap"><div class="timer-bar" id="timerBar"></div></div><div class="tap-info" id="tapInfo"></div><div class="combo-text" id="comboText"></div><div class="message" id="message"></div></div>
+<!-- Info Bar (separated) -->
+<div class="info-bar">
+  <div class="info-left">
+    <div class="info-label">SCORE</div>
+    <div class="info-value" id="score">0</div>
+  </div>
+  <div class="info-center">
+    <div class="info-value tier" id="level">워밍업</div>
+    <div class="lives" id="livesDisplay">♥ ♥ ♥</div>
+  </div>
+  <div class="info-right">
+    <div class="info-label">COMBO</div>
+    <div class="info-value combo" id="combo">0</div>
+  </div>
+</div>
+<!-- Target Area -->
+<div class="target-area">
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><div class="theme-toggle-track"><div class="theme-toggle-thumb">🌙</div><span class="theme-toggle-label dark-label">홀로</span><span class="theme-toggle-label light-label">라벤더</span></div></button>
+  <button class="settings-btn" onclick="openSettings()">⋮⋮</button>
+  <div class="mode-badge normal" id="modeBadge">T A R G E T</div>
+  <div class="target-number" id="targetNum">0</div>
+  <div class="timer-bar-wrap"><div class="timer-bar" id="timerBar"></div></div>
+</div>
+<!-- Message Slot (fixed height, no overlap) -->
+<div class="message-slot">
+  <span class="tap-info" id="tapInfo" style="font-size:9px;color:rgba(255,255,255,.2);letter-spacing:1px"></span>
+  <span class="message" id="message" style="position:static;font-size:16px"></span>
+  <span class="combo-text" id="comboText" style="position:static;font-size:13px;color:#44ddff"></span>
+</div>
 <div class="bottom-area" id="keypadArea"><div class="keypad-row"><button class="key-btn" data-num="1">1</button><button class="key-btn" data-num="2">2</button><button class="key-btn" data-num="3">3</button></div><div class="keypad-row"><button class="key-btn" data-num="4">4</button><button class="key-btn" data-num="5">5</button><button class="key-btn" data-num="6">6</button></div><div class="keypad-row"><button class="key-btn" data-num="7">7</button><button class="key-btn" data-num="8">8</button><button class="key-btn" data-num="9">9</button></div></div>
 <div class="particle-container" id="particles"></div>
 <div class="edge-glow" id="edgeGlow"></div>
@@ -347,7 +440,7 @@ function nextRound(){
   buttons.forEach(btn=>{const n=parseInt(btn.dataset.num);btn.classList.remove('disabled','forbidden');if(forbiddenNums.includes(n))btn.classList.add('forbidden')});
   timeLeft=100;timerBar.style.width='100%';timerBar.classList.remove('danger');clearInterval(timerInterval);
   let speed=cfg.timerSpeed;if(isReverse&&forbiddenNums.length>0)speed=Math.max(20,Math.floor(speed*.6));
-  isHeartbeatActive=false;heartbeatVignetteEl.classList.remove('show');document.querySelector('.top-area').classList.remove('heartbeat-active');
+  isHeartbeatActive=false;heartbeatVignetteEl.classList.remove('show');document.body.classList.remove('heartbeat-active');
   timerInterval=setInterval(()=>{timeLeft-=1;timerBar.style.width=timeLeft+'%';if(timeLeft<=25)timerBar.classList.add('danger');updateHeartbeat();if(timeLeft<=0){clearInterval(timerInterval);updateHeartbeat();handleFail('TIME UP!')}},speed);
 
   // Demo mode: start AI auto-play
@@ -474,7 +567,7 @@ function spawnAfterimage(oldText){
   ghost.textContent=oldText;
   const colors=['rgba(204,136,255,.4)','rgba(255,68,170,.35)','rgba(68,221,255,.35)'];
   const c=colors[Math.floor(Math.random()*colors.length)];
-  ghost.style.cssText=`left:50%;top:${document.querySelector('.top-area').offsetHeight*.45}px;color:${c};text-shadow:0 0 30px ${c}`;
+  ghost.style.cssText=`left:50%;top:${document.body.offsetHeight*.45}px;color:${c};text-shadow:0 0 30px ${c}`;
   document.body.appendChild(ghost);setTimeout(()=>ghost.remove(),500);
 }
 
@@ -520,11 +613,11 @@ function updateHeartbeat(){
   if(timeLeft<=25&&!isHeartbeatActive&&isPlaying){
     isHeartbeatActive=true;
     heartbeatVignetteEl.classList.add('show');
-    document.querySelector('.top-area').classList.add('heartbeat-active');
+    document.body.classList.add('heartbeat-active');
   }else if((timeLeft>25||!isPlaying)&&isHeartbeatActive){
     isHeartbeatActive=false;
     heartbeatVignetteEl.classList.remove('show');
-    document.querySelector('.top-area').classList.remove('heartbeat-active');
+    document.body.classList.remove('heartbeat-active');
   }
 }
 
@@ -603,7 +696,7 @@ function stopDemoAndPlay(){
   messageEl.className='message';
   buttons.forEach(b=>{b.classList.remove('disabled','forbidden','pressed','demo-highlight')});
   edgeGlowEl.classList.remove('show');heartbeatVignetteEl.classList.remove('show');
-  document.querySelector('.top-area').classList.remove('heartbeat-active');isHeartbeatActive=false;
+  document.body.classList.remove('heartbeat-active');isHeartbeatActive=false;
 
   // Show start screen
   $('startScreen').classList.remove('hidden');
