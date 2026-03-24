@@ -318,6 +318,27 @@
   .fever-timer{position:fixed;top:46px;left:0;right:0;height:3px;z-index:201;pointer-events:none}
   .fever-timer-fill{height:100%;background:linear-gradient(90deg,#ff44aa,#44ddff);border-radius:2px;transition:width .1s linear}
 
+  /* === BONUS NUMBER === */
+  .bonus-area{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 0;flex-shrink:0}
+  .bonus-btn{display:flex;align-items:center;justify-content:center;
+    width:56px;height:56px;border-radius:50%;border:2px solid rgba(0,200,255,.4);
+    background:radial-gradient(circle,rgba(0,200,255,.12),rgba(0,100,200,.06));
+    color:#44ddff;font-size:24px;font-weight:900;cursor:pointer;
+    box-shadow:0 0 12px rgba(0,200,255,.15),inset 0 0 8px rgba(0,200,255,.05);
+    text-shadow:0 0 8px rgba(0,200,255,.4);transition:all .2s;position:relative}
+  .bonus-btn.active{border-color:rgba(255,170,0,.7);color:#ffaa00;
+    background:radial-gradient(circle,rgba(255,170,0,.2),rgba(255,100,0,.08));
+    box-shadow:0 0 20px rgba(255,170,0,.3),inset 0 0 10px rgba(255,170,0,.1);
+    text-shadow:0 0 12px rgba(255,170,0,.5);transform:scale(1.15);animation:bonusPulse .6s infinite alternate}
+  .bonus-btn.used{opacity:.3;pointer-events:none;border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.2);
+    box-shadow:none;text-shadow:none;text-decoration:line-through}
+  @keyframes bonusPulse{0%{box-shadow:0 0 20px rgba(255,170,0,.3)}100%{box-shadow:0 0 30px rgba(255,170,0,.5)}}
+  .bonus-label{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:1px}
+  .bonus-preview{position:fixed;top:42%;left:50%;transform:translate(-50%,-50%);
+    font-size:min(10vw,48px);font-weight:900;color:#ffaa00;pointer-events:none;z-index:160;
+    text-shadow:0 0 20px rgba(255,170,0,.5);opacity:0;transition:opacity .15s}
+  .bonus-preview.show{opacity:1}
+
   /* === GOLDEN NUMBER === */
   .key-btn.golden{border-color:rgba(255,215,0,.5);box-shadow:0 4px 0 rgba(0,0,0,.3),0 6px 12px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.08),0 0 15px rgba(255,215,0,.2);color:rgba(255,215,0,.9);text-shadow:0 0 10px rgba(255,215,0,.3),0 2px 4px rgba(0,0,0,.3)}
   .key-btn.golden::before{content:'';position:absolute;inset:0;border-radius:13px;background:radial-gradient(ellipse at 50% 30%,rgba(255,215,0,.08),transparent 60%);pointer-events:none}
@@ -385,6 +406,10 @@
   <span class="tap-info" id="tapInfo" style="font-size:9px;color:rgba(255,255,255,.2);letter-spacing:1px"></span>
   <span class="message" id="message" style="position:static;font-size:16px"></span>
   <span class="combo-text" id="comboText" style="position:static;font-size:13px;color:#44ddff"></span>
+</div>
+<div class="bonus-area" id="bonusArea">
+  <button class="bonus-btn" id="bonusBtn" style="display:none" onclick="toggleBonus()">0</button>
+  <span class="bonus-label" id="bonusLabel"></span>
 </div>
 <div class="bottom-area" id="keypadArea"><div class="keypad-row"><button class="key-btn" data-num="1">1</button><button class="key-btn" data-num="2">2</button><button class="key-btn" data-num="3">3</button></div><div class="keypad-row"><button class="key-btn" data-num="4">4</button><button class="key-btn" data-num="5">5</button><button class="key-btn" data-num="6">6</button></div><div class="keypad-row"><button class="key-btn" data-num="7">7</button><button class="key-btn" data-num="8">8</button><button class="key-btn" data-num="9">9</button></div></div>
 <div class="fever-overlay" id="feverOverlay"></div>
@@ -491,19 +516,46 @@ function startGame(){
 
 function updateLives(){livesDisplay.textContent=Array(lives).fill('♥').join(' ')+(lives<3?' '+Array(3-lives).fill('♡').join(' '):'')}
 
+let bonusNum=0,bonusActive=false,bonusUsed=false;
+
 function nextRound(){
   if(demoStopping)return;
   const nextStage=stageCount+1;
   const cfg=getDifficulty(nextStage);
   isReverse=Math.random()<cfg.reverseChance;
   forbiddenNums=[];
+  // 키패드 원래 1~9로 복원
+  buttons.forEach((btn,i)=>{btn.dataset.num=i+1;btn.textContent=i+1});
+
   if(cfg.forbidCount>0){const av=[1,2,3,4,5,6,7,8,9];for(let i=0;i<cfg.forbidCount;i++){const idx=Math.floor(Math.random()*av.length);forbiddenNums.push(av.splice(idx,1)[0])}}
   const usable=[1,2,3,4,5,6,7,8,9].filter(n=>!forbiddenNums.includes(n));
   const maxU=Math.max(...usable);
   originalTarget=Math.floor(Math.random()*(cfg.max-cfg.min+1))+cfg.min;
+
+  // 보너스 숫자: 중급(11+) 이상에서 활성화
+  bonusActive=false;bonusUsed=false;
+  const bonusEl=$('bonusBtn');
+  if(nextStage>10){
+    bonusNum=Math.floor(Math.random()*9)+1;
+    bonusEl.textContent=bonusNum;bonusEl.className='bonus-btn';bonusEl.style.display='flex';
+  }else{
+    bonusNum=0;bonusEl.style.display='none';
+  }
   if(isReverse){currentValue=0;target=originalTarget;targetEl.textContent='0';targetEl.className='target-number reverse-color'}
   else{target=originalTarget;currentValue=0;targetEl.textContent=target;targetEl.className='target-number'}
-  tapCount=0;minTaps=Math.ceil(originalTarget/maxU);messageEl.className='message';
+  tapCount=0;
+  // minTaps: 보너스 사용 가능 시 최대 빼기값 = bonusNum*10+9
+  const maxSingle=maxU;
+  const maxWithBonus=(nextStage>10)?bonusNum*10+9:0;
+  if(maxWithBonus>0&&originalTarget>maxSingle){
+    // 보너스 1회 사용 + 나머지는 단일키로
+    const afterBonus=Math.max(0,originalTarget-maxWithBonus);
+    minTaps=1+Math.ceil(afterBonus/maxSingle);
+    if(originalTarget<=maxSingle)minTaps=1; // 단일로도 가능하면 1
+  }else{
+    minTaps=Math.ceil(originalTarget/maxSingle);
+  }
+  messageEl.className='message';
 
   if(isReverse&&forbiddenNums.length>0){modeBadge.textContent='↑ REVERSE + BAN '+forbiddenNums.join(',');modeBadge.className='mode-badge reverse-forbidden'}
   else if(isReverse){modeBadge.textContent='↑ REVERSE → '+originalTarget;modeBadge.className='mode-badge reverse'}
@@ -516,7 +568,7 @@ function nextRound(){
   // Golden number
   goldenNum=0;
   buttons.forEach(b=>b.classList.remove('golden'));
-  const availableNums=[1,2,3,4,5,6,7,8,9].filter(n=>!forbiddenNums.includes(n));
+  const availableNums=keyNums.filter(n=>!forbiddenNums.includes(n));
   if(availableNums.length>0){
     goldenNum=availableNums[Math.floor(Math.random()*availableNums.length)];
     const goldenBtn=document.querySelector(`.key-btn[data-num="${goldenNum}"]`);
@@ -579,25 +631,49 @@ function endFever(){
   $('feverTimer').style.display='none';
 }
 
+function toggleBonus(){
+  if(!isPlaying||bonusUsed)return;
+  bonusActive=!bonusActive;
+  const bonusEl=$('bonusBtn');
+  const labelEl=$('bonusLabel');
+  if(bonusActive){
+    bonusEl.classList.add('active');
+    labelEl.textContent='× 10 + 키패드';
+    vibrate(20);
+  }else{
+    bonusEl.classList.remove('active');
+    labelEl.textContent='';
+  }
+}
+
 /* === PRESS KEY (shared by human + AI) === */
 function pressKey(num){
   if(!isPlaying)return;if(forbiddenNums.includes(num))return;
+  // 보너스 활성 상태면 2자리 합체
+  let actualNum=num;
+  if(bonusActive&&!bonusUsed){
+    actualNum=bonusNum*10+num; // 보너스가 십의자리, 키패드가 일의자리
+    bonusUsed=true;bonusActive=false;
+    const bonusEl=$('bonusBtn');
+    bonusEl.classList.remove('active');bonusEl.classList.add('used');
+    $('bonusLabel').textContent='USED';
+  }
   const btn=document.querySelector(`.key-btn[data-num="${num}"]`);if(!btn)return;
   const rect=btn.getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
   tapCount++;btn.classList.remove('pressed');void btn.offsetWidth;btn.classList.add('pressed');
   if(isDemoMode){btn.classList.add('demo-highlight');setTimeout(()=>btn.classList.remove('demo-highlight'),200)}
-  vibrate(35);sfxTap(num);
+  vibrate(bonusUsed?[40,20,40]:35);sfxTap(num);
   lastTappedNum=num;
-  if(settings.explode)spawnExplodeNumber(num);if(settings.particle)spawnParticles(cx,cy,false);if(settings.flash)spawnFlash();spawnRipple(cx,cy);
+  if(settings.explode)spawnExplodeNumber(actualNum);if(settings.particle)spawnParticles(cx,cy,false);if(settings.flash)spawnFlash();spawnRipple(cx,cy);
 
   const oldDisplay=targetEl.textContent;
   if(isReverse){
-    currentValue+=num;
+    currentValue+=actualNum;
     if(currentValue>originalTarget){spawnAfterimage(oldDisplay);targetEl.textContent=currentValue;vibrate([80,40,80]);handleFail('OVER!')}
     else if(currentValue===originalTarget){spawnAfterimage(oldDisplay);targetEl.textContent=currentValue;vibrate([40,25,40,25,60]);handleSuccess()}
     else{spawnAfterimage(oldDisplay);targetEl.textContent=currentValue;targetEl.classList.add('shake');setTimeout(()=>targetEl.classList.remove('shake'),350)}
   }else{
-    target-=num;
+    target-=actualNum;
     if(target<0){spawnAfterimage(oldDisplay);targetEl.textContent=target;vibrate([80,40,80]);handleFail('FAIL!')}
     else if(target===0){spawnAfterimage(oldDisplay);targetEl.textContent='0';vibrate([40,25,40,25,60]);handleSuccess()}
     else{spawnAfterimage(oldDisplay);targetEl.textContent=target;targetEl.classList.add('shake');setTimeout(()=>targetEl.classList.remove('shake'),350)}
