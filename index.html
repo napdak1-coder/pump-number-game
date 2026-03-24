@@ -12,21 +12,27 @@
   .bg-dot{position:absolute;border-radius:50%;background:rgba(204,136,255,0.08);animation:floatDot linear infinite}
   @keyframes floatDot{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-20vh) scale(1);opacity:0}}
   .info-bar{
-    flex-shrink:0;height:44px;
+    flex-shrink:0;height:54px;
     display:flex;align-items:center;justify-content:space-between;
-    padding:0 14px;
-    background:rgba(255,255,255,.02);
-    border-bottom:1px solid rgba(204,136,255,.06);
+    padding:0 16px;
+    background:rgba(255,255,255,.03);
+    border-bottom:1px solid rgba(204,136,255,.08);
     z-index:10;
   }
   .info-left,.info-center,.info-right{display:flex;flex-direction:column;align-items:center}
   .info-left{align-items:flex-start}
   .info-right{align-items:flex-end}
-  .info-label{font-size:8px;color:rgba(255,255,255,.25);letter-spacing:2px}
-  .info-value{font-size:14px;font-weight:900;color:#dd99ff}
-  .info-value.combo{color:#44ddff}
-  .info-value.tier{font-size:11px;letter-spacing:2px}
-  .lives{font-size:11px;color:rgba(255,100,100,.5);letter-spacing:1px;margin-top:1px}
+  .info-label{font-size:9px;color:rgba(255,255,255,.35);letter-spacing:2px;margin-bottom:2px}
+  .info-value{font-size:18px;font-weight:900;color:#dd99ff;transition:transform .15s,color .15s}
+  .info-value.combo{color:#44ddff;font-size:20px}
+  .info-value.tier{font-size:12px;letter-spacing:2px}
+  .info-value.score-pop{transform:scale(1.4);color:#ffdd44}
+  .info-value.combo-pop{transform:scale(1.5);color:#44ffaa}
+  .lives{font-size:12px;color:rgba(255,100,100,.6);letter-spacing:1px;margin-top:1px}
+  .score-float{position:fixed;font-size:22px;font-weight:900;color:#ffdd44;pointer-events:none;z-index:999;
+    text-shadow:0 0 8px rgba(255,221,68,.6),0 2px 4px rgba(0,0,0,.5);
+    animation:scoreFloat .8s ease-out forwards}
+  @keyframes scoreFloat{0%{opacity:1;transform:translateY(0) scale(1)}50%{opacity:.9;transform:translateY(-30px) scale(1.1)}100%{opacity:0;transform:translateY(-60px) scale(.8)}}
   .target-area{
     flex:0 0 auto;height:calc(40dvh - 44px);
     display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -455,7 +461,7 @@ function setParticleAmount(v){settings.particleAmount=v;document.querySelectorAl
 function startGame(){
   initAudio();$('startScreen').classList.add('hidden');gameoverOverlay.classList.remove('show');
   score=0;comboCount=0;maxCombo=0;currentLevel=1;stageCount=0;lives=3;geniusCount=0;reverseClears=0;prevTier='';
-  scoreEl.textContent=score;levelEl.textContent='초급 0/30';comboEl.textContent=comboCount;updateLives();
+  scoreEl.textContent=score.toLocaleString();levelEl.textContent='초급 0/30';comboEl.textContent=comboCount;updateLives();
   fastClears=0;if(isFever)endFever();goldenNum=0;lastTappedNum=0;
   isPlaying=true;nextRound();
 }
@@ -591,7 +597,10 @@ function handleSuccess(){
   const goldenMult=isGoldenFinish?5:1;
   const feverMult=isFever?5:1;
   const total=Math.round((50+stageCount*8+comboCount*15+Math.ceil(timeLeft/5))*mult*modeBonus*speedMultiplier*feverMult*goldenMult);
-  score+=total;scoreEl.textContent=score;comboEl.textContent=comboCount;
+  score+=total;scoreEl.textContent=score.toLocaleString();comboEl.textContent=comboCount;
+  scoreEl.classList.add('score-pop');setTimeout(()=>scoreEl.classList.remove('score-pop'),200);
+  if(comboCount>=2){comboEl.classList.add('combo-pop');setTimeout(()=>comboEl.classList.remove('combo-pop'),200)}
+  spawnScoreFloat('+'+total.toLocaleString());
   targetEl.className='target-number success';tapInfoEl.textContent=tapCount+' TAP'+(tapCount>1?'S':'')+' (MIN '+minTaps+')';
   let msgText=rank+' +'+total;
   if(isGoldenFinish)msgText+=' GOLDEN!';
@@ -632,7 +641,7 @@ function handleFail(msg){
     setTimeout(()=>{
       if(!isDemoMode)return;
       score=0;comboCount=0;maxCombo=0;currentLevel=1;stageCount=0;lives=3;geniusCount=0;reverseClears=0;prevTier='';
-      scoreEl.textContent=score;levelEl.textContent='초급 0/30';comboEl.textContent=comboCount;updateLives();
+      scoreEl.textContent=score.toLocaleString();levelEl.textContent='초급 0/30';comboEl.textContent=comboCount;updateLives();
       fastClears=0;if(isFever)endFever();goldenNum=0;lastTappedNum=0;
       nextRound();
     },1800);
@@ -685,6 +694,12 @@ function showAllClear(){
 function closeAllClearAndRestart(){$('allclearOverlay').classList.remove('show');startGame()}
 
 function showMessage(t,c){messageEl.textContent=t;messageEl.className='message '+c+' show';setTimeout(()=>{messageEl.className='message'},1500)}
+function spawnScoreFloat(text){
+  const el=document.createElement('div');el.className='score-float';el.textContent=text;
+  const rect=document.getElementById('score').getBoundingClientRect();
+  el.style.left=(rect.left+rect.width/2)+'px';el.style.top=(rect.bottom+4)+'px';
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
 function spawnRankPopup(r,c){const e=document.createElement('div');e.className='rank-popup';e.textContent=r;e.style.color=c;e.style.textShadow=`0 0 30px ${c},0 0 60px ${c}`;document.body.appendChild(e);setTimeout(()=>e.remove(),800)}
 function spawnExplodeNumber(n){const e=document.createElement('div');e.className='explode-number';e.textContent=n;const c=randColor();e.style.color=c;e.style.textShadow=`0 0 40px ${c},0 0 80px ${c},0 0 120px ${c}`;document.body.appendChild(e);if(settings.particle)setTimeout(()=>spawnParticles(window.innerWidth/2,window.innerHeight/2,true),80);setTimeout(()=>e.remove(),550)}
 function spawnParticles(x,y,big){const cnt=big?pCountBig[settings.particleAmount]:pCount[settings.particleAmount];for(let i=0;i<cnt;i++){const p=document.createElement('div');p.className='particle';const sz=big?Math.random()*16+6:Math.random()*12+4,a=(Math.PI*2/cnt)*i+Math.random()*.5,d=big?Math.random()*180+80:Math.random()*120+40,c=randColor();p.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;background:${c};--tx:${Math.cos(a)*d}px;--ty:${Math.sin(a)*d}px;box-shadow:0 0 ${sz+4}px ${c}`;particleContainer.appendChild(p);setTimeout(()=>p.remove(),650)}const em=big?['✨','💥','🌟','💫','⚡']:['✨','💥'],ec=big?Math.ceil(cnt/4):Math.ceil(cnt/5);for(let i=0;i<ec;i++){const s=document.createElement('div');s.className='star-particle';const a=Math.random()*Math.PI*2,d=Math.random()*140+60;s.textContent=em[Math.floor(Math.random()*em.length)];s.style.cssText=`left:${x}px;top:${y}px;--tx:${Math.cos(a)*d}px;--ty:${Math.sin(a)*d}px;font-size:${big?28:20}px`;particleContainer.appendChild(s);setTimeout(()=>s.remove(),750)}}
@@ -801,7 +816,7 @@ function startDemo(){
 
   // Reset game state
   score=0;comboCount=0;maxCombo=0;currentLevel=1;stageCount=0;lives=3;geniusCount=0;reverseClears=0;prevTier='';
-  scoreEl.textContent=score;levelEl.textContent='초급 0/30';comboEl.textContent=comboCount;updateLives();
+  scoreEl.textContent=score.toLocaleString();levelEl.textContent='초급 0/30';comboEl.textContent=comboCount;updateLives();
   fastClears=0;if(isFever)endFever();goldenNum=0;lastTappedNum=0;
   isPlaying=true;
   nextRound();
