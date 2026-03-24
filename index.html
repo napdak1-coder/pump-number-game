@@ -326,7 +326,7 @@
   .golden-hint{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
     background:rgba(0,0,0,.85);border:2px solid rgba(255,215,0,.5);border-radius:16px;
     padding:16px 28px;text-align:center;pointer-events:none;z-index:180;
-    animation:goldenHintIn 1.6s ease forwards;backdrop-filter:blur(6px)}
+    animation:goldenHintIn 3.2s ease forwards;backdrop-filter:blur(6px)}
   .golden-hint .gh-icon{font-size:36px;margin-bottom:6px}
   .golden-hint .gh-title{font-size:18px;font-weight:900;color:#ffd700;letter-spacing:2px;margin-bottom:4px;
     text-shadow:0 0 12px rgba(255,215,0,.4)}
@@ -334,9 +334,9 @@
   .golden-hint .gh-num{font-size:32px;font-weight:900;color:#ffd700;margin:6px 0;
     text-shadow:0 0 20px rgba(255,215,0,.5)}
   @keyframes goldenHintIn{0%{transform:translate(-50%,-50%) scale(0);opacity:0}
-    12%{transform:translate(-50%,-50%) scale(1.05);opacity:1}
-    20%{transform:translate(-50%,-50%) scale(1);opacity:1}
-    80%{transform:translate(-50%,-50%) scale(1);opacity:1}
+    8%{transform:translate(-50%,-50%) scale(1.05);opacity:1}
+    12%{transform:translate(-50%,-50%) scale(1);opacity:1}
+    85%{transform:translate(-50%,-50%) scale(1);opacity:1}
     100%{transform:translate(-50%,-50%) scale(.9);opacity:0}}</style>
 </head>
 <body>
@@ -446,7 +446,15 @@ $('bestScoreStart').textContent='BEST '+bestScore;
 
 const neonColors=['#cc88ff','#ff44aa','#44ddff','#44ffaa','#dd99ff','#88ccff','#ff88cc','#aa66dd','#66ffdd','#ff66aa','#8844dd','#44aaff'];
 function randColor(){return neonColors[Math.floor(Math.random()*neonColors.length)]}
-function vibrate(ms){if(settings.vibrate&&navigator.vibrate&&!isDemoMode)navigator.vibrate(ms)}
+function vibrate(ms){
+  if(!settings.vibrate||isDemoMode)return;
+  // 안드로이드: navigator.vibrate
+  if(navigator.vibrate){try{navigator.vibrate(ms)}catch(e){}}
+  // iOS 대안: AudioContext로 짧은 햅틱 트리거 시도
+  if(!navigator.vibrate&&window.AudioContext){
+    try{const ctx=new AudioContext();const o=ctx.createOscillator();o.frequency.value=1;o.connect(ctx.destination);o.start();o.stop(ctx.currentTime+0.01);setTimeout(()=>ctx.close(),50)}catch(e){}
+  }
+}
 
 /* === 8단계 난이도 티어 (스테이지 기반) === */
 /* === 난이도: 초급(1~10) / 중급(11~20) / 고급(21~30) === */
@@ -710,11 +718,14 @@ function showAllClear(){
 function closeAllClearAndRestart(){$('allclearOverlay').classList.remove('show');startGame()}
 
 function showMessage(t,c){messageEl.textContent=t;messageEl.className='message '+c+' show';setTimeout(()=>{messageEl.className='message'},1500)}
+let goldenHintShown=false;
 function showGoldenHint(num){
+  if(goldenHintShown)return;
+  goldenHintShown=true;
   document.querySelectorAll('.golden-hint').forEach(e=>e.remove());
   const el=document.createElement('div');el.className='golden-hint';
   el.innerHTML=`<div class="gh-icon">⭐</div><div class="gh-title">GOLDEN NUMBER</div><div class="gh-num">${num}</div><div class="gh-desc">${num}번으로 마무리하면<br>점수 <b style="color:#ffd700">x5배</b>!</div>`;
-  document.body.appendChild(el);vibrate([30,20,30]);setTimeout(()=>el.remove(),1700);
+  document.body.appendChild(el);vibrate([30,20,30]);setTimeout(()=>el.remove(),3200);
 }
 function spawnScoreFloat(text){
   const el=document.createElement('div');el.className='score-float';el.textContent=text;
