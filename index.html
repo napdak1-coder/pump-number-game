@@ -431,19 +431,19 @@ function vibrate(ms){if(settings.vibrate&&navigator.vibrate&&!isDemoMode)navigat
 /* === 난이도: 초급(1~10) / 중급(11~20) / 고급(21~30) === */
 function getDifficulty(stage){
   // 초급: 스테이지 1~10 | 숫자 3~49
-  if(stage<=3)  return{tier:'초급',color:'#44ffaa',min:3,max:15,timerSpeed:100,forbidCount:0,reverseChance:0};
-  if(stage<=6)  return{tier:'초급',color:'#44ffaa',min:8,max:25,timerSpeed:90,forbidCount:0,reverseChance:0};
-  if(stage<=10) return{tier:'초급',color:'#44ffaa',min:15,max:49,timerSpeed:80,forbidCount:1,reverseChance:0};
+  if(stage<=3)  return{tier:'초급',color:'#44ffaa',min:3,max:15,timerSpeed:65,forbidCount:0,reverseChance:0};
+  if(stage<=6)  return{tier:'초급',color:'#44ffaa',min:8,max:25,timerSpeed:58,forbidCount:0,reverseChance:0};
+  if(stage<=10) return{tier:'초급',color:'#44ffaa',min:15,max:49,timerSpeed:52,forbidCount:1,reverseChance:0};
   // 중급: 스테이지 11~20 | 숫자 50~100
-  if(stage<=13) return{tier:'중급',color:'#ffd700',min:50,max:65,timerSpeed:72,forbidCount:0,reverseChance:.1};
-  if(stage<=16) return{tier:'중급',color:'#ffd700',min:55,max:80,timerSpeed:64,forbidCount:1,reverseChance:.15};
-  if(stage<=20) return{tier:'중급',color:'#ffd700',min:60,max:100,timerSpeed:56,forbidCount:1,reverseChance:.2};
+  if(stage<=13) return{tier:'중급',color:'#ffd700',min:50,max:65,timerSpeed:46,forbidCount:0,reverseChance:.1};
+  if(stage<=16) return{tier:'중급',color:'#ffd700',min:55,max:80,timerSpeed:42,forbidCount:1,reverseChance:.15};
+  if(stage<=20) return{tier:'중급',color:'#ffd700',min:60,max:100,timerSpeed:36,forbidCount:1,reverseChance:.2};
   // 고급: 스테이지 21~30 | 숫자 100~200
-  if(stage<=23) return{tier:'고급',color:'#ff44aa',min:100,max:130,timerSpeed:50,forbidCount:1,reverseChance:.2};
-  if(stage<=26) return{tier:'고급',color:'#ff44aa',min:120,max:160,timerSpeed:44,forbidCount:2,reverseChance:.25};
-  if(stage<=30) return{tier:'고급',color:'#ff44aa',min:150,max:200,timerSpeed:38,forbidCount:2,reverseChance:.3};
+  if(stage<=23) return{tier:'고급',color:'#ff44aa',min:100,max:130,timerSpeed:32,forbidCount:1,reverseChance:.2};
+  if(stage<=26) return{tier:'고급',color:'#ff44aa',min:120,max:160,timerSpeed:28,forbidCount:2,reverseChance:.25};
+  if(stage<=30) return{tier:'고급',color:'#ff44aa',min:150,max:200,timerSpeed:25,forbidCount:2,reverseChance:.3};
   // 30 이후: 무한 모드 (고급+)
-  return{tier:'∞ 고급+',color:'#ff2244',min:150+Math.floor((stage-30)*5),max:200+Math.floor((stage-30)*8),timerSpeed:Math.max(25,38-Math.floor((stage-30)*1.5)),forbidCount:Math.min(3,2+Math.floor((stage-30)/5)),reverseChance:Math.min(.4,.3+(stage-30)*.01)};
+  return{tier:'∞ 고급+',color:'#ff2244',min:150+Math.floor((stage-30)*5),max:200+Math.floor((stage-30)*8),timerSpeed:Math.max(18,25-Math.floor((stage-30)*1)),forbidCount:Math.min(3,2+Math.floor((stage-30)/5)),reverseChance:Math.min(.4,.3+(stage-30)*.01)};
 }
 let prevTier='';
 
