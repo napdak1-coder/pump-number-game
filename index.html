@@ -402,7 +402,29 @@
     image-rendering:pixelated;
   }
   body.peach .bg-particles{display:none}
-  body.peach *{font-family:'DotGothic16','Courier New',monospace !important}
+  body.peach *{font-family:'Press Start 2P','DotGothic16','Courier New',monospace !important}
+
+  /* RETRO ARCADE — scanline overlay */
+  body.peach .scanline-overlay{
+    position:fixed;inset:0;pointer-events:none;z-index:9999;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.12) 2px,rgba(0,0,0,.12) 4px);
+    animation:crtFlicker 6s infinite;
+  }
+  @keyframes crtFlicker{0%,96%,100%{opacity:1}97%{opacity:.85}98%{opacity:1}99%{opacity:.9}}
+
+  /* RETRO ARCADE — pixel particle bg */
+  body.peach .retro-pixel-bg{
+    position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;
+  }
+  body.peach .retro-pixel{
+    position:absolute;image-rendering:pixelated;border-radius:0;
+    animation:retroFloat linear infinite;
+  }
+  @keyframes retroFloat{
+    0%{transform:translateY(100vh) scale(.5);opacity:0}
+    10%{opacity:.7}90%{opacity:.7}
+    100%{transform:translateY(-10vh) scale(1);opacity:0}
+  }
 
   /* === 인포바 — 게임 HUD === */
   body.peach .info-bar{
@@ -414,13 +436,13 @@
     backdrop-filter:none;box-shadow:none;
   }
   body.peach .info-bar{padding:10px 14px 8px;height:auto}
-  body.peach .info-label{color:rgba(80,184,168,.4);font-size:11px;letter-spacing:2px}
-  body.peach .info-value{color:#60d8c0;text-shadow:0 0 8px rgba(96,216,192,.1),2px 2px 0 rgba(0,0,0,.3);font-size:28px}
-  body.peach .info-value.combo{color:#50b0ff;text-shadow:0 0 8px rgba(80,176,255,.1),2px 2px 0 rgba(0,0,0,.3);font-size:28px}
-  body.peach .info-value.tier{color:#50b8a8;font-size:15px;letter-spacing:2px;text-shadow:none}
-  body.peach .info-value.score-pop{color:#60ffb0;text-shadow:0 0 12px rgba(96,255,176,.25)}
-  body.peach .info-value.combo-pop{color:#70d0ff;text-shadow:0 0 12px rgba(112,208,255,.25)}
-  body.peach .lives{color:rgba(255,80,80,.5);font-size:16px;letter-spacing:3px}
+  body.peach .info-label{color:rgba(0,255,204,.5);font-size:9px;letter-spacing:2px;font-family:'Press Start 2P',monospace !important}
+  body.peach .info-value{color:#00ffcc;text-shadow:0 0 8px rgba(0,255,204,.15),2px 2px 0 #004422;font-size:24px;font-family:'Press Start 2P',monospace !important}
+  body.peach .info-value.combo{color:#44ff44;text-shadow:0 0 8px rgba(68,255,68,.15),2px 2px 0 #004400;font-size:24px}
+  body.peach .info-value.tier{color:#00ffcc;font-size:12px;letter-spacing:1px;text-shadow:none}
+  body.peach .info-value.score-pop{color:#ffcc00;text-shadow:0 0 15px rgba(255,204,0,.4)}
+  body.peach .info-value.combo-pop{color:#44ff44;text-shadow:0 0 15px rgba(68,255,68,.4)}
+  body.peach .lives{color:#ff0000;font-size:16px;letter-spacing:3px;text-shadow:0 0 6px rgba(255,0,0,.3);font-family:'Press Start 2P',monospace !important}
 
   /* === 캐릭터 바 (peach only) === */
   .char-bar{display:none}
@@ -464,27 +486,30 @@
   body.peach .target-area{background:transparent;padding:0 20px}
   body.peach .target-label{color:rgba(80,184,168,.3)}
   body.peach .target-number{
-    color:#60d8e0;font-size:min(25vw,110px);
-    text-shadow:0 0 12px rgba(96,216,224,.12),3px 3px 0 rgba(0,0,0,.3);
-    animation:none;
+    color:#00ffcc;font-size:min(25vw,110px);
+    text-shadow:0 0 20px rgba(0,255,204,.3),4px 4px 0 #006644;
+    animation:none;font-family:'Press Start 2P',monospace !important;
+    image-rendering:pixelated;
   }
-  body.peach .target-number .t-tens{color:#60d8e0;text-shadow:0 0 12px rgba(96,216,224,.12),3px 3px 0 rgba(0,0,0,.3)}
-  body.peach .target-number .t-sep{color:rgba(80,184,168,.12)}
-  body.peach .target-number .t-ones{color:#50e880;text-shadow:0 0 12px rgba(80,232,128,.1),3px 3px 0 rgba(0,0,0,.3)}
-  body.peach .target-number .t-hundreds{color:#ffa050;text-shadow:0 0 12px rgba(255,160,80,.1),3px 3px 0 rgba(0,0,0,.3)}
+  body.peach .target-number .t-tens{color:#00ffcc;text-shadow:0 0 20px rgba(0,255,204,.3),4px 4px 0 #006644}
+  body.peach .target-number .t-sep{color:rgba(0,255,204,.15)}
+  body.peach .target-number .t-ones{color:#44ff44;text-shadow:0 0 20px rgba(68,255,68,.2),4px 4px 0 #004400}
+  body.peach .target-number .t-hundreds{color:#ffcc00;text-shadow:0 0 20px rgba(255,204,0,.2),4px 4px 0 #664400}
   body.peach .target-number .t-digit-label{display:none}
   body.peach .target-number.success .t-tens,
   body.peach .target-number.success .t-ones,
   body.peach .target-number.success .t-hundreds,
-  body.peach .target-number.success .t-sep{color:#50ff90;text-shadow:0 0 15px rgba(80,255,144,.25),3px 3px 0 rgba(0,0,0,.3)}
+  body.peach .target-number.success .t-sep{color:#44ff44;text-shadow:0 0 25px rgba(68,255,68,.5),4px 4px 0 #004400;animation:retroSuccess .15s ease 2}
+  @keyframes retroSuccess{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
   body.peach .target-number.fail .t-tens,
   body.peach .target-number.fail .t-ones,
   body.peach .target-number.fail .t-hundreds,
-  body.peach .target-number.fail .t-sep{color:#ff4060;text-shadow:0 0 15px rgba(255,64,96,.25),3px 3px 0 rgba(0,0,0,.3)}
+  body.peach .target-number.fail .t-sep{color:#ff4444;text-shadow:0 0 25px rgba(255,68,68,.5),4px 4px 0 #440000;animation:retroGlitch .08s ease 4}
+  @keyframes retroGlitch{0%{transform:translate(0)}25%{transform:translate(-3px,1px)}50%{transform:translate(3px,-1px)}75%{transform:translate(-2px,-1px)}100%{transform:translate(0)}}
   body.peach .target-number.reverse-color .t-tens,
   body.peach .target-number.reverse-color .t-ones,
   body.peach .target-number.reverse-color .t-hundreds,
-  body.peach .target-number.reverse-color .t-sep{color:#ff6878;text-shadow:0 0 12px rgba(255,104,120,.15),3px 3px 0 rgba(0,0,0,.3)}
+  body.peach .target-number.reverse-color .t-sep{color:#ff6688;text-shadow:0 0 15px rgba(255,102,136,.3),4px 4px 0 #440022}
 
   /* 타이머 — 기존 선형 바 숨김 (peach에서 원형 사용) */
   body.peach .timer-bar-wrap{display:none !important}
@@ -502,20 +527,21 @@
   @keyframes hpBlink{0%,100%{opacity:1}50%{opacity:.6}}
 
   /* 속도 뱃지 */
-  body.peach .speed-mult{color:rgba(80,184,168,.3);font-size:10px;
-    background:rgba(8,20,28,.6);border:2px solid #184848;
-    padding:2px 6px;border-radius:0}
+  body.peach .speed-mult{color:#00ffcc;font-size:8px;
+    background:rgba(0,20,15,.7);border:2px solid #00aa88;
+    padding:3px 8px;border-radius:0;font-family:'Press Start 2P',monospace !important;
+    text-shadow:0 0 6px rgba(0,255,204,.2)}
 
   /* === 메시지 — 큰 폰트, 네온 글로우 === */
   body.peach .message-slot{background:transparent}
-  body.peach .tap-info{color:rgba(80,184,168,.18);font-size:9px}
-  body.peach .combo-text{color:#50e880 !important;font-size:16px !important;text-shadow:0 0 8px rgba(80,232,128,.15),1px 1px 0 rgba(0,0,0,.3)}
-  body.peach .message{font-size:22px !important;letter-spacing:3px}
-  body.peach .message.genius{color:#50ff90;text-shadow:0 0 12px rgba(80,255,144,.3),2px 2px 0 rgba(0,0,0,.3)}
-  body.peach .message.great{color:#60d8e0;text-shadow:0 0 10px rgba(96,216,224,.2),2px 2px 0 rgba(0,0,0,.3)}
-  body.peach .message.good{color:#50b0ff;text-shadow:0 0 10px rgba(80,176,255,.2),2px 2px 0 rgba(0,0,0,.3)}
-  body.peach .message.ok-rank{color:rgba(80,184,168,.4);text-shadow:1px 1px 0 rgba(0,0,0,.3)}
-  body.peach .message.fail-msg{color:#ff4060;text-shadow:0 0 10px rgba(255,64,96,.3),2px 2px 0 rgba(0,0,0,.3)}
+  body.peach .tap-info{color:rgba(0,255,204,.2);font-size:8px;font-family:'Press Start 2P',monospace !important}
+  body.peach .combo-text{color:#44ff44 !important;font-size:14px !important;text-shadow:0 0 10px rgba(68,255,68,.3),2px 2px 0 #002200;font-family:'Press Start 2P',monospace !important}
+  body.peach .message{font-size:18px !important;letter-spacing:2px;font-family:'Press Start 2P',monospace !important}
+  body.peach .message.genius{color:#ffcc00;text-shadow:0 0 15px rgba(255,204,0,.5),3px 3px 0 #443300;animation:retroGlitch .06s ease 3}
+  body.peach .message.great{color:#00ffcc;text-shadow:0 0 12px rgba(0,255,204,.4),3px 3px 0 #004422}
+  body.peach .message.good{color:#44aaff;text-shadow:0 0 10px rgba(68,170,255,.3),3px 3px 0 #002244}
+  body.peach .message.ok-rank{color:rgba(0,255,204,.35);text-shadow:2px 2px 0 rgba(0,0,0,.4)}
+  body.peach .message.fail-msg{color:#ff4444;text-shadow:0 0 15px rgba(255,68,68,.5),3px 3px 0 #440000;animation:retroGlitch .08s ease 4}
 
   /* === 키패드 — 8비트 아케이드 버튼 === */
   body.peach .bottom-area{
@@ -558,14 +584,22 @@
   body.peach .fever-timer-fill{background:linear-gradient(90deg,#d08030,#50e880)}
 
   /* 폭발 숫자 */
-  body.peach .explode-number{color:rgba(96,216,224,.1);text-shadow:0 0 20px rgba(96,216,224,.05)}
+  body.peach .explode-number{
+    color:rgba(0,255,204,.12) !important;
+    text-shadow:0 0 30px rgba(0,255,204,.08),4px 0 rgba(255,0,68,.06),-4px 0 rgba(68,255,68,.06) !important;
+    font-family:'Press Start 2P',monospace !important;
+    animation:numberExplode .55s ease-out forwards,retroGlitch .06s ease 5 !important;
+  }
 
   /* 점수 플로팅 */
-  body.peach .score-float{color:#50ff90;text-shadow:0 0 8px rgba(80,255,144,.3),2px 2px 0 rgba(0,0,0,.3)}
+  body.peach .score-float{
+    color:#ffcc00 !important;text-shadow:0 0 10px rgba(255,204,0,.4),2px 2px 0 #443300;
+    font-family:'Press Start 2P',monospace !important;font-size:18px !important;
+  }
 
   /* 킬스트릭 / 랭크업 / 콤보 텍스트 */
-  body.peach .streak-popup{text-shadow:0 0 20px currentColor,3px 3px 0 rgba(0,0,0,.4) !important}
-  body.peach .tier-up-popup{text-shadow:0 0 20px currentColor,3px 3px 0 rgba(0,0,0,.4) !important}
+  body.peach .streak-popup{text-shadow:0 0 25px currentColor,4px 4px 0 rgba(0,0,0,.5) !important;font-family:'Press Start 2P',monospace !important}
+  body.peach .tier-up-popup{text-shadow:0 0 25px currentColor,4px 4px 0 rgba(0,0,0,.5) !important;font-family:'Press Start 2P',monospace !important}
 
   /* 시작 화면 */
   body.peach .start-screen{
@@ -655,10 +689,15 @@
   body.peach .tier-up-name{text-shadow:0 0 20px rgba(146,64,14,.3)}
 
   /* 화면 플래시 */
-  body.peach .screen-flash{background:rgba(254,215,170,.15) !important}
+  body.peach .screen-flash{background:rgba(0,255,204,.08) !important}
+  body.peach .screen-flash.fail-flash{background:rgba(255,0,0,.12) !important}
 
-  /* 반짝이 */
-  body.peach .sparkle-effect{color:rgba(217,119,6,.3)}
+  /* pixel sparkle */
+  body.peach .sparkle-effect{color:rgba(0,255,204,.2)}
+
+  /* square particles */
+  body.peach .particle{border-radius:0 !important;image-rendering:pixelated}
+  body.peach .star-particle{image-rendering:pixelated}
 
   /* === 9번 풀 이펙트 피버 — 배경 애니메이션 (peach only) === */
   @keyframes fxSparkleAnim{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
@@ -1045,17 +1084,34 @@ function initBgFx(){
   if(!document.body.classList.contains('peach'))return;
   const el=document.querySelector('.target-area');
   if(!el)return;
-  /* 9번 풀 이펙트 피버: 별+육각+혜성+픽셀비+스파클+먼지 */
-  fxStarTwinkle(el,18);
-  fxHexFloat(el,6);
-  fxComet(el,4);
-  fxPixelRain(el,20,FX_MIX);
-  fxSparkle(el,15,FX_MIX);
-  fxDust(el,15);
+  /* RETRO ARCADE — scanline overlay */
+  if(!document.querySelector('.scanline-overlay')){
+    const scan=document.createElement('div');scan.className='scanline-overlay';
+    document.body.appendChild(scan);
+  }
+  /* RETRO ARCADE — pixel particle bg */
+  let retroBg=document.querySelector('.retro-pixel-bg');
+  if(!retroBg){retroBg=document.createElement('div');retroBg.className='retro-pixel-bg';document.body.insertBefore(retroBg,document.body.firstChild)}
+  retroBg.innerHTML='';
+  const retroColors=['#ff4444','#44ff44','#ffcc00','#4488ff','#ff44ff','#00ffcc','#ff8844'];
+  for(let i=0;i<25;i++){
+    const p=document.createElement('div');p.className='retro-pixel';
+    const sz=3+Math.random()*5;const rc=retroColors[Math.floor(Math.random()*retroColors.length)];
+    p.style.cssText='width:'+sz+'px;height:'+sz+'px;background:'+rc+';opacity:.5;left:'+Math.random()*100+'%;animation-duration:'+(4+Math.random()*8)+'s;animation-delay:'+Math.random()*6+'s';
+    retroBg.appendChild(p);
+  }
+  const RETRO_MIX=['#00ffcc','#44ff44','#ffcc00','#ff4444','#4488ff'];
+  fxStarTwinkle(el,10,['#ffcc00','#00ffcc','#fff']);
+  fxPixelRain(el,12,RETRO_MIX);
+  fxSparkle(el,10,RETRO_MIX);
 }
 
 function clearBgFx(){
   document.querySelectorAll('.fx-bg-el').forEach(e=>e.remove());
+  if(!document.body.classList.contains('peach')){
+    const scan=document.querySelector('.scanline-overlay');if(scan)scan.remove();
+    const rbg=document.querySelector('.retro-pixel-bg');if(rbg)rbg.remove();
+  }
 }
 
 const AudioCtx=window.AudioContext||window.webkitAudioContext;let audioCtx;
@@ -1572,6 +1628,7 @@ function handleFail(msg){
   clearInterval(timerInterval);comboCount=0;fastClears=0;if(isFever)endFever();lives--;comboEl.textContent=comboCount;updateLives();
   updateEdgeGlow();updateHeartbeat();
   targetEl.className='target-number fail shake';sfxFail();
+  if(settings.flash)spawnFlash(true);
   showMessage(msg+' ('+lives+' LEFT)','fail-msg');buttons.forEach(b=>b.classList.add('disabled'));
   if(isDemoMode&&lives<=0){
     // Demo: auto-restart instead of game over screen
@@ -1661,10 +1718,10 @@ function spawnScoreFloat(text){
   document.body.appendChild(el);setTimeout(()=>el.remove(),900);
 }
 function spawnRankPopup(r,c){const e=document.createElement('div');e.className='rank-popup';e.textContent=r;e.style.color=c;e.style.textShadow=`0 0 30px ${c},0 0 60px ${c}`;document.body.appendChild(e);setTimeout(()=>e.remove(),800)}
-function spawnExplodeNumber(n){const e=document.createElement('div');e.className='explode-number';e.textContent=n;const c=randColor();e.style.color=c;e.style.textShadow=`0 0 40px ${c},0 0 80px ${c},0 0 120px ${c}`;document.body.appendChild(e);if(settings.particle)setTimeout(()=>spawnParticles(window.innerWidth/2,window.innerHeight/2,true),80);setTimeout(()=>e.remove(),550)}
-function spawnParticles(x,y,big){const cnt=big?pCountBig[settings.particleAmount]:pCount[settings.particleAmount];for(let i=0;i<cnt;i++){const p=document.createElement('div');p.className='particle';const sz=big?Math.random()*16+6:Math.random()*12+4,a=(Math.PI*2/cnt)*i+Math.random()*.5,d=big?Math.random()*180+80:Math.random()*120+40,c=randColor();p.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;background:${c};--tx:${Math.cos(a)*d}px;--ty:${Math.sin(a)*d}px;box-shadow:0 0 ${sz+4}px ${c}`;particleContainer.appendChild(p);setTimeout(()=>p.remove(),650)}const em=big?['✨','💥','🌟','💫','⚡']:['✨','💥'],ec=big?Math.ceil(cnt/4):Math.ceil(cnt/5);for(let i=0;i<ec;i++){const s=document.createElement('div');s.className='star-particle';const a=Math.random()*Math.PI*2,d=Math.random()*140+60;s.textContent=em[Math.floor(Math.random()*em.length)];s.style.cssText=`left:${x}px;top:${y}px;--tx:${Math.cos(a)*d}px;--ty:${Math.sin(a)*d}px;font-size:${big?28:20}px`;particleContainer.appendChild(s);setTimeout(()=>s.remove(),750)}}
+function spawnExplodeNumber(n){const e=document.createElement('div');e.className='explode-number';e.textContent=n;const isPeach=document.body.classList.contains('peach');if(isPeach){const rc=['#00ffcc','#44ff44','#ffcc00','#ff4444','#4488ff'];const c=rc[Math.floor(Math.random()*rc.length)];e.style.color=c;e.style.textShadow='0 0 30px '+c+',4px 0 rgba(255,0,68,.15),-4px 0 rgba(68,255,68,.15)';e.style.fontFamily="'Press Start 2P',monospace"}else{const c=randColor();e.style.color=c;e.style.textShadow='0 0 40px '+c+',0 0 80px '+c+',0 0 120px '+c}document.body.appendChild(e);if(settings.particle)setTimeout(()=>spawnParticles(window.innerWidth/2,window.innerHeight/2,true),80);setTimeout(()=>e.remove(),550)}
+function spawnParticles(x,y,big){const isPeach=document.body.classList.contains('peach');const cnt=big?pCountBig[settings.particleAmount]:pCount[settings.particleAmount];const retroC=['#ff4444','#44ff44','#ffcc00','#4488ff','#ff44ff','#00ffcc','#ff8844'];for(let i=0;i<cnt;i++){const p=document.createElement('div');p.className='particle';const sz=big?Math.random()*16+6:Math.random()*12+4,a=(Math.PI*2/cnt)*i+Math.random()*.5,d=big?Math.random()*180+80:Math.random()*120+40,clr=isPeach?retroC[i%retroC.length]:randColor();p.style.cssText='left:'+x+'px;top:'+y+'px;width:'+sz+'px;height:'+sz+'px;background:'+clr+';--tx:'+Math.cos(a)*d+'px;--ty:'+Math.sin(a)*d+'px;box-shadow:0 0 '+(isPeach?sz/2:sz+4)+'px '+clr+(isPeach?';border-radius:0;image-rendering:pixelated':'');particleContainer.appendChild(p);setTimeout(()=>p.remove(),650)}const em=isPeach?(big?['\u25a0','\u25aa','\u25c6','\u25b2','\u25cf']:['\u25a0','\u25aa']):(big?['\u2728','\ud83d\udca5','\ud83c\udf1f','\ud83d\udcab','\u26a1']:['\u2728','\ud83d\udca5']),ec=big?Math.ceil(cnt/4):Math.ceil(cnt/5);for(let i=0;i<ec;i++){const s=document.createElement('div');s.className='star-particle';const a=Math.random()*Math.PI*2,d=Math.random()*140+60;s.textContent=em[Math.floor(Math.random()*em.length)];const sc=isPeach?retroC[Math.floor(Math.random()*retroC.length)]:'';s.style.cssText='left:'+x+'px;top:'+y+'px;--tx:'+Math.cos(a)*d+'px;--ty:'+Math.sin(a)*d+'px;font-size:'+(big?28:20)+'px'+(isPeach?';color:'+sc+';text-shadow:0 0 8px '+sc:'');particleContainer.appendChild(s);setTimeout(()=>s.remove(),750)}}
 function spawnRipple(x,y){const r=document.createElement('div');r.className='ripple';r.style.left=x+'px';r.style.top=y+'px';particleContainer.appendChild(r);setTimeout(()=>r.remove(),450)}
-function spawnFlash(){const f=document.createElement('div');f.className='screen-flash';document.body.appendChild(f);setTimeout(()=>f.remove(),150)}
+function spawnFlash(isFail){const f=document.createElement('div');f.className='screen-flash'+(isFail&&document.body.classList.contains('peach')?' fail-flash':'');document.body.appendChild(f);setTimeout(()=>f.remove(),150)}
 
 /* === 6. AFTERIMAGE (잔상 효과) === */
 function spawnAfterimage(oldText){
