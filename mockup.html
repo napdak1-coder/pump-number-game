@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스와이프 이펙트 목업 4종</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Arial Black',sans-serif;background:#0a0a14;color:#fff;min-height:100vh;padding:16px;overflow-x:hidden}
+  h1{text-align:center;font-size:18px;letter-spacing:4px;color:#cc88ff;margin-bottom:8px}
+  .subtitle{text-align:center;font-size:11px;color:rgba(255,255,255,.3);margin-bottom:20px;letter-spacing:1px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:900px;margin:0 auto}
+  @media(max-width:600px){.grid{grid-template-columns:1fr}}
+
+  .mockup{background:rgba(255,255,255,.03);border:1px solid rgba(204,136,255,.15);border-radius:16px;padding:16px;position:relative;overflow:hidden}
+  .mockup-title{font-size:14px;font-weight:900;letter-spacing:2px;margin-bottom:4px;text-align:center}
+  .mockup-desc{font-size:10px;color:rgba(255,255,255,.35);text-align:center;margin-bottom:12px;line-height:1.4}
+  .mockup-tag{position:absolute;top:8px;right:8px;font-size:8px;padding:2px 8px;border-radius:8px;letter-spacing:1px;font-weight:900}
+
+  /* Mini keypad */
+  .mini-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;width:100%;max-width:260px;margin:0 auto;aspect-ratio:1;position:relative}
+  .mini-key{border:1px solid rgba(255,200,255,.12);border-radius:10px;
+    background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+    color:rgba(220,240,255,.7);font-size:24px;font-weight:900;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;transition:all .15s;cursor:pointer;
+    box-shadow:0 3px 0 rgba(0,0,0,.25)}
+  .mini-key:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.2)}
+
+  /* Target display */
+  .mini-target{text-align:center;margin-bottom:10px;font-size:36px;font-weight:900}
+  .mini-target .t-tens{color:#cc88ff}
+  .mini-target .t-sep{font-size:18px;color:rgba(204,136,255,.3);margin:0 2px}
+  .mini-target .t-ones{color:#44ddff}
+
+  /* ===== EFFECT A: 네온 레이저 ===== */
+  .mockup-a .mini-key.path{
+    border-color:rgba(204,136,255,.6);
+    background:linear-gradient(180deg,rgba(204,136,255,.15),rgba(204,136,255,.05));
+    color:#fff;
+    box-shadow:0 3px 0 rgba(0,0,0,.25),0 0 20px rgba(204,136,255,.3);
+    text-shadow:0 0 10px rgba(204,136,255,.6);
+    transform:scale(1.05);
+  }
+  .laser-line{position:absolute;pointer-events:none;z-index:10}
+  .laser-line line{stroke:rgba(204,136,255,.8);stroke-width:3;filter:drop-shadow(0 0 6px rgba(204,136,255,.8)) drop-shadow(0 0 12px rgba(204,136,255,.4))}
+  .laser-glow{position:absolute;pointer-events:none;z-index:9}
+  .laser-glow line{stroke:rgba(204,136,255,.15);stroke-width:16;stroke-linecap:round}
+  .laser-number{position:absolute;top:10px;left:50%;transform:translateX(-50%);
+    font-size:28px;font-weight:900;color:#cc88ff;
+    text-shadow:0 0 20px rgba(204,136,255,.6),0 0 40px rgba(204,136,255,.3);
+    letter-spacing:3px;animation:laserPulse .8s ease infinite}
+  @keyframes laserPulse{0%,100%{opacity:.9}50%{opacity:1;text-shadow:0 0 30px rgba(204,136,255,.8),0 0 60px rgba(204,136,255,.5)}}
+
+  /* ===== EFFECT B: 전기 아크 ===== */
+  .mockup-b .mini-key.path{
+    border-color:rgba(68,221,255,.6);
+    background:linear-gradient(180deg,rgba(68,221,255,.12),rgba(68,221,255,.04));
+    color:#fff;
+    box-shadow:0 3px 0 rgba(0,0,0,.25),0 0 16px rgba(68,221,255,.25);
+    animation:electricPulse .15s ease infinite alternate;
+  }
+  @keyframes electricPulse{0%{box-shadow:0 3px 0 rgba(0,0,0,.25),0 0 16px rgba(68,221,255,.25)}100%{box-shadow:0 3px 0 rgba(0,0,0,.25),0 0 24px rgba(68,221,255,.4)}}
+  .electric-svg{position:absolute;inset:0;pointer-events:none;z-index:10}
+  .electric-number{position:absolute;top:10px;left:50%;transform:translateX(-50%);
+    font-size:28px;font-weight:900;color:#44ddff;
+    text-shadow:0 0 15px rgba(68,221,255,.6);letter-spacing:3px;
+    animation:electricFlicker .1s ease infinite}
+  @keyframes electricFlicker{0%{opacity:1}50%{opacity:.85}100%{opacity:1}}
+
+  /* ===== EFFECT C: 파티클 스트림 ===== */
+  .mockup-c .mini-key.path{
+    border-color:rgba(68,255,170,.5);
+    background:linear-gradient(180deg,rgba(68,255,170,.1),rgba(68,255,170,.03));
+    color:#44ffaa;
+    box-shadow:0 3px 0 rgba(0,0,0,.25),0 0 18px rgba(68,255,170,.2);
+    text-shadow:0 0 8px rgba(68,255,170,.4);
+    transform:scale(1.05);
+  }
+  .particle-stream{position:absolute;pointer-events:none;z-index:10}
+  .stream-dot{position:absolute;width:6px;height:6px;border-radius:50%;
+    animation:streamFlow 1.2s ease-in-out infinite}
+  @keyframes streamFlow{
+    0%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(0)}
+    20%{opacity:1;transform:translate(calc(var(--sx) + (var(--ex) - var(--sx))*.2),calc(var(--sy) + (var(--ey) - var(--sy))*.2)) scale(1.2)}
+    80%{opacity:1}
+    100%{opacity:0;transform:translate(var(--ex),var(--ey)) scale(0)}
+  }
+  .stream-number{position:absolute;top:10px;left:50%;transform:translateX(-50%);
+    font-size:28px;font-weight:900;color:#44ffaa;
+    text-shadow:0 0 15px rgba(68,255,170,.5);letter-spacing:3px}
+
+  /* ===== EFFECT D: 웨이브 링 ===== */
+  .mockup-d .mini-key.path{
+    border-color:rgba(255,68,170,.5);
+    background:linear-gradient(180deg,rgba(255,68,170,.1),rgba(255,68,170,.04));
+    color:#ff44aa;
+    box-shadow:0 3px 0 rgba(0,0,0,.25),0 0 18px rgba(255,68,170,.2);
+    text-shadow:0 0 8px rgba(255,68,170,.4);
+    transform:scale(1.06);
+  }
+  .wave-ring{position:absolute;border-radius:50%;pointer-events:none;z-index:10;
+    border:2px solid rgba(255,68,170,.5);
+    animation:waveExpand 1s ease-out infinite}
+  @keyframes waveExpand{0%{width:20px;height:20px;opacity:.8;transform:translate(-50%,-50%) scale(0)}
+    100%{width:80px;height:80px;opacity:0;transform:translate(-50%,-50%) scale(1)}}
+  .wave-trail{position:absolute;pointer-events:none;z-index:9;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,68,170,.2),transparent 70%);
+    animation:wavePulse .6s ease infinite alternate}
+  @keyframes wavePulse{0%{opacity:.5}100%{opacity:1}}
+  .wave-number{position:absolute;top:10px;left:50%;transform:translateX(-50%);
+    font-size:28px;font-weight:900;
+    background:linear-gradient(90deg,#ff44aa,#cc88ff,#44ddff);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    letter-spacing:3px;animation:waveShift 1.5s linear infinite}
+  @keyframes waveShift{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
+
+  .play-btn{display:block;margin:10px auto 0;padding:6px 16px;border-radius:20px;border:1px solid rgba(204,136,255,.3);
+    background:rgba(204,136,255,.08);color:#cc88ff;font-size:10px;font-weight:900;
+    letter-spacing:2px;cursor:pointer}
+  .play-btn:active{background:rgba(204,136,255,.2)}
+</style>
+</head>
+<body>
+<h1>SWIPE EFFECT 목업</h1>
+<p class="subtitle">3→4 스와이프 (34 빼기) 시 각 이펙트 비교</p>
+
+<div class="grid">
+  <!-- A: 네온 레이저 -->
+  <div class="mockup mockup-a" id="mockA">
+    <div class="mockup-tag" style="background:rgba(204,136,255,.2);color:#cc88ff">A</div>
+    <div class="mockup-title" style="color:#cc88ff">네온 레이저</div>
+    <div class="mockup-desc">버튼 사이에 빛나는 레이저 라인이 이어짐<br>경로가 선명하고 깔끔한 느낌</div>
+    <div class="mini-target"><span class="t-tens">3</span><span class="t-sep">·</span><span class="t-ones">4</span></div>
+    <div class="mini-keypad" id="padA">
+      <div class="mini-key">1</div><div class="mini-key">2</div><div class="mini-key">3</div>
+      <div class="mini-key">4</div><div class="mini-key">5</div><div class="mini-key">6</div>
+      <div class="mini-key">7</div><div class="mini-key">8</div><div class="mini-key">9</div>
+    </div>
+    <button class="play-btn" onclick="playA()">▶ 재생</button>
+  </div>
+
+  <!-- B: 전기 아크 -->
+  <div class="mockup mockup-b" id="mockB">
+    <div class="mockup-tag" style="background:rgba(68,221,255,.2);color:#44ddff">B</div>
+    <div class="mockup-title" style="color:#44ddff">전기 아크</div>
+    <div class="mockup-desc">두 버튼 사이에 지글거리는 전기 효과<br>임팩트 강하고 강렬한 느낌</div>
+    <div class="mini-target"><span class="t-tens">3</span><span class="t-sep">·</span><span class="t-ones">4</span></div>
+    <div class="mini-keypad" id="padB">
+      <div class="mini-key">1</div><div class="mini-key">2</div><div class="mini-key">3</div>
+      <div class="mini-key">4</div><div class="mini-key">5</div><div class="mini-key">6</div>
+      <div class="mini-key">7</div><div class="mini-key">8</div><div class="mini-key">9</div>
+    </div>
+    <button class="play-btn" onclick="playB()">▶ 재생</button>
+  </div>
+
+  <!-- C: 파티클 스트림 -->
+  <div class="mockup mockup-c" id="mockC">
+    <div class="mockup-tag" style="background:rgba(68,255,170,.2);color:#44ffaa">C</div>
+    <div class="mockup-title" style="color:#44ffaa">파티클 스트림</div>
+    <div class="mockup-desc">첫 버튼에서 두번째로 파티클이 줄줄 흐름<br>에너지가 이동하는 느낌</div>
+    <div class="mini-target"><span class="t-tens">3</span><span class="t-sep">·</span><span class="t-ones">4</span></div>
+    <div class="mini-keypad" id="padC">
+      <div class="mini-key">1</div><div class="mini-key">2</div><div class="mini-key">3</div>
+      <div class="mini-key">4</div><div class="mini-key">5</div><div class="mini-key">6</div>
+      <div class="mini-key">7</div><div class="mini-key">8</div><div class="mini-key">9</div>
+    </div>
+    <button class="play-btn" onclick="playC()">▶ 재생</button>
+  </div>
+
+  <!-- D: 웨이브 링 -->
+  <div class="mockup mockup-d" id="mockD">
+    <div class="mockup-tag" style="background:rgba(255,68,170,.2);color:#ff44aa">D</div>
+    <div class="mockup-title" style="color:#ff44aa">웨이브 링</div>
+    <div class="mockup-desc">스와이프 시작/끝점에서 파동이 퍼져나감<br>리듬감 있고 화려한 느낌</div>
+    <div class="mini-target"><span class="t-tens">3</span><span class="t-sep">·</span><span class="t-ones">4</span></div>
+    <div class="mini-keypad" id="padD">
+      <div class="mini-key">1</div><div class="mini-key">2</div><div class="mini-key">3</div>
+      <div class="mini-key">4</div><div class="mini-key">5</div><div class="mini-key">6</div>
+      <div class="mini-key">7</div><div class="mini-key">8</div><div class="mini-key">9</div>
+    </div>
+    <button class="play-btn" onclick="playD()">▶ 재생</button>
+  </div>
+</div>
+
+<script>
+function getKeyCenter(pad, num) {
+  const keys = pad.querySelectorAll('.mini-key');
+  const key = keys[num - 1];
+  const pr = pad.getBoundingClientRect();
+  const kr = key.getBoundingClientRect();
+  return {
+    x: kr.left - pr.left + kr.width / 2,
+    y: kr.top - pr.top + kr.height / 2,
+    key
+  };
+}
+
+function resetPad(pad) {
+  pad.querySelectorAll('.mini-key').forEach(k => k.classList.remove('path'));
+  pad.querySelectorAll('.laser-line,.laser-glow,.laser-number,.electric-svg,.electric-number,.particle-stream,.stream-number,.wave-ring,.wave-trail,.wave-number').forEach(e => e.remove());
+}
+
+// === A: 네온 레이저 ===
+function playA() {
+  const pad = document.getElementById('padA');
+  resetPad(pad);
+  const p3 = getKeyCenter(pad, 3);
+  const p4 = getKeyCenter(pad, 4);
+
+  // Step 1: highlight btn 3
+  setTimeout(() => {
+    p3.key.classList.add('path');
+  }, 100);
+
+  // Step 2: highlight btn 4 + draw laser
+  setTimeout(() => {
+    p4.key.classList.add('path');
+
+    // Glow (wide soft line)
+    const glow = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    glow.classList.add('laser-glow');
+    glow.style.cssText = `position:absolute;inset:0;pointer-events:none;z-index:9;width:100%;height:100%`;
+    glow.innerHTML = `<line x1="${p3.x}" y1="${p3.y}" x2="${p4.x}" y2="${p4.y}" stroke="rgba(204,136,255,.12)" stroke-width="18" stroke-linecap="round"/>`;
+    pad.appendChild(glow);
+
+    // Sharp laser
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.classList.add('laser-line');
+    svg.style.cssText = `position:absolute;inset:0;pointer-events:none;z-index:10;width:100%;height:100%`;
+    svg.innerHTML = `<line x1="${p3.x}" y1="${p3.y}" x2="${p4.x}" y2="${p4.y}" stroke="rgba(204,136,255,.85)" stroke-width="3" stroke-linecap="round" style="filter:drop-shadow(0 0 6px rgba(204,136,255,.8)) drop-shadow(0 0 14px rgba(204,136,255,.4))"/>`;
+    pad.appendChild(svg);
+
+    // Number preview
+    const num = document.createElement('div');
+    num.classList.add('laser-number');
+    num.textContent = '34';
+    pad.appendChild(num);
+  }, 400);
+
+  // Step 3: cleanup
+  setTimeout(() => resetPad(pad), 2200);
+}
+
+// === B: 전기 아크 ===
+function playB() {
+  const pad = document.getElementById('padB');
+  resetPad(pad);
+  const p3 = getKeyCenter(pad, 3);
+  const p4 = getKeyCenter(pad, 4);
+
+  setTimeout(() => p3.key.classList.add('path'), 100);
+
+  setTimeout(() => {
+    p4.key.classList.add('path');
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.classList.add('electric-svg');
+    svg.style.cssText = `width:100%;height:100%`;
+
+    function genLightning() {
+      const dx = p4.x - p3.x, dy = p4.y - p3.y;
+      const steps = 8;
+      let pts = [`${p3.x},${p3.y}`];
+      for (let i = 1; i < steps; i++) {
+        const t = i / steps;
+        const mx = p3.x + dx * t + (Math.random() - .5) * 30;
+        const my = p3.y + dy * t + (Math.random() - .5) * 20;
+        pts.push(`${mx},${my}`);
+      }
+      pts.push(`${p4.x},${p4.y}`);
+      return pts.join(' ');
+    }
+
+    let frame = 0;
+    const interval = setInterval(() => {
+      svg.innerHTML = `
+        <polyline points="${genLightning()}" fill="none" stroke="rgba(68,221,255,.15)" stroke-width="10" stroke-linecap="round"/>
+        <polyline points="${genLightning()}" fill="none" stroke="rgba(68,221,255,.7)" stroke-width="2.5" stroke-linecap="round" style="filter:drop-shadow(0 0 4px rgba(68,221,255,.8))"/>
+        <polyline points="${genLightning()}" fill="none" stroke="rgba(100,200,255,.3)" stroke-width="1.5" stroke-linecap="round"/>`;
+      frame++;
+      if (frame > 30) clearInterval(interval);
+    }, 50);
+
+    const num = document.createElement('div');
+    num.classList.add('electric-number');
+    num.textContent = '34';
+    pad.appendChild(num);
+
+    pad.appendChild(svg);
+  }, 400);
+
+  setTimeout(() => resetPad(pad), 2200);
+}
+
+// === C: 파티클 스트림 ===
+function playC() {
+  const pad = document.getElementById('padC');
+  resetPad(pad);
+  const p3 = getKeyCenter(pad, 3);
+  const p4 = getKeyCenter(pad, 4);
+
+  setTimeout(() => p3.key.classList.add('path'), 100);
+
+  setTimeout(() => {
+    p4.key.classList.add('path');
+
+    const container = document.createElement('div');
+    container.classList.add('particle-stream');
+    container.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:10';
+
+    const colors = ['#44ffaa', '#88ffcc', '#22dd88', '#66ffdd', '#44ddff'];
+    for (let i = 0; i < 18; i++) {
+      const dot = document.createElement('div');
+      dot.classList.add('stream-dot');
+      const c = colors[Math.floor(Math.random() * colors.length)];
+      const size = 3 + Math.random() * 5;
+      const jx = (Math.random() - .5) * 16;
+      const jy = (Math.random() - .5) * 16;
+      dot.style.cssText = `
+        left:0;top:0;width:${size}px;height:${size}px;
+        background:${c};box-shadow:0 0 ${size+4}px ${c};
+        --sx:${p3.x}px;--sy:${p3.y}px;--ex:${p4.x + jx}px;--ey:${p4.y + jy}px;
+        animation-delay:${i * 60}ms;animation-duration:${800 + Math.random()*400}ms;
+      `;
+      container.appendChild(dot);
+    }
+    pad.appendChild(container);
+
+    const num = document.createElement('div');
+    num.classList.add('stream-number');
+    num.textContent = '34';
+    pad.appendChild(num);
+  }, 400);
+
+  setTimeout(() => resetPad(pad), 2500);
+}
+
+// === D: 웨이브 링 ===
+function playD() {
+  const pad = document.getElementById('padD');
+  resetPad(pad);
+  const p3 = getKeyCenter(pad, 3);
+  const p4 = getKeyCenter(pad, 4);
+
+  setTimeout(() => {
+    p3.key.classList.add('path');
+    // Wave from btn3
+    for (let i = 0; i < 3; i++) {
+      const ring = document.createElement('div');
+      ring.classList.add('wave-ring');
+      ring.style.cssText = `left:${p3.x}px;top:${p3.y}px;animation-delay:${i*200}ms`;
+      pad.appendChild(ring);
+    }
+    // Glow at btn3
+    const glow3 = document.createElement('div');
+    glow3.classList.add('wave-trail');
+    glow3.style.cssText = `left:${p3.x-30}px;top:${p3.y-30}px;width:60px;height:60px`;
+    pad.appendChild(glow3);
+  }, 100);
+
+  setTimeout(() => {
+    p4.key.classList.add('path');
+    // Wave from btn4
+    for (let i = 0; i < 3; i++) {
+      const ring = document.createElement('div');
+      ring.classList.add('wave-ring');
+      ring.style.cssText = `left:${p4.x}px;top:${p4.y}px;animation-delay:${i*200}ms;border-color:rgba(68,221,255,.5)`;
+      pad.appendChild(ring);
+    }
+    // Glow at btn4
+    const glow4 = document.createElement('div');
+    glow4.classList.add('wave-trail');
+    glow4.style.cssText = `left:${p4.x-30}px;top:${p4.y-30}px;width:60px;height:60px;background:radial-gradient(circle,rgba(68,221,255,.2),transparent 70%)`;
+    pad.appendChild(glow4);
+
+    const num = document.createElement('div');
+    num.classList.add('wave-number');
+    num.textContent = '34';
+    pad.appendChild(num);
+  }, 500);
+
+  setTimeout(() => resetPad(pad), 2500);
+}
+
+// Auto-play all on load
+setTimeout(() => { playA(); playB(); playC(); playD(); }, 500);
+</script>
+</body>
+</html>

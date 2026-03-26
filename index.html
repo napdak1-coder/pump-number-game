@@ -363,28 +363,7 @@
     color:#44ffaa;text-shadow:0 0 30px rgba(68,255,170,.6);
     animation:swipeConfirm .4s ease forwards}
   @keyframes swipeConfirm{0%{transform:translate(-50%,-50%) scale(1.3);opacity:1}
-    100%{transform:translate(-50%,-50%) scale(.8) translateY(-30px);opacity:0}}
-
-  /* === GOLDEN NUMBER === */
-  .key-btn.golden{border-color:rgba(255,215,0,.5);box-shadow:0 4px 0 rgba(0,0,0,.3),0 6px 12px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.08),0 0 15px rgba(255,215,0,.2);color:rgba(255,215,0,.9);text-shadow:0 0 10px rgba(255,215,0,.3),0 2px 4px rgba(0,0,0,.3)}
-  .key-btn.golden::before{content:'';position:absolute;inset:0;border-radius:13px;background:radial-gradient(ellipse at 50% 30%,rgba(255,215,0,.08),transparent 60%);pointer-events:none}
-  .golden-bonus{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:min(12vw,52px);font-weight:900;color:#ffd700;text-shadow:0 0 30px #ffd700,0 0 60px rgba(255,215,0,.3);pointer-events:none;z-index:170;animation:goldenPop .8s ease forwards;letter-spacing:4px}
-  @keyframes goldenPop{0%{transform:translate(-50%,-50%) scale(0);opacity:0}30%{transform:translate(-50%,-50%) scale(1.2);opacity:1}60%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{transform:translate(-50%,-50%) scale(.9) translateY(-20px);opacity:0}}
-  .golden-hint{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
-    background:rgba(0,0,0,.85);border:2px solid rgba(255,215,0,.5);border-radius:16px;
-    padding:16px 28px;text-align:center;pointer-events:none;z-index:180;
-    animation:goldenHintIn 3.2s ease forwards;backdrop-filter:blur(6px)}
-  .golden-hint .gh-icon{font-size:36px;margin-bottom:6px}
-  .golden-hint .gh-title{font-size:18px;font-weight:900;color:#ffd700;letter-spacing:2px;margin-bottom:4px;
-    text-shadow:0 0 12px rgba(255,215,0,.4)}
-  .golden-hint .gh-desc{font-size:13px;color:rgba(255,255,255,.7);line-height:1.4}
-  .golden-hint .gh-num{font-size:32px;font-weight:900;color:#ffd700;margin:6px 0;
-    text-shadow:0 0 20px rgba(255,215,0,.5)}
-  @keyframes goldenHintIn{0%{transform:translate(-50%,-50%) scale(0);opacity:0}
-    8%{transform:translate(-50%,-50%) scale(1.05);opacity:1}
-    12%{transform:translate(-50%,-50%) scale(1);opacity:1}
-    85%{transform:translate(-50%,-50%) scale(1);opacity:1}
-    100%{transform:translate(-50%,-50%) scale(.9);opacity:0}}</style>
+    100%{transform:translate(-50%,-50%) scale(.8) translateY(-30px);opacity:0}}</style>
 </head>
 <body>
 <div class="bg-particles" id="bgParticles"></div>
@@ -473,7 +452,6 @@ let stageCount=0,tapCount=0,minTaps=0,lives=3,geniusCount=0,reverseClears=0;
 let isReverse=false,forbiddenNums=[];
 let bestScore=parseInt(localStorage.getItem('pumpBest')||'0');
 let speedMultiplier=1,fastClears=0,isFever=false,feverTimeout=null,feverInterval=null,feverTimeLeft=0;
-let goldenNum=0,lastTappedNum=0;
 
 /* === DEMO MODE STATE === */
 let isDemoMode=false;
@@ -534,7 +512,7 @@ function startGame(){
   initAudio();$('startScreen').classList.add('hidden');gameoverOverlay.classList.remove('show');
   score=0;comboCount=0;maxCombo=0;currentLevel=1;stageCount=0;lives=3;geniusCount=0;reverseClears=0;prevTier='';
   scoreEl.textContent=score.toLocaleString();levelEl.textContent='초급 0/30';comboEl.textContent=comboCount;updateLives();
-  fastClears=0;if(isFever)endFever();goldenNum=0;lastTappedNum=0;
+  fastClears=0;if(isFever)endFever();
   isPlaying=true;nextRound();
 }
 
@@ -590,17 +568,6 @@ function nextRound(){
 
   tapInfoEl.textContent='MIN '+minTaps+' TAP'+(minTaps>1?'S':'');
   buttons.forEach(btn=>{const n=parseInt(btn.dataset.num);btn.classList.remove('disabled','forbidden');if(forbiddenNums.includes(n))btn.classList.add('forbidden')});
-
-  // Golden number
-  goldenNum=0;
-  buttons.forEach(b=>b.classList.remove('golden'));
-  const availableNums=[1,2,3,4,5,6,7,8,9].filter(n=>!forbiddenNums.includes(n));
-  if(availableNums.length>0){
-    goldenNum=availableNums[Math.floor(Math.random()*availableNums.length)];
-    const goldenBtn=document.querySelector(`.key-btn[data-num="${goldenNum}"]`);
-    if(goldenBtn)goldenBtn.classList.add('golden');
-    showGoldenHint(goldenNum);
-  }
 
   timeLeft=100;timerBar.style.width='100%';timerBar.classList.remove('danger');clearInterval(timerInterval);
   let speed=cfg.timerSpeed;if(isReverse&&forbiddenNums.length>0)speed=Math.max(20,Math.floor(speed*.6));
@@ -667,7 +634,6 @@ function pressKey(num, actualNum){
   tapCount++;btn.classList.remove('pressed');void btn.offsetWidth;btn.classList.add('pressed');
   if(isDemoMode){btn.classList.add('demo-highlight');setTimeout(()=>btn.classList.remove('demo-highlight'),200)}
   vibrate(actualNum>9?[40,20,40]:35);sfxTap(num);
-  lastTappedNum=num;
   if(settings.explode)spawnExplodeNumber(actualNum);if(settings.particle)spawnParticles(cx,cy,false);if(settings.flash)spawnFlash();spawnRipple(cx,cy);
 
   const oldDisplay=targetEl.textContent;
@@ -771,7 +737,7 @@ function executeSwipe(){
     conf.className='swipe-confirm';conf.textContent=combined;
     document.body.appendChild(conf);setTimeout(()=>conf.remove(),450);
     clearSwipeVisual();
-    pressKey(ones, combined); // ones를 마지막 터치한 버튼으로 (golden 판정용)
+    pressKey(ones, combined);
   }
 }
 
@@ -833,28 +799,20 @@ function handleSuccess(){
   const{rank,cls,mult,color}=getRank(tapCount,minTaps);if(cls==='genius')geniusCount++;
   let modeBonus=1;if(isReverse)modeBonus+=.3;if(forbiddenNums.length>0)modeBonus+=forbiddenNums.length*.15;
   checkFeverTrigger();
-  const isGoldenFinish=(lastTappedNum===goldenNum);
-  const goldenMult=isGoldenFinish?5:1;
   const feverMult=isFever?5:1;
-  const total=Math.round((50+stageCount*8+comboCount*15+Math.ceil(timeLeft/5))*mult*modeBonus*speedMultiplier*feverMult*goldenMult);
+  const total=Math.round((50+stageCount*8+comboCount*15+Math.ceil(timeLeft/5))*mult*modeBonus*speedMultiplier*feverMult);
   score+=total;scoreEl.textContent=score.toLocaleString();comboEl.textContent=comboCount;
   scoreEl.classList.add('score-pop');setTimeout(()=>scoreEl.classList.remove('score-pop'),200);
   if(comboCount>=2){comboEl.classList.add('combo-pop');setTimeout(()=>comboEl.classList.remove('combo-pop'),200)}
   spawnScoreFloat('+'+total.toLocaleString());
   targetEl.className='target-number success';tapInfoEl.textContent=tapCount+' TAP'+(tapCount>1?'S':'')+' (MIN '+minTaps+')';
   let msgText=rank+' +'+total;
-  if(isGoldenFinish)msgText+=' GOLDEN!';
-  else if(isFever)msgText+=' FEVER!';
+  if(isFever)msgText+=' FEVER!';
   else if(speedMultiplier>1)msgText+=' (x'+speedMultiplier.toFixed(1)+')';
   showMessage(msgText,cls);setTimeout(()=>spawnRankPopup(rank,color),150);
   if(cls==='genius')sfxGenius();else sfxSuccess();
   if(comboCount>=2){sfxCombo();comboTextEl.textContent='COMBO x'+comboCount;comboTextEl.classList.add('show');setTimeout(()=>comboTextEl.classList.remove('show'),1200)}
   updateEdgeGlow();checkKillStreak();
-  if(isGoldenFinish){
-    const gp=document.createElement('div');gp.className='golden-bonus';gp.textContent='★ GOLDEN ★';
-    document.body.appendChild(gp);setTimeout(()=>gp.remove(),800);
-    if(settings.particle){for(let i=0;i<6;i++)setTimeout(()=>spawnParticles(window.innerWidth*(.1+Math.random()*.8),window.innerHeight*(.15+Math.random()*.3),true),i*80)}
-  }
   if(settings.particle){const bc=cls==='genius'?5:3;for(let i=0;i<bc;i++)setTimeout(()=>spawnParticles(window.innerWidth*(.15+Math.random()*.7),window.innerHeight*(.1+Math.random()*.4),true),i*100)}
   buttons.forEach(b=>b.classList.add('disabled'));
   const newCfg=getDifficulty(stageCount+1);
@@ -882,7 +840,7 @@ function handleFail(msg){
       if(!isDemoMode)return;
       score=0;comboCount=0;maxCombo=0;currentLevel=1;stageCount=0;lives=3;geniusCount=0;reverseClears=0;prevTier='';
       scoreEl.textContent=score.toLocaleString();levelEl.textContent='초급 0/30';comboEl.textContent=comboCount;updateLives();
-      fastClears=0;if(isFever)endFever();goldenNum=0;lastTappedNum=0;
+      fastClears=0;if(isFever)endFever();
       nextRound();
     },1800);
   }else if(lives<=0){setTimeout(showGameOver,1200)}
@@ -934,15 +892,6 @@ function showAllClear(){
 function closeAllClearAndRestart(){$('allclearOverlay').classList.remove('show');startGame()}
 
 function showMessage(t,c){messageEl.textContent=t;messageEl.className='message '+c+' show';setTimeout(()=>{messageEl.className='message'},1500)}
-let goldenHintShown=false;
-function showGoldenHint(num){
-  if(goldenHintShown)return;
-  goldenHintShown=true;
-  document.querySelectorAll('.golden-hint').forEach(e=>e.remove());
-  const el=document.createElement('div');el.className='golden-hint';
-  el.innerHTML=`<div class="gh-icon">⭐</div><div class="gh-title">GOLDEN NUMBER</div><div class="gh-num">${num}</div><div class="gh-desc">${num}번으로 마무리하면<br>점수 <b style="color:#ffd700">x5배</b>!</div>`;
-  document.body.appendChild(el);vibrate([30,20,30]);setTimeout(()=>el.remove(),3200);
-}
 function spawnScoreFloat(text){
   const el=document.createElement('div');el.className='score-float';el.textContent=text;
   const rect=document.getElementById('score').getBoundingClientRect();
@@ -1091,7 +1040,7 @@ function startDemo(){
   // Reset game state
   score=0;comboCount=0;maxCombo=0;currentLevel=1;stageCount=0;lives=3;geniusCount=0;reverseClears=0;prevTier='';
   scoreEl.textContent=score.toLocaleString();levelEl.textContent='초급 0/30';comboEl.textContent=comboCount;updateLives();
-  fastClears=0;if(isFever)endFever();goldenNum=0;lastTappedNum=0;
+  fastClears=0;if(isFever)endFever();
   isPlaying=true;
   nextRound();
 }
