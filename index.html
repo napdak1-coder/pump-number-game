@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
 <title>빼봐영</title>
-<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:'Arial Black','Helvetica Neue',sans-serif;overflow:hidden;height:100vh;height:100dvh;display:flex;flex-direction:column;user-select:none;-webkit-user-select:none;touch-action:manipulation;background:linear-gradient(160deg,#0a0a14 0%,#0f0f20 40%,#14142a 70%,#0f0f20 100%);background-size:200% 200%;animation:bgShift 20s ease infinite}
@@ -526,39 +526,28 @@
     border-top:2px solid #143838;
     padding:6px 8px 14px;gap:5px;
   }
-  body.peach .keypad-row{gap:5px}
+  body.peach .keypad-row{gap:4px}
   body.peach .key-btn{
-    border:3px solid #184848 !important;border-radius:0 !important;
-    background:linear-gradient(180deg,#102828 0%,#0c2020 30%,#081818 70%,#061414 100%);
-    color:#60d0c0;
-    box-shadow:
-      5px 5px 0 0 #020a08,
-      inset 0 2px 0 rgba(80,200,180,.06),
-      inset 0 -2px 0 rgba(0,0,0,.18);
-    text-shadow:0 0 8px rgba(96,208,192,.1),2px 2px 0 rgba(0,0,0,.45);
-    font-size:min(12vw,48px);
-  }
-  body.peach .key-btn:active{
-    transform:translate(4px,4px) !important;
-    box-shadow:1px 1px 0 0 #020a08,inset 0 2px 0 rgba(80,200,180,.04),inset 0 -2px 0 rgba(0,0,0,.12) !important;
-  }
-  body.peach .key-btn.forbidden{
-    background:linear-gradient(180deg,#301418,#240e10,#1a0a0c) !important;
-    border-color:#4a1820 !important;
-    box-shadow:5px 5px 0 0 #0a0204,inset 0 2px 0 rgba(255,70,70,.04),inset 0 -2px 0 rgba(0,0,0,.18) !important;
-    color:rgba(255,80,80,.35) !important;
-    text-shadow:0 0 6px rgba(255,60,60,.08),2px 2px 0 rgba(0,0,0,.45);
-  }
-  body.peach .key-btn.forbidden::after{color:rgba(255,60,60,.12);font-size:min(8vw,40px)}
-  body.peach .key-btn.disabled{opacity:.12}
-
-  /* 스와이프 호버 */
-  body.peach .key-btn.swipe-hover{
-    background:linear-gradient(180deg,#183838,#104040,#0c3030) !important;
-    border-color:#28a080 !important;
-    box-shadow:5px 5px 0 0 #020a08,0 0 12px rgba(40,160,128,.1),inset 0 2px 0 rgba(80,200,180,.08) !important;
-    color:#60ffc0;transform:translate(2px,2px);
-  }
+      border:3px solid #1a1a3a !important;border-radius:0 !important;
+      font-family:'Press Start 2P','DotGothic16',monospace;
+      font-size:min(10vw,40px);font-weight:900;
+      color:#fff;cursor:pointer;position:relative;overflow:hidden;
+      image-rendering:pixelated;transition:transform .08s ease,box-shadow .08s ease;
+    }
+    body.peach .key-btn[data-num="1"]{background:linear-gradient(180deg,#66ccff,#3399cc) !important;color:#fff !important;box-shadow:0 5px 0 #226688,inset 0 2px 0 rgba(255,255,255,.15) !important;text-shadow:1px 1px 0 rgba(0,0,0,.3)}
+    body.peach .key-btn[data-num="2"]{background:linear-gradient(180deg,#fff,#ddd) !important;color:#333 !important;box-shadow:0 5px 0 #aaa,inset 0 2px 0 rgba(255,255,255,.5) !important;text-shadow:1px 1px 0 rgba(0,0,0,.1)}
+    body.peach .key-btn[data-num="3"]{background:linear-gradient(180deg,#66ccff,#3399cc) !important;color:#fff !important;box-shadow:0 5px 0 #226688,inset 0 2px 0 rgba(255,255,255,.15) !important;text-shadow:1px 1px 0 rgba(0,0,0,.3)}
+    body.peach .key-btn[data-num="4"]{background:linear-gradient(180deg,#fff,#ddd) !important;color:#333 !important;box-shadow:0 5px 0 #aaa,inset 0 2px 0 rgba(255,255,255,.5) !important;text-shadow:1px 1px 0 rgba(0,0,0,.1)}
+    body.peach .key-btn[data-num="5"]{background:linear-gradient(180deg,#7766ff,#5544cc) !important;color:#fff !important;box-shadow:0 5px 0 #332288,inset 0 2px 0 rgba(255,255,255,.2) !important;text-shadow:0 0 8px rgba(119,102,255,.5),1px 1px 0 rgba(0,0,0,.3)}
+    body.peach .key-btn[data-num="6"]{background:linear-gradient(180deg,#fff,#ddd) !important;color:#333 !important;box-shadow:0 5px 0 #aaa,inset 0 2px 0 rgba(255,255,255,.5) !important;text-shadow:1px 1px 0 rgba(0,0,0,.1)}
+    body.peach .key-btn[data-num="7"]{background:linear-gradient(180deg,#66ccff,#3399cc) !important;color:#fff !important;box-shadow:0 5px 0 #226688,inset 0 2px 0 rgba(255,255,255,.15) !important;text-shadow:1px 1px 0 rgba(0,0,0,.3)}
+    body.peach .key-btn[data-num="8"]{background:linear-gradient(180deg,#fff,#ddd) !important;color:#333 !important;box-shadow:0 5px 0 #aaa,inset 0 2px 0 rgba(255,255,255,.5) !important;text-shadow:1px 1px 0 rgba(0,0,0,.1)}
+    body.peach .key-btn[data-num="9"]{background:linear-gradient(180deg,#ffcc44,#cc9933) !important;color:#333 !important;box-shadow:0 5px 0 #997722,inset 0 2px 0 rgba(255,255,255,.3) !important;text-shadow:0 0 6px rgba(255,204,68,.4),1px 1px 0 rgba(0,0,0,.15)}
+    body.peach .key-btn:active{transform:translateY(4px) scale(0.97) !important;box-shadow:0 1px 0 rgba(0,0,0,.3),inset 0 2px 0 rgba(255,255,255,.05) !important}
+    body.peach .key-btn.forbidden{background:linear-gradient(180deg,#3a2020,#2a1515) !important;border-color:#5a2020 !important;box-shadow:0 5px 0 #1a0808,inset 0 2px 0 rgba(255,70,70,.04) !important;color:rgba(255,80,80,.35) !important;text-shadow:none}
+    body.peach .key-btn.forbidden::after{color:rgba(255,60,60,.15);font-size:min(8vw,40px)}
+    body.peach .key-btn.disabled{opacity:.12}
+    body.peach .key-btn.swipe-hover{transform:translateY(2px) !important;filter:brightness(1.2);box-shadow:0 3px 0 rgba(0,0,0,.3),0 0 12px rgba(102,204,255,.2) !important}
   body.peach .swipe-preview{color:#60d8e0;text-shadow:0 0 12px rgba(96,216,224,.2)}
   body.peach .swipe-confirm{color:#50ff90;text-shadow:0 0 15px rgba(80,255,144,.3)}
 
