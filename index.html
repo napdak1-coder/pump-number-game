@@ -422,6 +422,28 @@
   body.peach .info-value.combo-pop{color:#70d0ff;text-shadow:0 0 12px rgba(112,208,255,.25)}
   body.peach .lives{color:rgba(255,80,80,.5);font-size:16px;letter-spacing:3px}
 
+  /* === 캐릭터 바 (peach only) === */
+  .char-bar{display:none}
+  body.peach .char-bar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:6px 14px 4px;
+    background:rgba(14,34,40,.4);
+    border-bottom:1px solid rgba(20,56,56,.3);
+    flex-shrink:0;z-index:10;
+    position:relative;
+  }
+  .char-bar-left,.char-bar-right{display:flex;gap:6px;align-items:center}
+  .char-bar-face{width:28px;height:28px;image-rendering:pixelated}
+  .char-bar-dog{width:36px;height:40px;image-rendering:pixelated}
+  @keyframes cbWiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+  @keyframes cbBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+  body.peach .char-bar-face{animation:cbWiggle .8s ease infinite}
+  body.peach .char-bar-face:nth-child(2){animation-delay:.15s}
+  body.peach .char-bar-dog{animation:cbBob 1.2s ease infinite}
+  body.peach .char-bar-right .char-bar-face:nth-child(1){animation-delay:.2s}
+  body.peach .char-bar-right .char-bar-face:nth-child(2){animation-delay:.35s}
+  @keyframes sparkle{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
+
   /* 설정 버튼 */
   body.peach .settings-btn{color:rgba(80,184,168,.15);font-size:14px;
     background:none;border:none;padding:2px 5px}
@@ -709,6 +731,18 @@
 </div>
 <div class="allclear-overlay" id="allclearOverlay"><div class="allclear-title">올 클리어!</div><div class="allclear-sub">30 스테이지 클리어!</div><div class="go-stats"><div class="go-stat-row"><span class="go-stat-label">최종 점수</span><span class="go-stat-val" id="acScore">0</span></div><div class="go-stat-row"><span class="go-stat-label">최고기록</span><span class="go-stat-val best" id="acBest">0</span></div><div class="go-stat-row"><span class="go-stat-label">최대 콤보</span><span class="go-stat-val" id="acCombo">0</span></div><div class="go-stat-row"><span class="go-stat-label">천재 횟수</span><span class="go-stat-val" id="acGenius">0</span></div></div><button class="go-retry" onclick="closeAllClearAndRestart()" style="margin-top:20px">다시 도전</button></div>
 <div class="settings-overlay" id="settingsOverlay"><div class="settings-panel"><div class="settings-title">설 정</div><div class="setting-row"><div><div class="setting-label">파티클 이펙트</div><div class="setting-sub">터치 시 파티클</div></div><button class="toggle on" id="togParticle" onclick="toggleSetting('particle')"></button></div><div class="setting-row"><div><div class="setting-label">화면 플래시</div><div class="setting-sub">터치 시 번쩍</div></div><button class="toggle on" id="togFlash" onclick="toggleSetting('flash')"></button></div><div class="setting-row"><div><div class="setting-label">폭발 숫자</div><div class="setting-sub">누른 숫자 크게 표시</div></div><button class="toggle on" id="togExplode" onclick="toggleSetting('explode')"></button></div><div class="setting-row"><div><div class="setting-label">진동</div><div class="setting-sub">모바일 향틱</div></div><button class="toggle on" id="togVibrate" onclick="toggleSetting('vibrate')"></button></div><div class="setting-row"><div><div class="setting-label">사운드</div><div class="setting-sub">효과음</div></div><button class="toggle on" id="togSound" onclick="toggleSetting('sound')"></button></div><div class="setting-row"><div><div class="setting-label">파티클 양</div></div><div class="seg-control"><button class="seg-btn" data-val="low" onclick="setParticleAmount('low')">적음</button><button class="seg-btn active" data-val="mid" onclick="setParticleAmount('mid')">보통</button><button class="seg-btn" data-val="high" onclick="setParticleAmount('high')">많음</button></div></div><button class="settings-close" onclick="closeSettings()">닫기</button></div></div>
+<!-- Character Bar (peach only) -->
+<div class="char-bar" id="charBar">
+  <div class="char-bar-left">
+    <canvas class="char-bar-face" id="cbFace0" width="14" height="14"></canvas>
+    <canvas class="char-bar-face" id="cbFace1" width="14" height="14"></canvas>
+  </div>
+  <canvas class="char-bar-dog" id="cbDog" width="14" height="16"></canvas>
+  <div class="char-bar-right">
+    <canvas class="char-bar-face" id="cbFace2" width="14" height="14"></canvas>
+    <canvas class="char-bar-face" id="cbFace3" width="14" height="14"></canvas>
+  </div>
+</div>
 <!-- Info Bar (separated) -->
 <div class="info-bar">
   <div class="info-left">
@@ -769,6 +803,34 @@ function applyTheme(t){
 const themeOrder=['peach','lavender','dark'];
 function toggleTheme(){const i=themeOrder.indexOf(currentTheme);applyTheme(themeOrder[(i+1)%themeOrder.length])}
 applyTheme(currentTheme);
+
+/* === 캐릭터 바 초기화 === */
+function initCharBar(){
+  const MIX_CB=['#ffd040','#ff80c0','#60e880','#60d0e0'];
+  for(let i=0;i<4;i++){
+    const fc=document.getElementById('cbFace'+i);
+    if(fc)drawTauntFace(fc,i,MIX_CB[i]);
+  }
+  const dog=document.getElementById('cbDog');
+  if(dog)drawPixelDog(dog,'#f9a870','#e8e0d8','#ffb0b0',true);
+  // 강아지 팔 애니메이션
+  let cbFrame=0;
+  setInterval(()=>{
+    cbFrame++;
+    if(dog)drawPixelDog(dog,'#f9a870','#e8e0d8','#ffb0b0',cbFrame%2===0);
+  },800);
+  // 반짝이 추가
+  const bar=document.getElementById('charBar');
+  if(bar){
+    for(let i=0;i<6;i++){
+      const sp=document.createElement('div');
+      sp.className='cb-sparkle';
+      sp.textContent='✦';
+      sp.style.cssText=`position:absolute;font-size:${4+Math.random()*5}px;color:rgba(255,215,0,${.15+Math.random()*.2});left:${10+Math.random()*80}%;top:${10+Math.random()*80}%;pointer-events:none;z-index:0;animation:sparkle ${1.5+Math.random()*2}s ease ${Math.random()*3}s infinite`;
+      bar.appendChild(sp);
+    }
+  }
+}
 
 /* ===== 픽셀 강아지 (Canvas 도트 그림) ===== */
 function drawPixelDog(canvas,bodyColor,earColor,cheekColor,armUp){
@@ -960,6 +1022,9 @@ function goCreateBgEffects(){
     overlay.appendChild(d);
   }
 }
+
+// 캐릭터 바 초기화 (drawTauntFace, drawPixelDog 정의 후)
+initCharBar();
 
 const AudioCtx=window.AudioContext||window.webkitAudioContext;let audioCtx;
 function initAudio(){if(!audioCtx)audioCtx=new AudioCtx()}
