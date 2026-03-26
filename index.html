@@ -161,11 +161,11 @@
   .go-stat-val.best{color:#cc88ff}
   .go-retry{margin-top:25px;background:rgba(204,136,255,0.15);border:1px solid rgba(204,136,255,0.3);border-radius:30px;padding:14px 50px;font-size:16px;font-weight:900;color:#cc88ff;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent}
   .start-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(160deg,#0a0a14 0%,#0f0f20 40%,#14142a 70%,#0f0f20 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;transition:opacity .5s}
-  .char-bg,.start-frame,.px-row,.start-monster{display:none}
+  .char-bg{display:none}
+  .start-frame{display:block}
+  .px-row{display:flex}
+  .start-monster{display:block}
   body.peach .char-bg{display:block}
-  body.peach .start-frame{display:block}
-  body.peach .px-row{display:flex}
-  body.peach .start-monster{display:block}
   .start-screen.hidden{opacity:0;pointer-events:none}
   .game-title{font-size:min(18vw,72px);font-weight:900;color:#fff;text-shadow:0 0 30px #cc88ff,0 0 60px #8844dd;letter-spacing:8px}
   .game-subtitle{font-size:13px;color:rgba(255,255,255,0.25);letter-spacing:6px;margin-bottom:8px}
