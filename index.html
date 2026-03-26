@@ -1188,7 +1188,7 @@ function clearBgFx(){
   }
 }
 
-const AudioCtx=window.AudioContext||window.webkitAudioContext;let audioCtx;
+const AudioCtx=window.AudioContext||window.webkitAudioContext;var audioCtx;
 function initAudio(){if(!audioCtx)audioCtx=new AudioCtx()}
 function playTone(f,d,t,v){if(!settings.sound||!audioCtx)return;try{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||.15,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}catch(e){}}
 function sfxTap(n){playTone(300+n*80,.12,'square',.1);playTone(600+n*60,.08,'sine',.06)}
