@@ -484,7 +484,8 @@
 
   /* === 타겟 영역 — 아케이드 디스플레이 === */
   body.peach .target-area{background:transparent;padding:0 20px}
-  body.peach .target-label{color:rgba(80,184,168,.3)}
+  body.peach .target-label{display:none}
+  body.peach .target-number .t-sep{display:none}
   body.peach .target-number{
     color:#00ffcc;font-size:min(25vw,110px);
     text-shadow:0 0 20px rgba(0,255,204,.3),4px 4px 0 #006644;
@@ -514,8 +515,21 @@
   /* 타이머 — 기존 선형 바 숨김 (peach에서 원형 사용) */
   body.peach .timer-bar-wrap{display:none !important}
 
-  /* 원형 타이머 */
-  body.peach .circular-timer-wrap{display:flex !important;position:relative;width:70px;height:70px;margin:6px auto 2px}
+  /* 원형 타이머 — peach에서 숨김 (BOMB FUSE로 대체) */
+  body.peach .circular-timer-wrap{display:none !important}
+
+  /* BOMB FUSE 타이머 */
+  .bomb-fuse-wrap{display:none}
+  body.peach .bomb-fuse-wrap{display:block !important;margin:8px auto 2px;text-align:center}
+  .bomb-fuse-track{display:flex;gap:3px;justify-content:center;align-items:center}
+  .bomb-fuse-spark{width:9px;height:9px;background:#ffcc00;box-shadow:0 0 8px rgba(255,204,0,.5);transition:background .15s,box-shadow .15s,opacity .15s}
+  .bomb-fuse-spark.burnt{background:#222;box-shadow:none;opacity:.25}
+  .bomb-fuse-spark.active{background:#ff4400;animation:fuseSparkle .2s infinite alternate;box-shadow:0 0 14px rgba(255,68,0,.9)}
+  .bomb-fuse-spark.danger-spark{background:#ff0000;box-shadow:0 0 14px rgba(255,0,0,.9);animation:fuseSparkle .15s infinite alternate}
+  @keyframes fuseSparkle{from{transform:scale(1)}to{transform:scale(1.4)}}
+  .bomb-fuse-time{font-size:8px;color:#ffcc00;font-family:'Press Start 2P',monospace !important;margin-top:5px;text-shadow:0 0 6px rgba(255,204,0,.3)}
+  .bomb-fuse-time.danger-time{color:#ff4444;text-shadow:0 0 8px rgba(255,68,68,.5);animation:fuseTimeBlink .3s infinite}
+  @keyframes fuseTimeBlink{0%,100%{opacity:1}50%{opacity:.5}}
   .circular-timer-wrap{display:none}
   .ct-svg{position:absolute;top:0;left:0;width:70px;height:70px;transform:rotate(-90deg)}
   .ct-bg{fill:none;stroke:#143838;stroke-width:5}
@@ -808,6 +822,10 @@
       <circle class="ct-prog" id="ctProg" cx="40" cy="40" r="34" stroke-dasharray="213.6" stroke-dashoffset="0"/>
     </svg>
     <div class="ct-dog-wrap"><canvas id="ctDogCanvas"></canvas></div>
+  </div>
+  <div class="bomb-fuse-wrap" id="bombFuseWrap">
+    <div class="bomb-fuse-track" id="bombFuseTrack"></div>
+    <div class="bomb-fuse-time" id="bombFuseTime"></div>
   </div>
   <div class="speed-mult" id="speedMult">x1.0</div>
 </div>
@@ -1152,11 +1170,48 @@ const ctProg=$('ctProg'),ctDogCanvas=$('ctDogCanvas');
 const CT_CIRC=2*Math.PI*34; // stroke-dasharray for r=34
 let ctDogFrame=0,ctDogInterval=null;
 
+/* === BOMB FUSE TIMER === */
+const FUSE_COUNT=12;
+const bombFuseTrack=$('bombFuseTrack');
+const bombFuseTime=$('bombFuseTime');
+function initBombFuse(){
+  if(!bombFuseTrack)return;
+  bombFuseTrack.innerHTML='';
+  for(let i=0;i<FUSE_COUNT;i++){
+    const s=document.createElement('div');
+    s.className='bomb-fuse-spark';
+    bombFuseTrack.appendChild(s);
+  }
+}
+initBombFuse();
+
+function updateBombFuse(pct){
+  if(!bombFuseTrack||!bombFuseTrack.children.length)return;
+  const lit=Math.round(pct/100*FUSE_COUNT);
+  const isDanger=pct<=25;
+  const sparks=bombFuseTrack.children;
+  for(let i=0;i<FUSE_COUNT;i++){
+    const s=sparks[i];
+    if(i<lit){
+      s.className='bomb-fuse-spark'+(i===lit-1?(isDanger?' danger-spark':' active'):'');
+    }else{
+      s.className='bomb-fuse-spark burnt';
+    }
+  }
+  if(bombFuseTime){
+    const sec=(pct/100*10).toFixed(1);
+    bombFuseTime.textContent=sec+'s'+(isDanger?' \u{1F4A3}':'');
+    bombFuseTime.className='bomb-fuse-time'+(isDanger?' danger-time':'');
+  }
+}
+
 function updateCircularTimer(pct){
-  if(!ctProg)return;
-  const off=CT_CIRC*(1-pct/100);
-  ctProg.setAttribute('stroke-dashoffset',off);
-  if(pct<=25){ctProg.classList.add('danger')}else{ctProg.classList.remove('danger')}
+  if(ctProg){
+    const off=CT_CIRC*(1-pct/100);
+    ctProg.setAttribute('stroke-dashoffset',off);
+    if(pct<=25){ctProg.classList.add('danger')}else{ctProg.classList.remove('danger')}
+  }
+  updateBombFuse(pct);
 }
 
 function startCtDogAnim(){
