@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>게임오버 목업 v2 — 약오르는 10종</title>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DotGothic16','Courier New',monospace;background:#060e18;color:#c0e8ff;overflow-x:hidden;image-rendering:pixelated}
+.nav{position:fixed;top:0;left:0;right:0;z-index:999;background:#040a14;border-bottom:2px solid #143040;display:flex;gap:3px;padding:5px 6px;overflow-x:auto;white-space:nowrap}
+.nav button{padding:5px 9px;border:2px solid #143040;background:#081828;color:#4888a8;font-size:9px;font-weight:700;cursor:pointer;flex-shrink:0;font-family:'DotGothic16',monospace}
+.nav button.active{background:#143040;border-color:#2880a0;color:#70d0e8;box-shadow:0 0 8px rgba(40,128,160,.3)}
+.wrap{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:56px 10px 20px}
+.wrap.active{display:flex}
+.phone{width:340px;height:620px;border-radius:24px;overflow:hidden;position:relative;border:3px solid #143848;box-shadow:0 0 30px rgba(30,90,120,.12)}
+.phone-inner{width:100%;height:100%;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+.lbl{margin-top:8px;font-size:10px;color:rgba(112,208,232,.3);text-align:center;letter-spacing:1px}
+.desc{margin-top:4px;font-size:11px;color:rgba(112,208,232,.4);text-align:center;max-width:340px;line-height:1.5;margin-bottom:16px}
+
+/* 애니메이션 */
+@keyframes countBounce{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes popIn{0%{opacity:0;transform:scale(0)}60%{transform:scale(1.2)}100%{opacity:1;transform:scale(1)}}
+@keyframes dropIn{0%{opacity:0;transform:translateY(-30px) scale(.7)}60%{transform:translateY(5px) scale(1.05)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes zoomBounce{0%{opacity:0;transform:scale(0) rotate(-10deg)}50%{transform:scale(1.15) rotate(2deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes shakeIn{0%{opacity:0;transform:translateX(-5px)}20%{transform:translateX(5px)}40%{transform:translateX(-3px)}60%{transform:translateX(3px)}80%{transform:translateX(-1px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes slideUp{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+@keyframes tongueWag{0%,100%{transform:scaleX(1)}50%{transform:scaleX(-1)}}
+@keyframes floatBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes glowPulse{0%,100%{filter:drop-shadow(0 0 3px rgba(255,200,60,.2))}50%{filter:drop-shadow(0 0 8px rgba(255,200,60,.5))}}
+@keyframes tauntBounce{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-6px) rotate(-5deg)}60%{transform:translateY(-3px) rotate(5deg)}}
+@keyframes laughShake{0%,100%{transform:translateY(0)}10%{transform:translateY(-3px)}20%{transform:translateY(0)}30%{transform:translateY(-2px)}40%{transform:translateY(0)}}
+@keyframes pixelRain{0%{transform:translateY(-10px);opacity:0}50%{opacity:.15}100%{transform:translateY(620px);opacity:0}}
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
+</style>
+</head>
+<body>
+<div class="nav" id="nav"></div>
+
+<script>
+const MOCKUPS=10;
+const nav=document.getElementById('nav');
+for(let i=1;i<=MOCKUPS;i++){
+  const btn=document.createElement('button');
+  btn.textContent='#'+i;
+  btn.onclick=()=>{
+    document.querySelectorAll('.wrap').forEach(w=>w.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+    document.getElementById('m'+i).classList.add('active');
+    btn.classList.add('active');
+    restartMockup(i);
+  };
+  nav.appendChild(btn);
+}
+
+const SCORE=12450, BEST=84827, STAGE='18/30', COMBO=12, GENIUS=5, REVERSE=3;
+
+function countUp(el,target,duration=1200,prefix='',suffix=''){
+  const start=performance.now();
+  const animate=(now)=>{
+    const p=Math.min((now-start)/duration,1);
+    const eased=1-Math.pow(1-p,3);
+    el.textContent=prefix+Math.floor(target*eased).toLocaleString()+suffix;
+    if(p<1)requestAnimationFrame(animate);
+    else{el.textContent=prefix+target.toLocaleString()+suffix;el.style.animation='countBounce .3s ease'}
+  };
+  requestAnimationFrame(animate);
+}
+
+function sequentialReveal(container,animClass,baseDelay=200,increment=150){
+  const items=container.querySelectorAll('[data-seq]');
+  items.forEach(el=>{
+    el.style.opacity='0';
+    const idx=parseInt(el.dataset.seq);
+    setTimeout(()=>{
+      el.style.opacity='1';
+      el.style.animation=animClass+' .5s ease forwards';
+    },baseDelay+idx*increment);
+  });
+}
+
+function restartMockup(n){
+  const wrap=document.getElementById('m'+n);
+  if(!wrap)return;
+  wrap.querySelectorAll('[data-seq]').forEach(el=>{el.style.opacity='0';el.style.animation='none'});
+  wrap.querySelectorAll('[data-count]').forEach(el=>{el.textContent='0'});
+  // 캔버스 다시 그리기
+  wrap.querySelectorAll('canvas.face-canvas').forEach(c=>drawTauntFace(c,c.dataset.style||'0',c.dataset.color||'#ffd040'));
+  setTimeout(()=>{if(builders[n])builders[n]()},100);
+}
+
+/* ============================== */
+/*  메롱 픽셀 얼굴 그리기         */
+/* ============================== */
+function drawTauntFace(canvas,style,mainColor){
+  const W=14,H=14;canvas.width=W;canvas.height=H;
+  canvas.style.imageRendering='pixelated';
+  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;
+  function px(x,y,c){ctx.fillStyle=c;ctx.fillRect(x,y,1,1)}
+  const O='#333',W2='#fff';
+  const s=parseInt(style)%5;
+
+  // 공통: 둥근 얼굴 외곽
+  const fc=mainColor;
+  // 상단
+  for(let x=4;x<=9;x++)px(x,0,O);
+  px(3,1,O);for(let x=4;x<=9;x++)px(x,1,fc);px(10,1,O);
+  for(let y=2;y<=9;y++){px(2,y,O);for(let x=3;x<=10;x++)px(x,y,fc);px(11,y,O)}
+  px(3,10,O);for(let x=4;x<=9;x++)px(x,10,fc);px(10,10,O);
+  for(let x=4;x<=9;x++)px(x,11,O);
+
+  // 눈
+  if(s===0){// 기본 메롱 — 윙크 + 혀
+    px(4,4,O);px(5,4,O);// 왼눈 감음 (ー)
+    px(8,3,W2);px(9,3,W2);px(8,4,W2);px(9,4,O);px(9,3,O);px(8,3,O);px(8,4,W2);px(9,4,W2);
+    // 오른눈 동그랗게
+    px(8,3,O);px(9,3,O);px(8,4,O);px(9,4,O);px(8,3,fc);px(9,3,fc);
+    px(8,3,W2);px(9,3,W2);px(8,4,W2);px(9,4,W2);px(9,4,O);px(8,5,O);px(9,5,O);px(8,4,W2);
+    // 심플하게 다시
+    ctx.clearRect(0,0,W,H);
+    for(let x=4;x<=9;x++)px(x,0,O);
+    px(3,1,O);for(let x=4;x<=9;x++)px(x,1,fc);px(10,1,O);
+    for(let y=2;y<=9;y++){px(2,y,O);for(let x=3;x<=10;x++)px(x,y,fc);px(11,y,O)}
+    px(3,10,O);for(let x=4;x<=9;x++)px(x,10,fc);px(10,10,O);
+    for(let x=4;x<=9;x++)px(x,11,O);
+    // 윙크 왼눈 (ー)
+    px(4,4,O);px(5,4,O);px(6,4,O);
+    // 오른눈 (동그라미)
+    px(8,3,O);px(9,3,O);px(8,4,W2);px(9,4,O);px(8,5,O);px(9,5,O);
+    // 입 + 혀
+    px(5,7,O);px(6,7,O);px(7,7,O);px(8,7,O);
+    px(5,8,O);px(6,8,'#ff6b6b');px(7,8,'#ff6b6b');px(8,8,O);
+    px(6,9,'#ff6b6b');px(7,9,'#ff6b6b');// 혀 내밈
+    px(6,10,O);px(7,10,O);
+  }else if(s===1){// 삐죽 혀 + 양쪽 감은 눈
+    px(4,4,O);px(5,4,O);px(6,4,O);
+    px(8,4,O);px(9,4,O);px(10,4,O);
+    // 볼 홍조
+    px(3,5,'#ff9090');px(10,5,'#ff9090');
+    // 입
+    px(5,7,O);px(6,7,O);px(7,7,O);px(8,7,O);px(9,7,O);
+    // 혀 길게
+    px(6,8,O);px(7,8,'#ff5555');px(8,8,O);
+    px(7,9,'#ff5555');px(7,10,'#ff5555');
+    px(7,11,O);
+  }else if(s===2){// XD 눈 + 혀
+    px(4,3,O);px(6,3,O);px(5,4,O);px(4,5,O);px(6,5,O);// X 왼
+    px(8,3,O);px(10,3,O);px(9,4,O);px(8,5,O);px(10,5,O);// X 오
+    px(5,7,O);px(6,7,O);px(7,7,O);px(8,7,O);px(9,7,O);
+    px(6,8,'#ff6b6b');px(7,8,'#ff6b6b');px(8,8,'#ff6b6b');
+    px(6,9,O);px(7,9,'#ff4040');px(8,9,O);
+    px(7,10,O);
+  }else if(s===3){// 눈웃음 ^^ + 혀
+    px(4,3,O);px(6,3,O);px(5,3,O);px(4,4,O);px(6,4,O);// ^ 왼
+    px(8,3,O);px(10,3,O);px(9,3,O);px(8,4,O);px(10,4,O);// ^ 오
+    // 볼
+    px(3,5,'#ffb0b0');px(10,5,'#ffb0b0');
+    px(5,7,O);px(6,7,O);px(7,7,O);px(8,7,O);
+    px(6,8,'#ff7070');px(7,8,'#ff7070');
+    px(5,9,O);px(6,9,'#ff5050');px(7,9,O);
+  }else{// ㅋㅋ 비웃음 — 한쪽 올라간 입
+    px(4,3,O);px(5,3,O);px(4,4,W2);px(5,4,O);// 왼눈
+    px(8,3,O);px(9,3,O);px(8,4,W2);px(9,4,O);// 오른눈
+    // 비뚤 입
+    px(5,7,O);px(6,7,O);px(7,7,O);px(8,7,O);px(9,6,O);
+    px(6,8,'#ff6b6b');px(7,8,'#ff6b6b');
+    px(6,9,O);px(7,9,O);
+  }
+}
+
+/* 배경 픽셀비 생성 */
+function createPixelRain(container,count,colors){
+  for(let i=0;i<count;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;width:3px;height:3px;background:${colors[i%colors.length]};opacity:0;left:${Math.random()*100}%;top:${Math.random()*-10}%;animation:pixelRain ${3+Math.random()*4}s linear ${Math.random()*3}s infinite;pointer-events:none;z-index:0`;
+    container.appendChild(d);
+  }
+}
+
+/* 반짝이 생성 */
+function createSparkles(container,count){
+  for(let i=0;i<count;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;width:4px;height:4px;background:#ffd700;opacity:0;left:${10+Math.random()*80}%;top:${10+Math.random()*80}%;animation:sparkle ${1+Math.random()*2}s ease ${Math.random()*3}s infinite;pointer-events:none;z-index:0;border-radius:0`;
+    container.appendChild(d);
+  }
+}
+
+const builders={};
+
+/* ============================================ */
+/*  공통 구조: #6 기반 카드 그리드               */
+/*  5개 메롱 픽셀 얼굴 상단 배치                */
+/*  배경 픽셀화                                  */
+/* ============================================ */
+
+function makeFaceRow(prefix,colors,styles,anim,size){
+  size=size||34;
+  let html='<div data-seq="0" style="display:flex;gap:8px;margin-bottom:10px;z-index:2">';
+  for(let i=0;i<5;i++){
+    html+=`<canvas class="face-canvas" id="${prefix}f${i}" data-style="${styles[i]}" data-color="${colors[i]}" width="14" height="14" style="width:${size}px;height:${size}px;image-rendering:pixelated;animation:${anim} ${.6+i*.15}s ease ${.3+i*.1}s infinite;z-index:2"></canvas>`;
+  }
+  html+='</div>';
+  return html;
+}
+
+function makeStatGrid(prefix,extraStats){
+  let html=`
+  <div data-seq="2" style="width:80%;padding:12px;background:rgba(255,200,60,.05);border:3px solid rgba(255,200,60,.18);text-align:center;margin-bottom:6px;z-index:2">
+    <div style="font-size:9px;color:rgba(255,200,60,.35);letter-spacing:3px;margin-bottom:4px">TOTAL SCORE</div>
+    <div class="${prefix}-score" data-count style="font-size:32px;font-weight:900;color:#ffd700;text-shadow:2px 2px 0 rgba(0,0,0,.4)">0</div>
+  </div>
+  <div style="display:flex;gap:6px;width:80%;margin-bottom:6px;z-index:2">
+    <div data-seq="3" style="flex:1;padding:8px 4px;background:rgba(255,200,60,.04);border:2px solid rgba(255,200,60,.12);text-align:center">
+      <div style="font-size:7px;color:rgba(255,200,60,.3)">BEST</div>
+      <div class="${prefix}-best" data-count style="font-size:15px;font-weight:900;color:#daa520">0</div>
+    </div>
+    <div data-seq="4" style="flex:1;padding:8px 4px;background:rgba(255,200,60,.04);border:2px solid rgba(255,200,60,.12);text-align:center">
+      <div style="font-size:7px;color:rgba(255,200,60,.3)">COMBO</div>
+      <div class="${prefix}-combo" data-count style="font-size:15px;font-weight:900;color:#ffa830">0</div>
+    </div>
+    <div data-seq="5" style="flex:1;padding:8px 4px;background:rgba(255,200,60,.04);border:2px solid rgba(255,200,60,.12);text-align:center">
+      <div style="font-size:7px;color:rgba(255,200,60,.3)">STAGE</div>
+      <div style="font-size:15px;font-weight:900;color:#c89820">${STAGE}</div>
+    </div>
+  </div>`;
+  if(extraStats){
+    html+=`<div style="display:flex;gap:6px;width:80%;margin-bottom:8px;z-index:2">
+    <div data-seq="6" style="flex:1;padding:6px 4px;background:rgba(255,200,60,.03);border:2px solid rgba(255,200,60,.08);text-align:center">
+      <div style="font-size:7px;color:rgba(255,200,60,.2)">천재</div>
+      <div style="font-size:13px;font-weight:900;color:#50e880">${GENIUS}</div>
+    </div>
+    <div data-seq="7" style="flex:1;padding:6px 4px;background:rgba(255,200,60,.03);border:2px solid rgba(255,200,60,.08);text-align:center">
+      <div style="font-size:7px;color:rgba(255,200,60,.2)">리버스</div>
+      <div style="font-size:13px;font-weight:900;color:#60d8e0">${REVERSE}</div>
+    </div>
+    </div>`;
+  }
+  return html;
+}
+
+function startCounts(w,prefix,delay){
+  setTimeout(()=>{
+    countUp(w.querySelector('.'+prefix+'-score'),SCORE,1500);
+    countUp(w.querySelector('.'+prefix+'-best'),BEST,2000);
+    countUp(w.querySelector('.'+prefix+'-combo'),COMBO,800);
+  },delay||800);
+}
+
+function initFaces(prefix){
+  for(let i=0;i<5;i++){
+    const c=document.getElementById(prefix+'f'+i);
+    if(c)drawTauntFace(c,c.dataset.style,c.dataset.color);
+  }
+}
+
+const GOLD=['#ffd040','#ffb830','#ffe060','#f0c030','#ffc848'];
+const WARM=['#ffb040','#ff8830','#ffd060','#f09030','#ffc040'];
+const PINK=['#ff9090','#ffb070','#ffd060','#ff8080','#ffaa60'];
+const LIME=['#c0e040','#e0d040','#ffc840','#d0c030','#e8b830'];
+const MIX=['#ffd040','#ff8060','#60e880','#60d0e0','#ff80c0'];
+
+/* #1: 클래식 메롱 — 위글 애니메이션 */
+builders[1]=function(){
+  const w=document.getElementById('m1');
+  sequentialReveal(w,'popIn',300,180);
+  startCounts(w,'m1');initFaces('m1');
+};
+
+/* #2: 빠른 쉐이크 — 놀리는 느낌 */
+builders[2]=function(){
+  const w=document.getElementById('m2');
+  sequentialReveal(w,'shakeIn',200,160);
+  startCounts(w,'m2');initFaces('m2');
+};
+
+/* #3: 느린 두둥 + 큰 헤더 */
+builders[3]=function(){
+  const w=document.getElementById('m3');
+  sequentialReveal(w,'zoomBounce',400,250);
+  startCounts(w,'m3',1200);initFaces('m3');
+};
+
+/* #4: 위에서 드롭 + 비웃음 */
+builders[4]=function(){
+  const w=document.getElementById('m4');
+  sequentialReveal(w,'dropIn',300,180);
+  startCounts(w,'m4');initFaces('m4');
+};
+
+/* #5: 슬라이드업 + 글로우 */
+builders[5]=function(){
+  const w=document.getElementById('m5');
+  sequentialReveal(w,'slideUp',300,170);
+  startCounts(w,'m5');initFaces('m5');
+};
+
+/* #6: 팝인 + 심한 흔들림 */
+builders[6]=function(){
+  const w=document.getElementById('m6');
+  sequentialReveal(w,'popIn',200,150);
+  startCounts(w,'m6');initFaces('m6');
+};
+
+/* #7: 줌바운스 + 반짝이 */
+builders[7]=function(){
+  const w=document.getElementById('m7');
+  sequentialReveal(w,'zoomBounce',300,200);
+  startCounts(w,'m7',1000);initFaces('m7');
+};
+
+/* #8: 쉐이크 + 무거운 드롭 */
+builders[8]=function(){
+  const w=document.getElementById('m8');
+  sequentialReveal(w,'shakeIn',250,170);
+  startCounts(w,'m8');initFaces('m8');
+};
+
+/* #9: 슬라이드업 + 큰 카운트 */
+builders[9]=function(){
+  const w=document.getElementById('m9');
+  sequentialReveal(w,'slideUp',350,180);
+  startCounts(w,'m9');initFaces('m9');
+};
+
+/* #10: 풀 콤보 — 줌 + 파티클 + 쉐이크 */
+builders[10]=function(){
+  const w=document.getElementById('m10');
+  sequentialReveal(w,'zoomBounce',400,200);
+  startCounts(w,'m10',1100);initFaces('m10');
+  // 캔버스 폭죽
+  const cv=w.querySelector('.fw-canvas');
+  if(cv){
+    cv.width=340;cv.height=620;
+    const ctx=cv.getContext('2d');
+    const ps=[];
+    for(let i=0;i<50;i++)ps.push({x:170+Math.random()*60-30,y:100,vx:(Math.random()-.5)*5,vy:Math.random()*-6-2,size:Math.random()*3+2,color:MIX[Math.floor(Math.random()*5)],life:1});
+    function draw(){
+      ctx.clearRect(0,0,340,620);
+      ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.12;p.life-=.012;
+        if(p.life>0){ctx.globalAlpha=p.life;ctx.fillStyle=p.color;ctx.fillRect(Math.floor(p.x/3)*3,Math.floor(p.y/3)*3,p.size,p.size)}});
+      ctx.globalAlpha=1;
+      if(ps.some(p=>p.life>0))requestAnimationFrame(draw);
+    }
+    setTimeout(draw,600);
+  }
+};
+
+/* ============================================ */
+/*  HTML 생성                                   */
+/* ============================================ */
+function createAll(){
+const body=document.body;
+
+// 공통 배경
+const bgDots=`background:radial-gradient(circle,rgba(255,200,60,.03) 1px,transparent 1px),linear-gradient(135deg,#0a1418 0%,#081018 50%,#060c10 100%);background-size:6px 6px,auto`;
+const bgScan=`background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,220,100,.015) 2px,rgba(255,220,100,.015) 3px),radial-gradient(circle,rgba(255,200,60,.03) 1px,transparent 1px),linear-gradient(135deg,#0c1810 0%,#081410 50%,#060e0a 100%);background-size:auto,5px 5px,auto`;
+const bgGrid=`background:linear-gradient(rgba(255,200,60,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,200,60,.02) 1px,transparent 1px),linear-gradient(135deg,#0a0e18 0%,#080a10 100%);background-size:8px 8px,8px 8px,auto`;
+const bgCheck=`background:repeating-conic-gradient(rgba(255,210,80,.02) 0% 25%,transparent 0% 50%) 0 0/10px 10px,linear-gradient(135deg,#100c08 0%,#0c0a06 100%)`;
+
+// #1: 클래식 메롱 위글
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m1">
+  <div class="phone"><div class="phone-inner" style="${bgDots};gap:0">
+    ${makeFaceRow('m1',GOLD,[0,1,2,3,4],'wiggle',32)}
+    <div data-seq="1" style="font-size:min(13vw,40px);font-weight:900;color:#f0c848;text-shadow:3px 3px 0 #705808;letter-spacing:5px;margin-bottom:2px;z-index:2">메 롱 ~</div>
+    <div style="font-size:10px;color:rgba(255,200,60,.25);letter-spacing:4px;margin-bottom:14px;z-index:2" data-seq="1">게 임 오 버</div>
+    ${makeStatGrid('m1',true)}
+    <button data-seq="8" style="padding:12px 40px;background:#c89820;border:3px solid #806010;color:#fff;font-size:15px;font-weight:900;letter-spacing:4px;cursor:pointer;font-family:'DotGothic16',monospace;box-shadow:5px 5px 0 #302000;border-radius:0;z-index:2">다 시 하 기</button>
+  </div></div>
+  <div class="lbl">① 클래식 메롱 위글</div>
+  <div class="desc">좌우 흔들리는 메롱 얼굴 · 팝인 순차등장 · 골드톤</div>
+</div>`);
+
+// #2: 쏠쏠 놀리기 쉐이크
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m2">
+  <div class="phone"><div class="phone-inner" style="${bgScan};gap:0">
+    ${makeFaceRow('m2',WARM,[1,0,3,2,4],'tauntBounce',36)}
+    <div data-seq="1" style="font-size:min(15vw,48px);font-weight:900;color:#ffe060;text-shadow:4px 4px 0 #8b6914,-2px -2px 0 #4a3500;letter-spacing:6px;margin-bottom:2px;z-index:2">ㅋㅋㅋ</div>
+    <div style="font-size:11px;color:rgba(255,200,60,.3);letter-spacing:5px;margin-bottom:14px;z-index:2" data-seq="1">이것도 못해?</div>
+    ${makeStatGrid('m2',true)}
+    <button data-seq="8" style="padding:13px 42px;background:linear-gradient(180deg,#e8a820,#c08018);border:3px solid #906010;color:#fff;font-size:16px;font-weight:900;letter-spacing:5px;cursor:pointer;font-family:'DotGothic16',monospace;box-shadow:5px 5px 0 #402808;border-radius:0;z-index:2">한 번 더 ?</button>
+  </div></div>
+  <div class="lbl">② 쏠쏠 놀리기</div>
+  <div class="desc">통통 바운스 얼굴 · ㅋㅋㅋ 도발 · 쉐이크인</div>
+</div>`);
+
+// #3: 넷플릭스 두둥 대형
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m3">
+  <div class="phone"><div class="phone-inner" style="${bgGrid};gap:0">
+    ${makeFaceRow('m3',PINK,[2,0,1,4,3],'laughShake',30)}
+    <div data-seq="1" style="font-size:min(18vw,58px);font-weight:900;color:#ffd040;text-shadow:5px 5px 0 #705808,0 0 30px rgba(255,208,64,.4);letter-spacing:8px;margin-bottom:0;z-index:2">끝!</div>
+    <div style="font-size:12px;color:rgba(255,200,60,.3);letter-spacing:6px;margin-bottom:14px;z-index:2" data-seq="1">아쉽다~ 메롱</div>
+    ${makeStatGrid('m3',false)}
+    <button data-seq="6" style="padding:14px 44px;background:#d09820;border:3px solid #886010;color:#fff;font-size:16px;font-weight:900;letter-spacing:5px;cursor:pointer;font-family:'DotGothic16',monospace;box-shadow:5px 5px 0 #382008;border-radius:0;z-index:2">복수하기</button>
+    <div data-seq="7" style="margin-top:6px;font-size:8px;color:rgba(255,200,60,.15);letter-spacing:2px;z-index:2">할 수 있 겠 어 ~?</div>
+  </div></div>
+  <div class="lbl">③ 넷플릭스 두둥</div>
+  <div class="desc">큰 '끝!' + 줌바운스 · 아쉽다~메롱 도발 · 복수하기 버튼</div>
+</div>`);
+
+// #4: 비웃음 드롭 + 픽셀비
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m4">
+  <div class="phone"><div class="phone-inner" id="m4inner" style="${bgCheck};gap:0;overflow:hidden">
+    ${makeFaceRow('m4',GOLD,[4,3,0,1,2],'floatBob',34)}
+    <div data-seq="1" style="font-size:min(14vw,44px);font-weight:900;color:#ffe070;text-shadow:3px 3px 0 #805800;letter-spacing:5px;margin-bottom:2px;z-index:2">찡 ~</div>
+    <div style="font-size:11px;color:rgba(255,200,60,.25);letter-spacing:4px;margin-bottom:14px;z-index:2" data-seq="1">다음엔 잘하겠지?</div>
+    ${makeStatGrid('m4',true)}
+    <button data-seq="8" style="padding:12px 40px;background:rgba(255,200,60,.12);border:3px solid rgba(255,200,60,.3);color:#ffd040;font-size:15px;font-weight:900;letter-spacing:4px;cursor:pointer;font-family:'DotGothic16',monospace;box-shadow:4px 4px 0 rgba(100,70,0,.3);border-radius:0;z-index:2">다 시 하 기</button>
+  </div></div>
+  <div class="lbl">④ 비웃음 + 픽셀비</div>
+  <div class="desc">둥실 떠다니는 얼굴 · 픽셀비 배경 · 드롭인</div>
+</div>`);
+
+// #5: 글로우 + 슬라이드업
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m5">
+  <div class="phone"><div class="phone-inner" style="${bgDots};gap:0">
+    ${makeFaceRow('m5',LIME,[3,1,0,2,4],'glowPulse',32)}
+    <div data-seq="1" style="font-size:min(13vw,42px);font-weight:900;color:#e8d040;text-shadow:3px 3px 0 #605000,0 0 20px rgba(232,208,64,.25);letter-spacing:4px;margin-bottom:2px;z-index:2">빠 빠 ~</div>
+    <div style="font-size:10px;color:rgba(200,220,60,.25);letter-spacing:4px;margin-bottom:14px;z-index:2" data-seq="1">이번엔 졌다 ㅎ</div>
+    ${makeStatGrid('m5',false)}
+    <button data-seq="6" style="padding:13px 42px;background:linear-gradient(180deg,#b8a020,#908018);border:3px solid #706010;color:#fff;font-size:15px;font-weight:900;letter-spacing:4px;cursor:pointer;font-family:'DotGothic16',monospace;box-shadow:4px 4px 0 #302800;border-radius:0;z-index:2">또 할래!</button>
+  </div></div>
+  <div class="lbl">⑤ 글로우 슬라이드</div>
+  <div class="desc">빛나는 얼굴 · 슬라이드업 · 빠빠~ 작별인사</div>
+</div>`);
+
+// #6: 팝인 + 진동 심한 놀림
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m6">
+  <div class="phone"><div class="phone-inner" id="m6inner" style="${bgScan};gap:0;overflow:hidden">
+    ${makeFaceRow('m6',MIX,[0,2,1,4,3],'wiggle',38)}
+    <div data-seq="1" style="font-size:min(16vw,52px);font-weight:900;color:#ffe066;text-shadow:4px 4px 0 #8b6914,0 0 25px rgba(255,224,102,.4);letter-spacing:7px;margin-bottom:0;z-index:2">으헤헤</div>
+    <div style="font-size:12px;color:rgba(255,200,60,.35);letter-spacing:5px;margin-bottom:12px;z-index:2" data-seq="1">너 방금 뭐했어?</div>
+    ${makeStatGrid('m6',true)}
+    <button data-seq="8" style="padding:14px 44px;background:#d8a020;border:3px solid #907010;color:#fff;font-size:16px;font-weight:900;letter-spacing:5px;cursor:pointer;font-family:'DotGothic16',monospace;box-shadow:5px 5px 0 #402808;border-radius:0;z-index:2">😤 다시하기</button>
+  </div></div>
+  <div class="lbl">⑥ 으헤헤 진동 놀림</div>
+  <div class="desc">큰 위글 얼굴 · 팝인 · 으헤헤 도발 · 컬러풀</div>
+</div>`);
+
+// #7: 반짝이 + 줌바운스
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m7">
+  <div class="phone"><div class="phone-inner" id="m7inner" style="${bgGrid};gap:0;overflow:hidden">
+    ${makeFaceRow('m7',GOLD,[1,3,0,4,2],'tauntBounce',34)}
+    <div data-seq="1" style="font-size:min(14vw,46px);font-weight:900;color:#ffc832;text-shadow:3px 3px 0 #604800,0 0 20px rgba(255,200,50,.3);letter-spacing:5px;margin-bottom:2px;z-index:2">ㅉㅉ</div>
+    <div style="font-size:11px;color:rgba(255,200,60,.3);letter-spacing:4px;margin-bottom:14px;z-index:2" data-seq="1">고작 이거?</div>
+    ${makeStatGrid('m7',false)}
+    <button data-seq="6" style="padding:13px 42px;background:#c89820;border:3px solid #806010;color:#fff;font-size:15px;font-weight:900;letter-spacing:4px;cursor:pointer;font-family:'DotGothic16',monospace;box-shadow:4px 4px 0 #302000;border-radius:0;z-index:2">두고봐라</button>
+  </div></div>
+  <div class="lbl">⑦ ㅉㅉ 반짝이</div>
+  <div class="desc">반짝이 배경 · 바운스 얼굴 · ㅉㅉ 비웃음</div>
+</div>`);
+
+// #8: 묵직한 쉐이크 + 한탄
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m8">
+  <div class="phone"><div class="phone-inner" style="${bgCheck};gap:0">
+    ${makeFaceRow('m8',WARM,[2,4,0,3,1],'laughShake',30)}
+    <div data-seq="1" style="font-size:min(12vw,38px);font-weight:900;color:#f0c040;text-shadow:3px 3px 0 #705808;letter-spacing:3px;margin-bottom:2px;z-index:2">아이고~</div>
+    <div style="font-size:11px;color:rgba(255,180,60,.3);letter-spacing:4px;margin-bottom:14px;z-index:2" data-seq="1">이 점수가 최선이야?</div>
+    ${makeStatGrid('m8',true)}
+    <button data-seq="8" style="padding:12px 40px;background:linear-gradient(180deg,#e0a020,#b88018);border:3px solid #806010;color:#fff;font-size:15px;font-weight:900;letter-spacing:4px;cursor:pointer;font-family:'DotGothic16',monospace;box-shadow:5px 5px 0 #302000;border-radius:0;z-index:2">증명하기</button>
+  </div></div>
+  <div class="lbl">⑧ 아이고 한탄</div>
+  <div class="desc">웃음떨림 얼굴 · 쉐이크인 · 이 점수가 최선? 도발</div>
+</div>`);
+
+// #9: 차분한 비아냥
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m9">
+  <div class="phone"><div class="phone-inner" style="${bgDots};gap:0">
+    ${makeFaceRow('m9',GOLD,[4,0,3,1,2],'floatBob',28)}
+    <div data-seq="1" style="font-size:min(12vw,36px);font-weight:900;color:#e8c040;text-shadow:3px 3px 0 #604800;letter-spacing:3px;margin-bottom:2px;z-index:2">흠 . . .</div>
+    <div style="font-size:10px;color:rgba(255,200,60,.25);letter-spacing:3px;margin-bottom:14px;z-index:2" data-seq="1">연습이 더 필요하군</div>
+    ${makeStatGrid('m9',true)}
+    <button data-seq="8" style="padding:12px 38px;background:rgba(200,152,32,.15);border:3px solid rgba(200,152,32,.35);color:#e8c040;font-size:15px;font-weight:900;letter-spacing:4px;cursor:pointer;font-family:'DotGothic16',monospace;box-shadow:4px 4px 0 rgba(80,50,0,.3);border-radius:0;z-index:2">다 시 하 기</button>
+  </div></div>
+  <div class="lbl">⑨ 차분한 비아냥</div>
+  <div class="desc">둥실 작은 얼굴 · 슬라이드업 · 연습이 더 필요하군</div>
+</div>`);
+
+// #10: 풀 콤보 — 폭죽 + 쉐이크 + 모든 요소
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m10">
+  <div class="phone"><div class="phone-inner" id="m10inner" style="${bgGrid};gap:0;overflow:hidden">
+    <canvas class="fw-canvas" style="position:absolute;top:0;left:0;pointer-events:none;z-index:3;image-rendering:pixelated"></canvas>
+    ${makeFaceRow('m10',MIX,[0,1,2,3,4],'tauntBounce',40)}
+    <div data-seq="1" style="font-size:min(17vw,54px);font-weight:900;color:#ffe066;text-shadow:5px 5px 0 #705808,0 0 30px rgba(255,224,102,.5),-2px -2px 0 #ffd040;letter-spacing:8px;margin-bottom:0;z-index:2">바보!</div>
+    <div style="font-size:13px;color:rgba(255,200,60,.4);letter-spacing:5px;margin-bottom:12px;z-index:2" data-seq="1">다시 해볼 자신 있어?</div>
+    ${makeStatGrid('m10',true)}
+    <button data-seq="8" style="padding:14px 46px;background:linear-gradient(180deg,#e8b028,#c88818);border:3px solid #886010;color:#fff;font-size:17px;font-weight:900;letter-spacing:6px;cursor:pointer;font-family:'DotGothic16',monospace;box-shadow:5px 5px 0 #382008;border-radius:0;z-index:4">🔥 재도전</button>
+    <div data-seq="9" style="margin-top:6px;font-size:8px;color:rgba(255,224,102,.15);letter-spacing:3px;z-index:2">못 하면 인정하든가 ㅋ</div>
+  </div></div>
+  <div class="lbl">⑩ 바보! 풀콤보</div>
+  <div class="desc">대형 타운트 · 폭죽 파티클 · 바보! 최고 도발</div>
+</div>`);
+
+}// end createAll
+
+createAll();
+
+// 배경 효과 추가
+setTimeout(()=>{
+  const m4i=document.getElementById('m4inner');
+  if(m4i)createPixelRain(m4i,25,['#ffd040','#ffb030','#ffe060']);
+  const m6i=document.getElementById('m6inner');
+  if(m6i)createSparkles(m6i,15);
+  const m7i=document.getElementById('m7inner');
+  if(m7i)createSparkles(m7i,20);
+  const m10i=document.getElementById('m10inner');
+  if(m10i){createSparkles(m10i,12);createPixelRain(m10i,20,MIX);}
+},200);
+
+// 첫번째 활성화
+document.getElementById('m1').classList.add('active');
+nav.children[0].classList.add('active');
+setTimeout(()=>builders[1](),300);
+</script>
+</body>
+</html>
