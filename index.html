@@ -149,17 +149,32 @@
   .seg-btn{padding:5px 10px;font-size:9px;font-weight:900;color:rgba(255,255,255,0.35);background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .3s}
   .seg-btn.active{background:rgba(204,136,255,0.3);color:#fff}
   .settings-close{display:block;margin:16px auto 0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:25px;padding:10px 40px;color:rgba(255,255,255,0.6);font-size:12px;font-weight:900;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent}
-  .gameover-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:350;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .5s}
+  .gameover-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:350;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .5s;overflow:hidden;gap:0}
   .gameover-overlay.show{opacity:1;pointer-events:auto}
-  .go-title{font-size:min(14vw,56px);font-weight:900;color:#ff2244;text-shadow:0 0 30px rgba(255,34,68,0.6);letter-spacing:5px;margin-bottom:6px}
-  .go-new-best{font-size:14px;color:#ffd700;letter-spacing:3px;margin-bottom:20px;opacity:0;transition:opacity .3s}
-  .go-new-best.show{opacity:1;animation:comboPulse .6s ease}
-  .go-stats{width:80%;max-width:280px}
-  .go-stat-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
-  .go-stat-label{font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1px}
-  .go-stat-val{font-size:13px;font-weight:900;color:#ffd700}
-  .go-stat-val.best{color:#cc88ff}
-  .go-retry{margin-top:25px;background:rgba(204,136,255,0.15);border:1px solid rgba(204,136,255,0.3);border-radius:30px;padding:14px 50px;font-size:16px;font-weight:900;color:#cc88ff;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .go-fw-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:3;image-rendering:pixelated}
+  .go-face-row{display:flex;gap:8px;margin-bottom:10px;z-index:2}
+  .go-face{width:40px;height:40px;image-rendering:pixelated;z-index:2}
+  @keyframes goTauntBounce{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-6px) rotate(-5deg)}60%{transform:translateY(-3px) rotate(5deg)}}
+  @keyframes goZoomBounce{0%{opacity:0;transform:scale(0) rotate(-10deg)}50%{transform:scale(1.15) rotate(2deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+  @keyframes goCountBounce{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+  @keyframes goSparkle{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
+  @keyframes goPixelRain{0%{transform:translateY(-10px);opacity:0}50%{opacity:.15}100%{transform:translateY(100vh);opacity:0}}
+  .go-title{font-size:min(17vw,54px);font-weight:900;color:#ffe066;text-shadow:5px 5px 0 #705808,0 0 30px rgba(255,224,102,.5),-2px -2px 0 #ffd040;letter-spacing:8px;margin-bottom:0;z-index:2;font-family:'DotGothic16',monospace}
+  .go-taunt{font-size:13px;color:rgba(255,200,60,.4);letter-spacing:5px;margin-bottom:12px;z-index:2;font-family:'DotGothic16',monospace}
+  .go-new-best{font-size:14px;color:#ffd700;letter-spacing:3px;margin-bottom:4px;display:none;z-index:2;font-family:'DotGothic16',monospace}
+  .go-new-best.show{display:block;animation:comboPulse .6s ease}
+  .go-card{width:80%;max-width:280px;padding:12px;background:rgba(255,200,60,.05);border:3px solid rgba(255,200,60,.18);text-align:center;margin-bottom:6px;z-index:2;border-radius:0}
+  .go-card-score{margin-bottom:6px}
+  .go-card-label{font-size:9px;color:rgba(255,200,60,.35);letter-spacing:3px;margin-bottom:4px;font-family:'DotGothic16',monospace}
+  .go-card-val{font-size:32px;font-weight:900;color:#ffd700;text-shadow:2px 2px 0 rgba(0,0,0,.4);font-family:'DotGothic16',monospace}
+  .go-card-val.sm{font-size:15px}
+  .go-card-val.sm.genius{color:#50e880}
+  .go-card-val.sm.reverse{color:#60d8e0}
+  .go-card-row{display:flex;gap:6px;width:80%;max-width:280px;margin-bottom:6px;z-index:2}
+  .go-card-sm{flex:1;padding:8px 4px;background:rgba(255,200,60,.04);border:2px solid rgba(255,200,60,.12);text-align:center;border-radius:0}
+  .go-retry{margin-top:8px;padding:14px 46px;background:linear-gradient(180deg,#e8b028,#c88818);border:3px solid #886010;color:#fff;font-size:17px;font-weight:900;letter-spacing:6px;cursor:pointer;font-family:'DotGothic16',monospace;box-shadow:5px 5px 0 #382008;border-radius:0;z-index:4;-webkit-tap-highlight-color:transparent}
+  .go-retry:active{transform:scale(.95)}
+  .go-footer{margin-top:6px;font-size:8px;color:rgba(255,224,102,.15);letter-spacing:3px;z-index:2;font-family:'DotGothic16',monospace}
   .start-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(160deg,#0a0a14 0%,#0f0f20 40%,#14142a 70%,#0f0f20 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;transition:opacity .5s}
   .char-bg{display:none}
   .start-frame{display:block}
@@ -586,16 +601,20 @@
   body.peach .breathe-sub{color:rgba(80,184,168,.25)}
   body.peach .breathe-countdown{color:#50e880;text-shadow:0 0 25px rgba(80,232,128,.3),3px 3px 0 rgba(0,0,0,.3)}
 
-  /* 게임오버 */
-  body.peach .gameover-overlay{background:rgba(8,24,40,.94)}
-  body.peach .go-title{color:#ff4060;text-shadow:0 0 15px rgba(255,64,96,.25),3px 3px 0 rgba(0,0,0,.3);font-size:min(12vw,48px);letter-spacing:6px}
+  /* 게임오버 #10 바보! */
+  body.peach .gameover-overlay{background:linear-gradient(rgba(255,200,60,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,200,60,.02) 1px,transparent 1px),linear-gradient(135deg,#0a0e18 0%,#080a10 100%);background-size:8px 8px,8px 8px,auto}
+  body.peach .go-title{color:#ffe066;text-shadow:5px 5px 0 #705808,0 0 30px rgba(255,224,102,.5),-2px -2px 0 #ffd040}
   body.peach .go-new-best{color:#ffc040}
-  body.peach .go-stat-label{color:rgba(80,184,168,.35)}
-  body.peach .go-stat-val{color:#60d8c0}
-  body.peach .go-stat-val.best{color:#50ff90}
-  body.peach .go-stat-row{border-bottom-color:rgba(20,56,56,.3)}
-  body.peach .go-retry{background:rgba(20,56,56,.3);border:2px solid #184848;color:#60d8e0;border-radius:0;
-    box-shadow:4px 4px 0 rgba(0,0,0,.2)}
+  body.peach .go-taunt{color:rgba(255,200,60,.4)}
+  body.peach .go-card{background:rgba(255,200,60,.05);border-color:rgba(255,200,60,.18)}
+  body.peach .go-card-sm{background:rgba(255,200,60,.04);border-color:rgba(255,200,60,.12)}
+  body.peach .go-card-label{color:rgba(255,200,60,.35)}
+  body.peach .go-card-val{color:#ffd700}
+  body.peach .go-card-val.sm{color:#daa520}
+  body.peach .go-card-val.sm.genius{color:#50e880}
+  body.peach .go-card-val.sm.reverse{color:#60d8e0}
+  body.peach .go-retry{background:linear-gradient(180deg,#e8b028,#c88818);border:3px solid #886010;color:#fff;box-shadow:5px 5px 0 #382008;border-radius:0}
+  body.peach .go-footer{color:rgba(255,224,102,.15)}
 
   /* 올클리어 */
   body.peach .allclear-overlay{background:rgba(8,24,40,.94)}
@@ -645,7 +664,49 @@
 
 <div class="start-screen" id="startScreen"><div class="char-bg" id="charBg"></div><div class="start-frame"><div class="start-monster">👾</div><div class="game-title">빼봐영</div><div class="game-subtitle">숫 자 빼 기 게 임</div><div class="px-row"><div class="px" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.06)">8</div><div class="px" style="border-color:#dc2626;color:#dc2626;background:rgba(220,38,38,.06);animation-delay:.1s">−</div><div class="px" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.06);animation-delay:.2s">5</div><div class="px" style="border-color:#dc2626;color:#dc2626;background:rgba(220,38,38,.06);animation-delay:.3s">−</div><div class="px" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.06);animation-delay:.4s">3</div><div class="px" style="border-color:#16a34a;color:#16a34a;background:rgba(22,163,74,.06);animation-delay:.5s">=</div><div class="px" style="border-color:#16a34a;color:#16a34a;background:rgba(22,163,74,.08);animation-delay:.6s">0</div></div><div class="best-score-display" id="bestScoreStart">🏆 최고기록 0</div><button class="start-btn" onclick="startGame()">시 작 하 기</button></div></div>
 <div class="breathe-overlay" id="breatheOverlay"><div class="breathe-stage" id="breatheStage">스테이지 2</div><div class="breathe-text">숨 고르기!</div><div class="breathe-sub" id="breatheSub"></div><div class="breathe-countdown" id="breatheCount">1</div></div>
-<div class="gameover-overlay" id="gameoverOverlay"><div class="go-title">게임 오버</div><div class="go-new-best" id="goNewBest">★ 신기록! ★</div><div class="go-stats"><div class="go-stat-row"><span class="go-stat-label">점수</span><span class="go-stat-val" id="goScore">0</span></div><div class="go-stat-row"><span class="go-stat-label">최고기록</span><span class="go-stat-val best" id="goBest">0</span></div><div class="go-stat-row"><span class="go-stat-label">스테이지</span><span class="go-stat-val" id="goStage">0</span></div><div class="go-stat-row"><span class="go-stat-label">최대 콤보</span><span class="go-stat-val" id="goCombo">0</span></div><div class="go-stat-row"><span class="go-stat-label">천재 횟수</span><span class="go-stat-val" id="goGenius">0</span></div><div class="go-stat-row"><span class="go-stat-label">리버스 클리어</span><span class="go-stat-val" id="goReverse">0</span></div></div><button class="go-retry" onclick="startGame()">다 시 하 기</button></div>
+<div class="gameover-overlay" id="gameoverOverlay">
+  <canvas id="goFireworkCanvas" class="go-fw-canvas"></canvas>
+  <div class="go-face-row" data-seq="0" id="goFaceRow">
+    <canvas class="go-face" id="goFace0" width="14" height="14"></canvas>
+    <canvas class="go-face" id="goFace1" width="14" height="14"></canvas>
+    <canvas class="go-face" id="goFace2" width="14" height="14"></canvas>
+    <canvas class="go-face" id="goFace3" width="14" height="14"></canvas>
+    <canvas class="go-face" id="goFace4" width="14" height="14"></canvas>
+  </div>
+  <div class="go-title" data-seq="1">바보!</div>
+  <div class="go-new-best" id="goNewBest" data-seq="1">★ 신기록! ★</div>
+  <div class="go-taunt" data-seq="1">다시 해볼 자신 있어?</div>
+  <div class="go-card go-card-score" data-seq="2">
+    <div class="go-card-label">TOTAL SCORE</div>
+    <div class="go-card-val" id="goScore">0</div>
+  </div>
+  <div class="go-card-row">
+    <div class="go-card go-card-sm" data-seq="3">
+      <div class="go-card-label">BEST</div>
+      <div class="go-card-val sm" id="goBest">0</div>
+    </div>
+    <div class="go-card go-card-sm" data-seq="4">
+      <div class="go-card-label">COMBO</div>
+      <div class="go-card-val sm" id="goCombo">0</div>
+    </div>
+    <div class="go-card go-card-sm" data-seq="5">
+      <div class="go-card-label">STAGE</div>
+      <div class="go-card-val sm" id="goStage">0</div>
+    </div>
+  </div>
+  <div class="go-card-row">
+    <div class="go-card go-card-sm" data-seq="6">
+      <div class="go-card-label">천재</div>
+      <div class="go-card-val sm genius" id="goGenius">0</div>
+    </div>
+    <div class="go-card go-card-sm" data-seq="7">
+      <div class="go-card-label">리버스</div>
+      <div class="go-card-val sm reverse" id="goReverse">0</div>
+    </div>
+  </div>
+  <button class="go-retry" data-seq="8" onclick="startGame()">🔥 재도전</button>
+  <div class="go-footer" data-seq="9">못 하면 인정하든가 ㅋ</div>
+</div>
 <div class="allclear-overlay" id="allclearOverlay"><div class="allclear-title">올 클리어!</div><div class="allclear-sub">30 스테이지 클리어!</div><div class="go-stats"><div class="go-stat-row"><span class="go-stat-label">최종 점수</span><span class="go-stat-val" id="acScore">0</span></div><div class="go-stat-row"><span class="go-stat-label">최고기록</span><span class="go-stat-val best" id="acBest">0</span></div><div class="go-stat-row"><span class="go-stat-label">최대 콤보</span><span class="go-stat-val" id="acCombo">0</span></div><div class="go-stat-row"><span class="go-stat-label">천재 횟수</span><span class="go-stat-val" id="acGenius">0</span></div></div><button class="go-retry" onclick="closeAllClearAndRestart()" style="margin-top:20px">다시 도전</button></div>
 <div class="settings-overlay" id="settingsOverlay"><div class="settings-panel"><div class="settings-title">설 정</div><div class="setting-row"><div><div class="setting-label">파티클 이펙트</div><div class="setting-sub">터치 시 파티클</div></div><button class="toggle on" id="togParticle" onclick="toggleSetting('particle')"></button></div><div class="setting-row"><div><div class="setting-label">화면 플래시</div><div class="setting-sub">터치 시 번쩍</div></div><button class="toggle on" id="togFlash" onclick="toggleSetting('flash')"></button></div><div class="setting-row"><div><div class="setting-label">폭발 숫자</div><div class="setting-sub">누른 숫자 크게 표시</div></div><button class="toggle on" id="togExplode" onclick="toggleSetting('explode')"></button></div><div class="setting-row"><div><div class="setting-label">진동</div><div class="setting-sub">모바일 향틱</div></div><button class="toggle on" id="togVibrate" onclick="toggleSetting('vibrate')"></button></div><div class="setting-row"><div><div class="setting-label">사운드</div><div class="setting-sub">효과음</div></div><button class="toggle on" id="togSound" onclick="toggleSetting('sound')"></button></div><div class="setting-row"><div><div class="setting-label">파티클 양</div></div><div class="seg-control"><button class="seg-btn" data-val="low" onclick="setParticleAmount('low')">적음</button><button class="seg-btn active" data-val="mid" onclick="setParticleAmount('mid')">보통</button><button class="seg-btn" data-val="high" onclick="setParticleAmount('high')">많음</button></div></div><button class="settings-close" onclick="closeSettings()">닫기</button></div></div>
 <!-- Info Bar (separated) -->
@@ -779,6 +840,126 @@ function drawPixelDog(canvas,bodyColor,earColor,cheekColor,armUp){
     });
   },800);
 })();
+
+/* === 메롱 픽셀 얼굴 (게임오버용) === */
+function drawTauntFace(canvas,style,mainColor){
+  const W=14,H=14;canvas.width=W;canvas.height=H;
+  canvas.style.imageRendering='pixelated';
+  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;
+  function px(x,y,c){ctx.fillStyle=c;ctx.fillRect(x,y,1,1)}
+  const O='#333',W2='#fff';
+  const s=parseInt(style)%5;
+  const fc=mainColor;
+  for(let x=4;x<=9;x++)px(x,0,O);
+  px(3,1,O);for(let x=4;x<=9;x++)px(x,1,fc);px(10,1,O);
+  for(let y=2;y<=9;y++){px(2,y,O);for(let x=3;x<=10;x++)px(x,y,fc);px(11,y,O)}
+  px(3,10,O);for(let x=4;x<=9;x++)px(x,10,fc);px(10,10,O);
+  for(let x=4;x<=9;x++)px(x,11,O);
+  if(s===0){
+    ctx.clearRect(0,0,W,H);
+    for(let x=4;x<=9;x++)px(x,0,O);
+    px(3,1,O);for(let x=4;x<=9;x++)px(x,1,fc);px(10,1,O);
+    for(let y=2;y<=9;y++){px(2,y,O);for(let x=3;x<=10;x++)px(x,y,fc);px(11,y,O)}
+    px(3,10,O);for(let x=4;x<=9;x++)px(x,10,fc);px(10,10,O);
+    for(let x=4;x<=9;x++)px(x,11,O);
+    px(4,4,O);px(5,4,O);px(6,4,O);
+    px(8,3,O);px(9,3,O);px(8,4,W2);px(9,4,O);px(8,5,O);px(9,5,O);
+    px(5,7,O);px(6,7,O);px(7,7,O);px(8,7,O);
+    px(5,8,O);px(6,8,'#ff6b6b');px(7,8,'#ff6b6b');px(8,8,O);
+    px(6,9,'#ff6b6b');px(7,9,'#ff6b6b');px(6,10,O);px(7,10,O);
+  }else if(s===1){
+    px(4,4,O);px(5,4,O);px(6,4,O);px(8,4,O);px(9,4,O);px(10,4,O);
+    px(3,5,'#ff9090');px(10,5,'#ff9090');
+    px(5,7,O);px(6,7,O);px(7,7,O);px(8,7,O);px(9,7,O);
+    px(6,8,O);px(7,8,'#ff5555');px(8,8,O);
+    px(7,9,'#ff5555');px(7,10,'#ff5555');px(7,11,O);
+  }else if(s===2){
+    px(4,3,O);px(6,3,O);px(5,4,O);px(4,5,O);px(6,5,O);
+    px(8,3,O);px(10,3,O);px(9,4,O);px(8,5,O);px(10,5,O);
+    px(5,7,O);px(6,7,O);px(7,7,O);px(8,7,O);px(9,7,O);
+    px(6,8,'#ff6b6b');px(7,8,'#ff6b6b');px(8,8,'#ff6b6b');
+    px(6,9,O);px(7,9,'#ff4040');px(8,9,O);px(7,10,O);
+  }else if(s===3){
+    px(4,3,O);px(6,3,O);px(5,3,O);px(4,4,O);px(6,4,O);
+    px(8,3,O);px(10,3,O);px(9,3,O);px(8,4,O);px(10,4,O);
+    px(3,5,'#ffb0b0');px(10,5,'#ffb0b0');
+    px(5,7,O);px(6,7,O);px(7,7,O);px(8,7,O);
+    px(6,8,'#ff7070');px(7,8,'#ff7070');
+    px(5,9,O);px(6,9,'#ff5050');px(7,9,O);
+  }else{
+    px(4,3,O);px(5,3,O);px(4,4,W2);px(5,4,O);
+    px(8,3,O);px(9,3,O);px(8,4,W2);px(9,4,O);
+    px(5,7,O);px(6,7,O);px(7,7,O);px(8,7,O);px(9,6,O);
+    px(6,8,'#ff6b6b');px(7,8,'#ff6b6b');px(6,9,O);px(7,9,O);
+  }
+}
+
+/* === 게임오버 카운트업 애니메이션 === */
+function goCountUp(el,target,duration,prefix,suffix){
+  duration=duration||1200;prefix=prefix||'';suffix=suffix||'';
+  const start=performance.now();
+  const animate=(now)=>{
+    const p=Math.min((now-start)/duration,1);
+    const eased=1-Math.pow(1-p,3);
+    el.textContent=prefix+Math.floor(target*eased).toLocaleString()+suffix;
+    if(p<1)requestAnimationFrame(animate);
+    else{el.textContent=prefix+target.toLocaleString()+suffix;el.style.animation='goCountBounce .3s ease'}
+  };
+  requestAnimationFrame(animate);
+}
+
+/* === 게임오버 순차 등장 === */
+function goSequentialReveal(container,baseDelay,increment){
+  baseDelay=baseDelay||400;increment=increment||200;
+  const items=container.querySelectorAll('[data-seq]');
+  items.forEach(el=>{
+    el.style.opacity='0';
+    const idx=parseInt(el.dataset.seq);
+    setTimeout(()=>{
+      el.style.opacity='1';
+      el.style.animation='goZoomBounce .5s ease forwards';
+    },baseDelay+idx*increment);
+  });
+}
+
+/* === 게임오버 폭죽 파티클 === */
+function goFireworks(){
+  const cv=$('goFireworkCanvas');if(!cv)return;
+  cv.width=cv.offsetWidth||window.innerWidth;
+  cv.height=cv.offsetHeight||window.innerHeight;
+  const ctx=cv.getContext('2d');
+  const MIX=['#ffd040','#ff8060','#60e880','#60d0e0','#ff80c0'];
+  const ps=[];
+  for(let i=0;i<50;i++)ps.push({x:cv.width/2+Math.random()*60-30,y:cv.height*0.2,vx:(Math.random()-.5)*5,vy:Math.random()*-6-2,size:Math.random()*3+2,color:MIX[Math.floor(Math.random()*5)],life:1});
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.12;p.life-=.012;
+      if(p.life>0){ctx.globalAlpha=p.life;ctx.fillStyle=p.color;ctx.fillRect(Math.floor(p.x/3)*3,Math.floor(p.y/3)*3,p.size,p.size)}});
+    ctx.globalAlpha=1;
+    if(ps.some(p=>p.life>0))requestAnimationFrame(draw);
+  }
+  setTimeout(draw,600);
+}
+
+/* === 게임오버 배경효과 === */
+function goCreateBgEffects(){
+  const overlay=$('gameoverOverlay');if(!overlay)return;
+  // 반짝이
+  for(let i=0;i<12;i++){
+    const d=document.createElement('div');
+    d.className='go-sparkle';
+    d.style.cssText=`position:absolute;width:4px;height:4px;background:#ffd700;opacity:0;left:${10+Math.random()*80}%;top:${10+Math.random()*80}%;animation:goSparkle ${1+Math.random()*2}s ease ${Math.random()*3}s infinite;pointer-events:none;z-index:0;border-radius:0`;
+    overlay.appendChild(d);
+  }
+  // 픽셀비
+  const MIX=['#ffd040','#ff8060','#60e880','#60d0e0','#ff80c0'];
+  for(let i=0;i<20;i++){
+    const d=document.createElement('div');
+    d.className='go-rain';
+    d.style.cssText=`position:absolute;width:3px;height:3px;background:${MIX[i%5]};opacity:0;left:${Math.random()*100}%;top:${Math.random()*-10}%;animation:goPixelRain ${3+Math.random()*4}s linear ${Math.random()*3}s infinite;pointer-events:none;z-index:0`;
+    overlay.appendChild(d);
+  }
+}
 
 const AudioCtx=window.AudioContext||window.webkitAudioContext;let audioCtx;
 function initAudio(){if(!audioCtx)audioCtx=new AudioCtx()}
@@ -1311,12 +1492,39 @@ function handleFail(msg){
 function showGameOver(){
   isPlaying=false;sfxGameOver();const isNew=score>bestScore;
   if(isNew&&!isDemoMode){bestScore=score;localStorage.setItem('pumpBest',bestScore)}
-  $('goScore').textContent=score;$('goBest').textContent=bestScore;
-  const finalTier=getDifficulty(stageCount).tier;
-  $('goStage').textContent=stageCount+'/30 ('+finalTier+')';
-  $('goCombo').textContent=maxCombo;$('goGenius').textContent=geniusCount;$('goReverse').textContent=reverseClears;
-  $('goNewBest').classList.toggle('show',isNew);$('bestScoreStart').textContent='🏆 최고기록 '+bestScore;
+  $('bestScoreStart').textContent='🏆 최고기록 '+bestScore;
+  // 기존 배경효과 제거
+  gameoverOverlay.querySelectorAll('.go-sparkle,.go-rain').forEach(e=>e.remove());
+  // 순차 등장 초기화
+  gameoverOverlay.querySelectorAll('[data-seq]').forEach(el=>{el.style.opacity='0';el.style.animation='none'});
+  // 메롱 얼굴 그리기 (5개, 다양한 색상)
+  const MIX_C=['#ffd040','#ff8060','#60e880','#60d0e0','#ff80c0'];
+  for(let i=0;i<5;i++){
+    const fc=$('goFace'+i);
+    if(fc){
+      drawTauntFace(fc,i,MIX_C[i]);
+      fc.style.animation='goTauntBounce '+(.6+i*.15)+'s ease '+(.3+i*.1)+'s infinite';
+    }
+  }
+  // 신기록 표시
+  $('goNewBest').classList.toggle('show',isNew);
+  // 오버레이 표시
   gameoverOverlay.classList.add('show');
+  // 순차 등장
+  goSequentialReveal(gameoverOverlay,400,200);
+  // 카운트업 애니메이션 (스코어들)
+  const finalTier=getDifficulty(stageCount).tier;
+  setTimeout(()=>{
+    goCountUp($('goScore'),score,1500);
+    goCountUp($('goBest'),bestScore,2000);
+    goCountUp($('goCombo'),maxCombo,800);
+    $('goStage').textContent=stageCount+'/30 ('+finalTier+')';
+    goCountUp($('goGenius'),geniusCount,800);
+    goCountUp($('goReverse'),reverseClears,800);
+  },1100);
+  // 폭죽 + 배경효과
+  goFireworks();
+  goCreateBgEffects();
 }
 
 function showBreathe(){
