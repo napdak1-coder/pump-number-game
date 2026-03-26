@@ -266,6 +266,13 @@
   body.lavender .explode-number{filter:hue-rotate(280deg)}
   body.lavender .screen-flash{background:rgba(171,71,188,0.08)!important}
   body.lavender .key-btn.pressed{animation:btnPress3d .25s ease}
+  body.lavender .key-btn.swipe-hover{
+    background:linear-gradient(180deg,rgba(171,71,188,.2) 0%,rgba(171,71,188,.1) 100%);
+    border-color:rgba(171,71,188,.5);color:#4a148c;
+    box-shadow:0 2px 0 rgba(171,71,188,.12),0 4px 8px rgba(0,0,0,.04),0 0 18px rgba(171,71,188,.2);
+  }
+  body.lavender .swipe-preview{color:#7b1fa2;text-shadow:0 0 20px rgba(123,31,162,.4)}
+  body.lavender .swipe-confirm{color:#00c853;text-shadow:0 0 30px rgba(0,200,83,.4)}
 
   /* === TIER UP POPUP === */
   .tier-up-popup{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;pointer-events:none;animation:tierUpFade 1.5s ease forwards}
@@ -318,26 +325,27 @@
   .fever-timer{position:fixed;top:46px;left:0;right:0;height:3px;z-index:201;pointer-events:none}
   .fever-timer-fill{height:100%;background:linear-gradient(90deg,#ff44aa,#44ddff);border-radius:2px;transition:width .1s linear}
 
-  /* === BONUS NUMBER === */
-  .bonus-area{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 0;flex-shrink:0}
-  .bonus-btn{display:flex;align-items:center;justify-content:center;
-    width:56px;height:56px;border-radius:50%;border:2px solid rgba(0,200,255,.4);
-    background:radial-gradient(circle,rgba(0,200,255,.12),rgba(0,100,200,.06));
-    color:#44ddff;font-size:24px;font-weight:900;cursor:pointer;
-    box-shadow:0 0 12px rgba(0,200,255,.15),inset 0 0 8px rgba(0,200,255,.05);
-    text-shadow:0 0 8px rgba(0,200,255,.4);transition:all .2s;position:relative}
-  .bonus-btn.active{border-color:rgba(255,170,0,.7);color:#ffaa00;
-    background:radial-gradient(circle,rgba(255,170,0,.2),rgba(255,100,0,.08));
-    box-shadow:0 0 20px rgba(255,170,0,.3),inset 0 0 10px rgba(255,170,0,.1);
-    text-shadow:0 0 12px rgba(255,170,0,.5);transform:scale(1.15);animation:bonusPulse .6s infinite alternate}
-  .bonus-btn.used{opacity:.3;pointer-events:none;border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.2);
-    box-shadow:none;text-shadow:none;text-decoration:line-through}
-  @keyframes bonusPulse{0%{box-shadow:0 0 20px rgba(255,170,0,.3)}100%{box-shadow:0 0 30px rgba(255,170,0,.5)}}
-  .bonus-label{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:1px}
-  .bonus-preview{position:fixed;top:42%;left:50%;transform:translate(-50%,-50%);
-    font-size:min(10vw,48px);font-weight:900;color:#ffaa00;pointer-events:none;z-index:160;
-    text-shadow:0 0 20px rgba(255,170,0,.5);opacity:0;transition:opacity .15s}
-  .bonus-preview.show{opacity:1}
+  /* === SWIPE KEYPAD === */
+  .key-btn.swipe-hover{
+    background:linear-gradient(180deg,rgba(204,136,255,.18) 0%,rgba(204,136,255,.08) 100%);
+    border-color:rgba(204,136,255,.5);
+    transform:translateY(1px) scale(1.03);
+    box-shadow:0 2px 0 rgba(0,0,0,.3),0 4px 8px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.08),0 0 18px rgba(204,136,255,.25);
+    color:#fff;text-shadow:0 0 12px rgba(204,136,255,.5);
+    z-index:5;position:relative;
+  }
+  .swipe-line{position:fixed;pointer-events:none;z-index:200}
+  .swipe-preview{position:fixed;top:38%;left:50%;transform:translate(-50%,-50%);
+    font-size:min(14vw,64px);font-weight:900;pointer-events:none;z-index:160;
+    text-shadow:0 0 20px rgba(204,136,255,.6),0 0 40px rgba(204,136,255,.3);
+    color:#cc88ff;opacity:0;transition:opacity .12s}
+  .swipe-preview.show{opacity:1}
+  .swipe-confirm{position:fixed;top:38%;left:50%;transform:translate(-50%,-50%) scale(0);
+    font-size:min(16vw,72px);font-weight:900;pointer-events:none;z-index:165;
+    color:#44ffaa;text-shadow:0 0 30px rgba(68,255,170,.6);
+    animation:swipeConfirm .4s ease forwards}
+  @keyframes swipeConfirm{0%{transform:translate(-50%,-50%) scale(1.3);opacity:1}
+    100%{transform:translate(-50%,-50%) scale(.8) translateY(-30px);opacity:0}}
 
   /* === GOLDEN NUMBER === */
   .key-btn.golden{border-color:rgba(255,215,0,.5);box-shadow:0 4px 0 rgba(0,0,0,.3),0 6px 12px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.08),0 0 15px rgba(255,215,0,.2);color:rgba(255,215,0,.9);text-shadow:0 0 10px rgba(255,215,0,.3),0 2px 4px rgba(0,0,0,.3)}
@@ -407,10 +415,8 @@
   <span class="message" id="message" style="position:static;font-size:16px"></span>
   <span class="combo-text" id="comboText" style="position:static;font-size:13px;color:#44ddff"></span>
 </div>
-<div class="bonus-area" id="bonusArea">
-  <button class="bonus-btn" id="bonusBtn" style="display:none" onclick="toggleBonus()">0</button>
-  <span class="bonus-label" id="bonusLabel"></span>
-</div>
+<svg class="swipe-line" id="swipeLine" width="0" height="0"></svg>
+<div class="swipe-preview" id="swipePreview"></div>
 <div class="bottom-area" id="keypadArea"><div class="keypad-row"><button class="key-btn" data-num="1">1</button><button class="key-btn" data-num="2">2</button><button class="key-btn" data-num="3">3</button></div><div class="keypad-row"><button class="key-btn" data-num="4">4</button><button class="key-btn" data-num="5">5</button><button class="key-btn" data-num="6">6</button></div><div class="keypad-row"><button class="key-btn" data-num="7">7</button><button class="key-btn" data-num="8">8</button><button class="key-btn" data-num="9">9</button></div></div>
 <div class="fever-overlay" id="feverOverlay"></div>
 <div class="fever-banner" id="feverBanner"><span class="fever-text">🔥 FEVER TIME 🔥</span></div>
@@ -516,8 +522,6 @@ function startGame(){
 
 function updateLives(){livesDisplay.textContent=Array(lives).fill('♥').join(' ')+(lives<3?' '+Array(3-lives).fill('♡').join(' '):'')}
 
-let bonusNum=0,bonusActive=false,bonusUsed=false;
-
 function nextRound(){
   if(demoStopping)return;
   const nextStage=stageCount+1;
@@ -532,28 +536,17 @@ function nextRound(){
   const maxU=Math.max(...usable);
   originalTarget=Math.floor(Math.random()*(cfg.max-cfg.min+1))+cfg.min;
 
-  // 보너스 숫자: 중급(11+) 이상에서 활성화
-  bonusActive=false;bonusUsed=false;
-  const bonusEl=$('bonusBtn');
-  if(nextStage>10){
-    bonusNum=Math.floor(Math.random()*9)+1;
-    bonusEl.textContent=bonusNum;bonusEl.className='bonus-btn';bonusEl.style.display='flex';
-  }else{
-    bonusNum=0;bonusEl.style.display='none';
-  }
   if(isReverse){currentValue=0;target=originalTarget;targetEl.textContent='0';targetEl.className='target-number reverse-color'}
   else{target=originalTarget;currentValue=0;targetEl.textContent=target;targetEl.className='target-number'}
   tapCount=0;
-  // minTaps: 보너스 사용 가능 시 최대 빼기값 = bonusNum*10+9
-  const maxSingle=maxU;
-  const maxWithBonus=(nextStage>10)?bonusNum*10+9:0;
-  if(maxWithBonus>0&&originalTarget>maxSingle){
-    // 보너스 1회 사용 + 나머지는 단일키로
-    const afterBonus=Math.max(0,originalTarget-maxWithBonus);
-    minTaps=1+Math.ceil(afterBonus/maxSingle);
-    if(originalTarget<=maxSingle)minTaps=1; // 단일로도 가능하면 1
+  // minTaps: 스와이프로 최대 99까지 가능 (9→9 = 99)
+  const maxSwipe=maxU*10+maxU; // e.g. 99
+  if(originalTarget>maxSwipe){
+    minTaps=1+Math.ceil((originalTarget-maxSwipe)/maxSwipe);
+  }else if(originalTarget>9){
+    minTaps=1; // 스와이프 한 번이면 됨
   }else{
-    minTaps=Math.ceil(originalTarget/maxSingle);
+    minTaps=1; // 탭 한 번
   }
   messageEl.className='message';
 
@@ -631,38 +624,16 @@ function endFever(){
   $('feverTimer').style.display='none';
 }
 
-function toggleBonus(){
-  if(!isPlaying||bonusUsed)return;
-  bonusActive=!bonusActive;
-  const bonusEl=$('bonusBtn');
-  const labelEl=$('bonusLabel');
-  if(bonusActive){
-    bonusEl.classList.add('active');
-    labelEl.textContent='× 10 + 키패드';
-    vibrate(20);
-  }else{
-    bonusEl.classList.remove('active');
-    labelEl.textContent='';
-  }
-}
-
 /* === PRESS KEY (shared by human + AI) === */
-function pressKey(num){
+/* actualNum: 실제 빼는 숫자 (스와이프 시 2자리, 탭 시 1자리) */
+function pressKey(num, actualNum){
   if(!isPlaying)return;if(forbiddenNums.includes(num))return;
-  // 보너스 활성 상태면 2자리 합체
-  let actualNum=num;
-  if(bonusActive&&!bonusUsed){
-    actualNum=bonusNum*10+num; // 보너스가 십의자리, 키패드가 일의자리
-    bonusUsed=true;bonusActive=false;
-    const bonusEl=$('bonusBtn');
-    bonusEl.classList.remove('active');bonusEl.classList.add('used');
-    $('bonusLabel').textContent='USED';
-  }
+  if(!actualNum) actualNum=num; // 일반 탭이면 num 그대로
   const btn=document.querySelector(`.key-btn[data-num="${num}"]`);if(!btn)return;
   const rect=btn.getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
   tapCount++;btn.classList.remove('pressed');void btn.offsetWidth;btn.classList.add('pressed');
   if(isDemoMode){btn.classList.add('demo-highlight');setTimeout(()=>btn.classList.remove('demo-highlight'),200)}
-  vibrate(bonusUsed?[40,20,40]:35);sfxTap(num);
+  vibrate(actualNum>9?[40,20,40]:35);sfxTap(num);
   lastTappedNum=num;
   if(settings.explode)spawnExplodeNumber(actualNum);if(settings.particle)spawnParticles(cx,cy,false);if(settings.flash)spawnFlash();spawnRipple(cx,cy);
 
@@ -680,12 +651,148 @@ function pressKey(num){
   }
 }
 
-buttons.forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    if(isDemoMode)return; // block human input during demo
-    pressKey(parseInt(btn.dataset.num));
-  });
-  btn.addEventListener('touchstart',()=>{},{passive:true});
+/* === SWIPE KEYPAD SYSTEM === */
+const keypadArea=$('keypadArea');
+const swipeLine=$('swipeLine');
+const swipePreview=$('swipePreview');
+let swipeActive=false;
+let swipePath=[]; // 스와이프 경로에 포함된 버튼들 [{num, cx, cy}]
+let swipeStarted=false;
+
+function getBtnFromPoint(x,y){
+  // elementFromPoint로 버튼 찾기
+  const el=document.elementFromPoint(x,y);
+  if(!el)return null;
+  const btn=el.closest('.key-btn');
+  if(!btn)return null;
+  const num=parseInt(btn.dataset.num);
+  if(forbiddenNums.includes(num))return null;
+  if(btn.classList.contains('disabled'))return null;
+  return{btn,num};
+}
+
+function addToSwipePath(info){
+  // 이미 경로에 있으면 무시, 최대 2개만
+  if(swipePath.length>=2)return;
+  if(swipePath.find(p=>p.num===info.num))return;
+  const rect=info.btn.getBoundingClientRect();
+  const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+  swipePath.push({num:info.num,btn:info.btn,cx,cy});
+  info.btn.classList.add('swipe-hover');
+  vibrate(15);
+  updateSwipeVisual();
+}
+
+function updateSwipeVisual(){
+  if(swipePath.length===0){
+    swipeLine.style.display='none';
+    swipePreview.classList.remove('show');
+    return;
+  }
+  if(swipePath.length===1){
+    swipeLine.style.display='none';
+    swipePreview.textContent=swipePath[0].num;
+    swipePreview.classList.add('show');
+    return;
+  }
+  // 2개: 라인 그리기 + 합친 숫자 보여주기
+  const p1=swipePath[0], p2=swipePath[1];
+  const combined=p1.num*10+p2.num;
+  swipePreview.textContent=combined;
+  swipePreview.classList.add('show');
+  // SVG 라인
+  const minX=Math.min(p1.cx,p2.cx)-10, minY=Math.min(p1.cy,p2.cy)-10;
+  const w=Math.abs(p2.cx-p1.cx)+20, h=Math.abs(p2.cy-p1.cy)+20;
+  swipeLine.style.display='block';
+  swipeLine.style.left=minX+'px';swipeLine.style.top=minY+'px';
+  swipeLine.setAttribute('width',w);swipeLine.setAttribute('height',h);
+  swipeLine.innerHTML=`<line x1="${p1.cx-minX}" y1="${p1.cy-minY}" x2="${p2.cx-minX}" y2="${p2.cy-minY}"
+    stroke="rgba(204,136,255,.6)" stroke-width="4" stroke-linecap="round"/>
+    <line x1="${p1.cx-minX}" y1="${p1.cy-minY}" x2="${p2.cx-minX}" y2="${p2.cy-minY}"
+    stroke="rgba(204,136,255,.2)" stroke-width="12" stroke-linecap="round"/>`;
+}
+
+function clearSwipeVisual(){
+  swipePath.forEach(p=>p.btn.classList.remove('swipe-hover'));
+  swipePath=[];
+  swipeLine.style.display='none';
+  swipePreview.classList.remove('show');
+}
+
+function executeSwipe(){
+  if(swipePath.length===0)return;
+  if(isDemoMode){clearSwipeVisual();return;}
+
+  if(swipePath.length===1){
+    // 단일 탭
+    const num=swipePath[0].num;
+    clearSwipeVisual();
+    pressKey(num);
+  }else{
+    // 2자리 스와이프
+    const tens=swipePath[0].num;
+    const ones=swipePath[1].num;
+    const combined=tens*10+ones;
+    // 확인 이펙트
+    const conf=document.createElement('div');
+    conf.className='swipe-confirm';conf.textContent=combined;
+    document.body.appendChild(conf);setTimeout(()=>conf.remove(),450);
+    clearSwipeVisual();
+    pressKey(ones, combined); // ones를 마지막 터치한 버튼으로 (golden 판정용)
+  }
+}
+
+// Touch events
+keypadArea.addEventListener('touchstart',(e)=>{
+  if(isDemoMode)return;
+  swipeActive=true;swipeStarted=true;
+  clearSwipeVisual();
+  const t=e.touches[0];
+  const info=getBtnFromPoint(t.clientX,t.clientY);
+  if(info)addToSwipePath(info);
+},{passive:true});
+
+keypadArea.addEventListener('touchmove',(e)=>{
+  if(!swipeActive||isDemoMode)return;
+  const t=e.touches[0];
+  const info=getBtnFromPoint(t.clientX,t.clientY);
+  if(info)addToSwipePath(info);
+},{passive:true});
+
+keypadArea.addEventListener('touchend',(e)=>{
+  if(!swipeActive||isDemoMode)return;
+  swipeActive=false;
+  executeSwipe();
+},{passive:true});
+
+keypadArea.addEventListener('touchcancel',()=>{
+  swipeActive=false;clearSwipeVisual();
+});
+
+// Mouse events (PC 테스트용)
+let mouseDown=false;
+keypadArea.addEventListener('mousedown',(e)=>{
+  if(isDemoMode)return;
+  mouseDown=true;swipeActive=true;
+  clearSwipeVisual();
+  const info=getBtnFromPoint(e.clientX,e.clientY);
+  if(info)addToSwipePath(info);
+});
+
+keypadArea.addEventListener('mousemove',(e)=>{
+  if(!mouseDown||!swipeActive||isDemoMode)return;
+  const info=getBtnFromPoint(e.clientX,e.clientY);
+  if(info)addToSwipePath(info);
+});
+
+keypadArea.addEventListener('mouseup',()=>{
+  if(!mouseDown)return;
+  mouseDown=false;swipeActive=false;
+  executeSwipe();
+});
+
+keypadArea.addEventListener('mouseleave',()=>{
+  if(mouseDown){mouseDown=false;swipeActive=false;executeSwipe();}
 });
 
 function handleSuccess(){
@@ -881,32 +988,57 @@ function updateHeartbeat(){
 function demoChooseNumber(){
   const usable=[1,2,3,4,5,6,7,8,9].filter(n=>!forbiddenNums.includes(n));
   let remaining=isReverse?(originalTarget-currentValue):target;
-  if(remaining<=0)return usable[0];
+  if(remaining<=0)return{num:usable[0]};
 
-  // Try to play smart (mostly GENIUS/GREAT) with occasional variety
+  // 2자리 스와이프 시도 (remaining >= 11)
+  if(remaining>=11&&Math.random()<0.6){
+    const tens=Math.min(Math.floor(remaining/10),9);
+    const ones=Math.min(remaining-tens*10,9);
+    if(usable.includes(tens)&&usable.includes(ones)&&tens!==ones){
+      const combined=tens*10+ones;
+      if(combined<=remaining)return{num:ones,actualNum:combined,swipe:true,tens,ones};
+    }
+    // 가장 큰 2자리 조합
+    for(let t=Math.min(9,Math.floor(remaining/10));t>=1;t--){
+      if(!usable.includes(t))continue;
+      for(let o=Math.min(9,remaining-t*10);o>=1;o--){
+        if(!usable.includes(o)||o===t)continue;
+        return{num:o,actualNum:t*10+o,swipe:true,tens:t,ones:o};
+      }
+    }
+  }
+
+  // 1자리 탭
   const exact=usable.filter(n=>n===remaining);
-  if(exact.length>0)return exact[0];
+  if(exact.length>0)return{num:exact[0]};
 
   const valid=usable.filter(n=>n<=remaining);
-  if(valid.length===0)return usable[Math.floor(Math.random()*usable.length)]; // will fail intentionally sometimes
+  if(valid.length===0)return{num:usable[Math.floor(Math.random()*usable.length)]};
 
-  // 70% chance pick optimal (biggest valid), 30% pick random valid for variety
-  if(Math.random()<0.7){
-    return Math.max(...valid);
-  }else{
-    return valid[Math.floor(Math.random()*valid.length)];
-  }
+  if(Math.random()<0.7) return{num:Math.max(...valid)};
+  return{num:valid[Math.floor(Math.random()*valid.length)]};
 }
 
 function scheduleDemoTap(){
   if(!isDemoMode||!isPlaying||demoStopping)return;
-  // Random delay between 350ms ~ 800ms for natural feel
   const delay=350+Math.random()*450;
   demoTimeout=setTimeout(()=>{
     if(!isDemoMode||!isPlaying||demoStopping)return;
-    const num=demoChooseNumber();
-    pressKey(num);
-    // Schedule next tap if game is still going
+    const choice=demoChooseNumber();
+    if(choice.swipe){
+      // 스와이프 시각 효과 시뮬레이션
+      const btn1=document.querySelector(`.key-btn[data-num="${choice.tens}"]`);
+      const btn2=document.querySelector(`.key-btn[data-num="${choice.ones}"]`);
+      if(btn1)btn1.classList.add('demo-highlight');
+      if(btn2)setTimeout(()=>btn2.classList.add('demo-highlight'),100);
+      setTimeout(()=>{
+        if(btn1)btn1.classList.remove('demo-highlight');
+        if(btn2)btn2.classList.remove('demo-highlight');
+      },300);
+      pressKey(choice.num, choice.actualNum);
+    }else{
+      pressKey(choice.num);
+    }
     if(isDemoMode&&isPlaying){
       const remaining=isReverse?(originalTarget-currentValue):target;
       if(remaining>0)scheduleDemoTap();
