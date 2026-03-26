@@ -487,20 +487,20 @@ function vibrate(ms){
 /* === 난이도: 초급(1~10) / 중급(11~20) / 고급(21~30) === */
 function getDifficulty(stage){
   /* ── 초급 1~10: 1자리 탭 + 2자리 스와이프 학습 ── */
-  if(stage<=3)  return{tier:'초급',color:'#44ffaa',min:3,max:15,timerSpeed:65,forbidCount:0,reverseChance:0};
-  if(stage<=6)  return{tier:'초급',color:'#44ffaa',min:10,max:35,timerSpeed:58,forbidCount:0,reverseChance:0};
-  if(stage<=10) return{tier:'초급',color:'#44ffaa',min:25,max:60,timerSpeed:52,forbidCount:1,reverseChance:0};
+  if(stage<=3)  return{tier:'초급',color:'#44ffaa',min:3,max:15,timerSpeed:52,forbidCount:0,reverseChance:0};
+  if(stage<=6)  return{tier:'초급',color:'#44ffaa',min:10,max:35,timerSpeed:46,forbidCount:0,reverseChance:0};
+  if(stage<=10) return{tier:'초급',color:'#44ffaa',min:25,max:60,timerSpeed:42,forbidCount:1,reverseChance:0};
   /* ── 중급 11~20: 2자리 스와이프 활용 + 리버스/금지 등장 ── */
-  if(stage<=13) return{tier:'중급',color:'#ffd700',min:50,max:99,timerSpeed:46,forbidCount:0,reverseChance:.1};
-  if(stage<=16) return{tier:'중급',color:'#ffd700',min:70,max:130,timerSpeed:42,forbidCount:1,reverseChance:.15};
-  if(stage<=20) return{tier:'중급',color:'#ffd700',min:90,max:180,timerSpeed:36,forbidCount:1,reverseChance:.2};
+  if(stage<=13) return{tier:'중급',color:'#ffd700',min:50,max:99,timerSpeed:37,forbidCount:0,reverseChance:.1};
+  if(stage<=16) return{tier:'중급',color:'#ffd700',min:70,max:130,timerSpeed:34,forbidCount:1,reverseChance:.15};
+  if(stage<=20) return{tier:'중급',color:'#ffd700',min:90,max:180,timerSpeed:29,forbidCount:1,reverseChance:.2};
   /* ── 고급 21~30: 3자리 스와이프 필수, 고난도 ── */
-  if(stage<=23) return{tier:'고급',color:'#ff44aa',min:150,max:300,timerSpeed:32,forbidCount:1,reverseChance:.2};
-  if(stage<=26) return{tier:'고급',color:'#ff44aa',min:250,max:450,timerSpeed:28,forbidCount:2,reverseChance:.25};
-  if(stage<=30) return{tier:'고급',color:'#ff44aa',min:350,max:600,timerSpeed:25,forbidCount:2,reverseChance:.3};
+  if(stage<=23) return{tier:'고급',color:'#ff44aa',min:150,max:300,timerSpeed:26,forbidCount:1,reverseChance:.2};
+  if(stage<=26) return{tier:'고급',color:'#ff44aa',min:250,max:450,timerSpeed:22,forbidCount:2,reverseChance:.25};
+  if(stage<=30) return{tier:'고급',color:'#ff44aa',min:350,max:600,timerSpeed:20,forbidCount:2,reverseChance:.3};
   /* ── 무한 31+: 점진적 상승, max 999 수렴 ── */
   const s=stage-30;
-  return{tier:'∞ 고급+',color:'#ff2244',min:Math.min(600+s*12,900),max:Math.min(700+s*15,999),timerSpeed:Math.max(18,25-Math.floor(s*.8)),forbidCount:Math.min(3,2+Math.floor(s/5)),reverseChance:Math.min(.4,.3+s*.01)};
+  return{tier:'∞ 고급+',color:'#ff2244',min:Math.min(600+s*12,900),max:Math.min(700+s*15,999),timerSpeed:Math.max(14,20-Math.floor(s*.7)),forbidCount:Math.min(3,2+Math.floor(s/5)),reverseChance:Math.min(.4,.3+s*.01)};
 }
 let prevTier='';
 
@@ -748,6 +748,31 @@ function getBtnFromPoint(x,y){
   return{btn,num};
 }
 
+/* === 대각선 스와이프 오입력 방지 (C: 중심근접 + 체류시간 혼합) === */
+let _swipeHoverBtn=null, _swipeHoverTime=0;
+const SWIPE_CENTER_RATIO=0.55; // 버튼 반경 55% 이내면 즉시 등록
+const SWIPE_DWELL_MS=35;       // 가장자리 35ms 체류 시 등록
+
+function getSwipeFiltered(x,y){
+  const info=getBtnFromPoint(x,y);
+  if(!info)return(_swipeHoverBtn=null,null);
+  const r=info.btn.getBoundingClientRect();
+  const cx=r.left+r.width/2, cy=r.top+r.height/2;
+  const dx=x-cx, dy=y-cy;
+  const dist=Math.sqrt(dx*dx+dy*dy);
+  const threshold=Math.min(r.width,r.height)/2*SWIPE_CENTER_RATIO;
+  // 중심 근접: 즉시 등록
+  if(dist<=threshold){_swipeHoverBtn=info.num;_swipeHoverTime=performance.now();return info;}
+  // 가장자리: 체류 시간 체크
+  if(_swipeHoverBtn===info.num){
+    if(performance.now()-_swipeHoverTime>=SWIPE_DWELL_MS)return info;
+    return null; // 아직 체류 부족
+  }
+  // 새 버튼 가장자리 진입: 타이머 시작
+  _swipeHoverBtn=info.num;_swipeHoverTime=performance.now();
+  return null;
+}
+
 function addToSwipePath(info){
   if(swipePath.length>=3)return; // 최대 3자리
   if(swipePath.find(p=>p.num===info.num))return;
@@ -784,6 +809,7 @@ function clearSwipeVisual(){
   swipePath.forEach(p=>p.btn.classList.remove('swipe-hover'));
   swipePath=[];
   swipePreview.classList.remove('show');
+  _swipeHoverBtn=null;_swipeHoverTime=0;
 }
 
 function executeSwipe(){
@@ -818,7 +844,7 @@ keypadArea.addEventListener('touchstart',(e)=>{
 keypadArea.addEventListener('touchmove',(e)=>{
   if(!swipeActive||isDemoMode)return;
   const t=e.touches[0];
-  const info=getBtnFromPoint(t.clientX,t.clientY);
+  const info=getSwipeFiltered(t.clientX,t.clientY);
   if(info)addToSwipePath(info);
 },{passive:true});
 
@@ -844,7 +870,7 @@ keypadArea.addEventListener('mousedown',(e)=>{
 
 keypadArea.addEventListener('mousemove',(e)=>{
   if(!mouseDown||!swipeActive||isDemoMode)return;
-  const info=getBtnFromPoint(e.clientX,e.clientY);
+  const info=getSwipeFiltered(e.clientX,e.clientY);
   if(info)addToSwipePath(info);
 });
 
