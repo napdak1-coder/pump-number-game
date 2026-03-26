@@ -486,20 +486,21 @@ function vibrate(ms){
 /* === 8단계 난이도 티어 (스테이지 기반) === */
 /* === 난이도: 초급(1~10) / 중급(11~20) / 고급(21~30) === */
 function getDifficulty(stage){
-  // 초급: 스테이지 1~10 | 숫자 3~49
+  /* ── 초급 1~10: 1자리 탭 + 2자리 스와이프 학습 ── */
   if(stage<=3)  return{tier:'초급',color:'#44ffaa',min:3,max:15,timerSpeed:65,forbidCount:0,reverseChance:0};
-  if(stage<=6)  return{tier:'초급',color:'#44ffaa',min:8,max:25,timerSpeed:58,forbidCount:0,reverseChance:0};
-  if(stage<=10) return{tier:'초급',color:'#44ffaa',min:15,max:49,timerSpeed:52,forbidCount:1,reverseChance:0};
-  // 중급: 스테이지 11~20 | 숫자 50~100
-  if(stage<=13) return{tier:'중급',color:'#ffd700',min:50,max:65,timerSpeed:46,forbidCount:0,reverseChance:.1};
-  if(stage<=16) return{tier:'중급',color:'#ffd700',min:55,max:80,timerSpeed:42,forbidCount:1,reverseChance:.15};
-  if(stage<=20) return{tier:'중급',color:'#ffd700',min:60,max:100,timerSpeed:36,forbidCount:1,reverseChance:.2};
-  // 고급: 스테이지 21~30 | 숫자 100~200
-  if(stage<=23) return{tier:'고급',color:'#ff44aa',min:100,max:130,timerSpeed:32,forbidCount:1,reverseChance:.2};
-  if(stage<=26) return{tier:'고급',color:'#ff44aa',min:120,max:160,timerSpeed:28,forbidCount:2,reverseChance:.25};
-  if(stage<=30) return{tier:'고급',color:'#ff44aa',min:150,max:200,timerSpeed:25,forbidCount:2,reverseChance:.3};
-  // 30 이후: 무한 모드 (고급+)
-  return{tier:'∞ 고급+',color:'#ff2244',min:150+Math.floor((stage-30)*5),max:200+Math.floor((stage-30)*8),timerSpeed:Math.max(18,25-Math.floor((stage-30)*1)),forbidCount:Math.min(3,2+Math.floor((stage-30)/5)),reverseChance:Math.min(.4,.3+(stage-30)*.01)};
+  if(stage<=6)  return{tier:'초급',color:'#44ffaa',min:10,max:35,timerSpeed:58,forbidCount:0,reverseChance:0};
+  if(stage<=10) return{tier:'초급',color:'#44ffaa',min:25,max:60,timerSpeed:52,forbidCount:1,reverseChance:0};
+  /* ── 중급 11~20: 2자리 스와이프 활용 + 리버스/금지 등장 ── */
+  if(stage<=13) return{tier:'중급',color:'#ffd700',min:50,max:99,timerSpeed:46,forbidCount:0,reverseChance:.1};
+  if(stage<=16) return{tier:'중급',color:'#ffd700',min:70,max:130,timerSpeed:42,forbidCount:1,reverseChance:.15};
+  if(stage<=20) return{tier:'중급',color:'#ffd700',min:90,max:180,timerSpeed:36,forbidCount:1,reverseChance:.2};
+  /* ── 고급 21~30: 3자리 스와이프 필수, 고난도 ── */
+  if(stage<=23) return{tier:'고급',color:'#ff44aa',min:150,max:300,timerSpeed:32,forbidCount:1,reverseChance:.2};
+  if(stage<=26) return{tier:'고급',color:'#ff44aa',min:250,max:450,timerSpeed:28,forbidCount:2,reverseChance:.25};
+  if(stage<=30) return{tier:'고급',color:'#ff44aa',min:350,max:600,timerSpeed:25,forbidCount:2,reverseChance:.3};
+  /* ── 무한 31+: 점진적 상승, max 999 수렴 ── */
+  const s=stage-30;
+  return{tier:'∞ 고급+',color:'#ff2244',min:Math.min(600+s*12,900),max:Math.min(700+s*15,999),timerSpeed:Math.max(18,25-Math.floor(s*.8)),forbidCount:Math.min(3,2+Math.floor(s/5)),reverseChance:Math.min(.4,.3+s*.01)};
 }
 let prevTier='';
 
@@ -550,12 +551,15 @@ function nextRound(){
   if(isReverse){currentValue=0;target=originalTarget;targetEl.textContent='0';targetEl.className='target-number reverse-color'}
   else{target=originalTarget;currentValue=0;displayTarget(target);targetEl.className='target-number'}
   tapCount=0;
-  // minTaps: 스와이프로 최대 99까지 가능 (9→9 = 99)
-  const maxSwipe=maxU*10+maxU; // e.g. 99
-  if(originalTarget>maxSwipe){
-    minTaps=1+Math.ceil((originalTarget-maxSwipe)/maxSwipe);
+  // minTaps: 스와이프로 최대 999까지 가능 (9→9→9 = 999)
+  const maxSwipe3=maxU*100+maxU*10+maxU; // e.g. 999
+  const maxSwipe2=maxU*10+maxU; // e.g. 99
+  if(originalTarget>maxSwipe3){
+    minTaps=1+Math.ceil((originalTarget-maxSwipe3)/maxSwipe3);
+  }else if(originalTarget>maxSwipe2){
+    minTaps=1; // 3자리 스와이프 한 번
   }else if(originalTarget>9){
-    minTaps=1; // 스와이프 한 번이면 됨
+    minTaps=1; // 2자리 스와이프 한 번
   }else{
     minTaps=1; // 탭 한 번
   }
@@ -745,34 +749,35 @@ function getBtnFromPoint(x,y){
 }
 
 function addToSwipePath(info){
-  if(swipePath.length>=2)return;
+  if(swipePath.length>=3)return; // 최대 3자리
   if(swipePath.find(p=>p.num===info.num))return;
   const rect=info.btn.getBoundingClientRect();
   const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
   swipePath.push({num:info.num,btn:info.btn,cx,cy});
   info.btn.classList.add('swipe-hover');
   vibrate(15);
-  // 에코잔상 즉시 스폰
   spawnFluidGhost(info.num, info.btn);
   updateSwipeVisual();
 }
 
+function getSwipeCombined(){
+  if(swipePath.length===1) return swipePath[0].num;
+  if(swipePath.length===2) return swipePath[0].num*10+swipePath[1].num;
+  if(swipePath.length===3) return swipePath[0].num*100+swipePath[1].num*10+swipePath[2].num;
+  return 0;
+}
 function updateSwipeVisual(){
   if(swipePath.length===0){
     swipePreview.classList.remove('show');
     return;
   }
-  if(swipePath.length===1){
-    swipePreview.textContent=swipePath[0].num;
-    swipePreview.classList.add('show');
-    return;
-  }
-  const p1=swipePath[0], p2=swipePath[1];
-  const combined=p1.num*10+p2.num;
-  swipePreview.textContent=combined;
+  swipePreview.textContent=getSwipeCombined();
   swipePreview.classList.add('show');
-  // 경로 잔상 도트
-  spawnTrailDots(p1.btn, p2.btn);
+  // 경로 잔상 도트 (마지막 2개 사이)
+  if(swipePath.length>=2){
+    const last=swipePath[swipePath.length-1], prev=swipePath[swipePath.length-2];
+    spawnTrailDots(prev.btn, last.btn);
+  }
 }
 
 function clearSwipeVisual(){
@@ -790,14 +795,13 @@ function executeSwipe(){
     clearSwipeVisual();
     pressKey(num);
   }else{
-    const tens=swipePath[0].num;
-    const ones=swipePath[1].num;
-    const combined=tens*10+ones;
+    const combined=getSwipeCombined();
+    const lastNum=swipePath[swipePath.length-1].num;
     const conf=document.createElement('div');
     conf.className='swipe-confirm';conf.textContent=combined;
     document.body.appendChild(conf);setTimeout(()=>conf.remove(),500);
     clearSwipeVisual();
-    pressKey(ones, combined);
+    pressKey(lastNum, combined);
   }
 }
 
@@ -1032,20 +1036,40 @@ function demoChooseNumber(){
   let remaining=isReverse?(originalTarget-currentValue):target;
   if(remaining<=0)return{num:usable[0]};
 
+  // 3자리 스와이프 시도 (remaining >= 100)
+  if(remaining>=100&&Math.random()<0.5){
+    const h=Math.min(Math.floor(remaining/100),9);
+    const t=Math.min(Math.floor((remaining-h*100)/10),9);
+    const o=Math.min(remaining-h*100-t*10,9);
+    if(o>=1&&usable.includes(h)&&usable.includes(t)&&usable.includes(o)&&h!==t&&h!==o&&t!==o){
+      const combined=h*100+t*10+o;
+      if(combined<=remaining)return{num:o,actualNum:combined,swipe:true,digits:[h,t,o]};
+    }
+    // 가장 큰 3자리 조합
+    for(let hh=Math.min(9,Math.floor(remaining/100));hh>=1;hh--){
+      if(!usable.includes(hh))continue;
+      for(let tt=Math.min(9,Math.floor((remaining-hh*100)/10));tt>=1;tt--){
+        if(!usable.includes(tt)||tt===hh)continue;
+        for(let oo=Math.min(9,remaining-hh*100-tt*10);oo>=1;oo--){
+          if(!usable.includes(oo)||oo===hh||oo===tt)continue;
+          return{num:oo,actualNum:hh*100+tt*10+oo,swipe:true,digits:[hh,tt,oo]};
+        }
+      }
+    }
+  }
   // 2자리 스와이프 시도 (remaining >= 11)
   if(remaining>=11&&Math.random()<0.6){
     const tens=Math.min(Math.floor(remaining/10),9);
     const ones=Math.min(remaining-tens*10,9);
     if(usable.includes(tens)&&usable.includes(ones)&&tens!==ones){
       const combined=tens*10+ones;
-      if(combined<=remaining)return{num:ones,actualNum:combined,swipe:true,tens,ones};
+      if(combined<=remaining)return{num:ones,actualNum:combined,swipe:true,digits:[tens,ones]};
     }
-    // 가장 큰 2자리 조합
     for(let t=Math.min(9,Math.floor(remaining/10));t>=1;t--){
       if(!usable.includes(t))continue;
       for(let o=Math.min(9,remaining-t*10);o>=1;o--){
         if(!usable.includes(o)||o===t)continue;
-        return{num:o,actualNum:t*10+o,swipe:true,tens:t,ones:o};
+        return{num:o,actualNum:t*10+o,swipe:true,digits:[t,o]};
       }
     }
   }
@@ -1068,27 +1092,27 @@ function scheduleDemoTap(){
     if(!isDemoMode||!isPlaying||demoStopping)return;
     const choice=demoChooseNumber();
     if(choice.swipe){
-      // 스와이프 에코잔상 시뮬레이션
-      const btn1=document.querySelector(`.key-btn[data-num="${choice.tens}"]`);
-      const btn2=document.querySelector(`.key-btn[data-num="${choice.ones}"]`);
-      if(btn1&&btn2){
-        btn1.classList.add('swipe-hover');
-        spawnFluidGhost(choice.tens, btn1);
+      // 스와이프 에코잔상 시뮬레이션 (2자리/3자리 공통)
+      const btns=choice.digits.map(d=>document.querySelector(`.key-btn[data-num="${d}"]`));
+      if(btns.every(b=>b)){
+        btns.forEach((btn,i)=>{
+          setTimeout(()=>{
+            btn.classList.add('swipe-hover');
+            spawnFluidGhost(choice.digits[i], btn);
+            if(i>0) spawnTrailDots(btns[i-1], btn);
+            if(i===btns.length-1){
+              swipePreview.textContent=choice.actualNum;
+              swipePreview.classList.add('show');
+            }
+          },i*110);
+        });
         setTimeout(()=>{
-          btn2.classList.add('swipe-hover');
-          spawnFluidGhost(choice.ones, btn2);
-          spawnTrailDots(btn1, btn2);
-          swipePreview.textContent=choice.actualNum;
-          swipePreview.classList.add('show');
-        },120);
-        setTimeout(()=>{
-          btn1.classList.remove('swipe-hover');
-          btn2.classList.remove('swipe-hover');
+          btns.forEach(b=>b.classList.remove('swipe-hover'));
           swipePreview.classList.remove('show');
           const conf=document.createElement('div');
           conf.className='swipe-confirm';conf.textContent=choice.actualNum;
           document.body.appendChild(conf);setTimeout(()=>conf.remove(),500);
-        },380);
+        },btns.length*110+200);
       }
       pressKey(choice.num, choice.actualNum);
     }else{
