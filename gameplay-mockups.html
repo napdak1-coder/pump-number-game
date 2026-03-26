@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>게임플레이 목업 v2 — 강아지+네온숫자+반짝이 10종</title>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DotGothic16','Courier New',monospace;background:#060e18;color:#c0e8ff;overflow-x:hidden;image-rendering:pixelated}
+.nav{position:fixed;top:0;left:0;right:0;z-index:999;background:#040a14;border-bottom:2px solid #143040;display:flex;gap:3px;padding:5px 6px;overflow-x:auto;white-space:nowrap}
+.nav button{padding:5px 9px;border:2px solid #143040;background:#081828;color:#4888a8;font-size:9px;font-weight:700;cursor:pointer;flex-shrink:0;font-family:'DotGothic16',monospace}
+.nav button.active{background:#143040;border-color:#2880a0;color:#70d0e8;box-shadow:0 0 8px rgba(40,128,160,.3)}
+.wrap{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:56px 10px 20px}
+.wrap.active{display:flex}
+.phone{width:340px;height:680px;border-radius:24px;overflow:hidden;position:relative;border:3px solid #143848;box-shadow:0 0 30px rgba(30,90,120,.12)}
+.phone-inner{width:100%;height:100%;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.lbl{margin-top:8px;font-size:10px;color:rgba(112,208,232,.3);text-align:center;letter-spacing:1px}
+.desc{margin-top:4px;font-size:11px;color:rgba(112,208,232,.4);text-align:center;max-width:340px;line-height:1.5;margin-bottom:16px}
+
+.hud{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 8px;flex-shrink:0}
+.hud-col{display:flex;flex-direction:column}
+.hud-col.left{align-items:flex-start}
+.hud-col.center{align-items:center}
+.hud-col.right{align-items:flex-end}
+.hud-lbl{font-size:10px;letter-spacing:2px;margin-bottom:2px}
+.hud-val{font-size:26px;font-weight:900}
+.hud-tier{font-size:13px;letter-spacing:2px}
+.hud-lives{font-size:14px;letter-spacing:3px;margin-top:2px}
+.target-zone{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.mode-badge{font-size:10px;letter-spacing:3px;padding:3px 10px;margin-bottom:4px;font-weight:900}
+.target-num{font-weight:900;letter-spacing:2px}
+.timer-wrap{width:70px;height:70px;position:relative;margin:6px auto 2px}
+.timer-svg{position:absolute;top:0;left:0;width:70px;height:70px;transform:rotate(-90deg)}
+.ct-bg{fill:none;stroke-width:5}
+.ct-prog{fill:none;stroke-width:5;stroke-linecap:square}
+.dog-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+.dog-center canvas{width:28px;height:28px;image-rendering:pixelated}
+.speed-mult{font-size:10px;letter-spacing:2px;margin-top:2px}
+.msg-slot{text-align:center;padding:4px;flex-shrink:0;min-height:24px}
+.keypad{padding:4px 10px 16px;flex-shrink:0}
+.keypad-row{display:flex;gap:6px;justify-content:center;margin-bottom:6px}
+.key-btn{width:90px;height:56px;font-size:28px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;border-radius:0}
+
+/* 강아지 관련 */
+.dog-area{display:flex;align-items:center;gap:8px;margin-bottom:6px;z-index:2}
+.bubble{background:rgba(255,200,60,.08);border:2px solid rgba(255,200,60,.15);padding:5px 10px;position:relative;border-radius:0;font-size:11px}
+.bubble::before{content:'';position:absolute;left:-6px;top:50%;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:6px solid rgba(255,200,60,.15);transform:translateY(-50%)}
+
+/* 애니메이션 */
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
+@keyframes pixelRain{0%{transform:translateY(-10px);opacity:0}50%{opacity:.12}100%{transform:translateY(700px);opacity:0}}
+@keyframes glowPulse{0%,100%{text-shadow:0 0 20px rgba(255,215,0,.3),4px 4px 0 #705808}50%{text-shadow:0 0 50px rgba(255,215,0,.6),4px 4px 0 #705808,0 0 80px rgba(255,180,0,.3)}}
+@keyframes floatBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes starTwinkle{0%,100%{opacity:.2;transform:scale(.5) rotate(0)}50%{opacity:1;transform:scale(1.2) rotate(180deg)}}
+@keyframes hexFloat{0%{transform:translateY(0) rotate(0);opacity:.08}50%{opacity:.15}100%{transform:translateY(-600px) rotate(360deg);opacity:0}}
+@keyframes ringPulse{0%{transform:scale(.5);opacity:.3}50%{opacity:.08}100%{transform:scale(2.5);opacity:0}}
+@keyframes diamondDrift{0%{transform:translateY(700px) rotate(45deg);opacity:0}30%{opacity:.12}70%{opacity:.08}100%{transform:translateY(-20px) rotate(45deg);opacity:0}}
+@keyframes crossBlink{0%,100%{opacity:0;transform:scale(0) rotate(0)}50%{opacity:.25;transform:scale(1) rotate(90deg)}}
+@keyframes orbitDot{0%{transform:rotate(0) translateX(30px) scale(1)}50%{transform:rotate(180deg) translateX(30px) scale(1.5)}100%{transform:rotate(360deg) translateX(30px) scale(1)}}
+@keyframes gridPulseWave{0%,100%{opacity:.03}50%{opacity:.1}}
+@keyframes dustFloat{0%{transform:translate(0,0);opacity:0}20%{opacity:.15}80%{opacity:.1}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
+@keyframes waveRipple{0%{box-shadow:0 0 0 0 rgba(255,200,60,.1)}50%{box-shadow:0 0 0 15px rgba(255,200,60,0)}100%{box-shadow:0 0 0 0 rgba(255,200,60,0)}}
+@keyframes neonFlicker{0%,100%{opacity:1}50%{opacity:.7}52%{opacity:1}70%{opacity:.85}72%{opacity:1}}
+</style>
+</head>
+<body>
+<div class="nav" id="nav"></div>
+
+<script>
+const MOCKUPS=10;
+const nav=document.getElementById('nav');
+for(let i=1;i<=MOCKUPS;i++){
+  const btn=document.createElement('button');
+  btn.textContent='#'+i;
+  btn.onclick=()=>{
+    document.querySelectorAll('.wrap').forEach(w=>w.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+    document.getElementById('m'+i).classList.add('active');
+    btn.classList.add('active');
+    initMockup(i);
+  };
+  nav.appendChild(btn);
+}
+
+/* 픽셀 강아지 */
+function drawPixelDog(canvas,bodyColor,earColor,cheekColor,armUp){
+  const W=14,H=16;canvas.width=W;canvas.height=H;
+  canvas.style.imageRendering='pixelated';
+  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;
+  function px(x,y,c){ctx.fillStyle=c;ctx.fillRect(x,y,1,1)}
+  const O='#333',W2='#fff';
+  px(2,0,O);px(3,0,O);px(10,0,O);px(11,0,O);
+  px(1,1,O);px(2,1,earColor);px(3,1,earColor);px(4,1,O);px(9,1,O);px(10,1,earColor);px(11,1,earColor);px(12,1,O);
+  px(1,2,O);px(2,2,earColor);px(3,2,earColor);px(4,2,O);px(9,2,O);px(10,2,earColor);px(11,2,earColor);px(12,2,O);
+  for(let x=3;x<=10;x++)px(x,3,O);
+  px(2,4,O);for(let x=3;x<=10;x++)px(x,4,bodyColor);px(11,4,O);
+  px(2,5,O);for(let x=3;x<=10;x++)px(x,5,bodyColor);px(11,5,O);
+  px(4,5,W2);px(5,5,O);px(8,5,W2);px(9,5,O);
+  px(2,6,O);for(let x=3;x<=10;x++)px(x,6,bodyColor);px(11,6,O);
+  px(6,6,O);px(7,6,O);px(6,7,bodyColor);px(7,7,bodyColor);
+  px(3,6,cheekColor);px(10,6,cheekColor);
+  px(2,7,O);for(let x=3;x<=10;x++)px(x,7,bodyColor);px(11,7,O);
+  for(let y=8;y<=11;y++){px(3,y,O);for(let x=4;x<=9;x++)px(x,y,bodyColor);px(10,y,O)}
+  if(armUp){px(2,8,O);px(3,8,bodyColor);px(3,7,O);px(2,7,bodyColor);px(10,8,bodyColor);px(11,8,O);px(10,7,O);px(11,7,bodyColor)}
+  else{px(3,9,O);px(2,10,O);px(10,9,O);px(11,10,O)}
+  px(4,12,O);px(5,12,O);px(8,12,O);px(9,12,O);
+  px(3,13,O);px(4,13,bodyColor);px(5,13,O);px(8,13,O);px(9,13,bodyColor);px(10,13,O);
+}
+
+/* 메롱 얼굴 */
+function drawTauntFace(canvas,style,mainColor){
+  const W=14,H=14;canvas.width=W;canvas.height=H;
+  canvas.style.imageRendering='pixelated';
+  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;
+  function px(x,y,c){ctx.fillStyle=c;ctx.fillRect(x,y,1,1)}
+  const O='#333',W2='#fff';const s=parseInt(style)%5;const fc=mainColor;
+  for(let x=4;x<=9;x++)px(x,0,O);
+  px(3,1,O);for(let x=4;x<=9;x++)px(x,1,fc);px(10,1,O);
+  for(let y=2;y<=9;y++){px(2,y,O);for(let x=3;x<=10;x++)px(x,y,fc);px(11,y,O)}
+  px(3,10,O);for(let x=4;x<=9;x++)px(x,10,fc);px(10,10,O);
+  for(let x=4;x<=9;x++)px(x,11,O);
+  if(s===0){
+    ctx.clearRect(0,0,W,H);
+    for(let x=4;x<=9;x++)px(x,0,O);px(3,1,O);for(let x=4;x<=9;x++)px(x,1,fc);px(10,1,O);
+    for(let y=2;y<=9;y++){px(2,y,O);for(let x=3;x<=10;x++)px(x,y,fc);px(11,y,O)}
+    px(3,10,O);for(let x=4;x<=9;x++)px(x,10,fc);px(10,10,O);for(let x=4;x<=9;x++)px(x,11,O);
+    px(4,4,O);px(5,4,O);px(6,4,O);px(8,3,O);px(9,3,O);px(8,4,W2);px(9,4,O);px(8,5,O);px(9,5,O);
+    px(5,7,O);px(6,7,O);px(7,7,O);px(8,7,O);px(5,8,O);px(6,8,'#ff6b6b');px(7,8,'#ff6b6b');px(8,8,O);
+    px(6,9,'#ff6b6b');px(7,9,'#ff6b6b');px(6,10,O);px(7,10,O);
+  }else if(s===1){
+    px(4,4,O);px(5,4,O);px(6,4,O);px(8,4,O);px(9,4,O);px(10,4,O);
+    px(3,5,'#ff9090');px(10,5,'#ff9090');
+    px(5,7,O);px(6,7,O);px(7,7,O);px(8,7,O);px(9,7,O);
+    px(6,8,O);px(7,8,'#ff5555');px(8,8,O);px(7,9,'#ff5555');px(7,10,'#ff5555');px(7,11,O);
+  }else if(s===2){
+    px(4,3,O);px(6,3,O);px(5,4,O);px(4,5,O);px(6,5,O);
+    px(8,3,O);px(10,3,O);px(9,4,O);px(8,5,O);px(10,5,O);
+    px(5,7,O);px(6,7,O);px(7,7,O);px(8,7,O);px(9,7,O);
+    px(6,8,'#ff6b6b');px(7,8,'#ff6b6b');px(8,8,'#ff6b6b');
+    px(6,9,O);px(7,9,'#ff4040');px(8,9,O);px(7,10,O);
+  }else if(s===3){
+    px(4,3,O);px(6,3,O);px(5,3,O);px(4,4,O);px(6,4,O);
+    px(8,3,O);px(10,3,O);px(9,3,O);px(8,4,O);px(10,4,O);
+    px(3,5,'#ffb0b0');px(10,5,'#ffb0b0');
+    px(5,7,O);px(6,7,O);px(7,7,O);px(8,7,O);px(6,8,'#ff7070');px(7,8,'#ff7070');
+    px(5,9,O);px(6,9,'#ff5050');px(7,9,O);
+  }else{
+    px(4,3,O);px(5,3,O);px(4,4,W2);px(5,4,O);px(8,3,O);px(9,3,O);px(8,4,W2);px(9,4,O);
+    px(5,7,O);px(6,7,O);px(7,7,O);px(8,7,O);px(9,6,O);
+    px(6,8,'#ff6b6b');px(7,8,'#ff6b6b');px(6,9,O);px(7,9,O);
+  }
+}
+
+const MIX=['#ffd040','#ff8060','#60e880','#60d0e0','#ff80c0'];
+
+/* 배경 이펙트 함수들 */
+
+// 1. 기본 반짝이 (사각형)
+function fxSparkle(el,n,colors){
+  colors=colors||['#ffd700'];
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;width:${3+Math.random()*3}px;height:${3+Math.random()*3}px;background:${colors[i%colors.length]};opacity:0;left:${5+Math.random()*90}%;top:${5+Math.random()*90}%;animation:sparkle ${1+Math.random()*2}s ease ${Math.random()*3}s infinite;pointer-events:none;z-index:0;border-radius:0`;
+    el.appendChild(d);
+  }
+}
+
+// 2. 픽셀비 (위→아래)
+function fxPixelRain(el,n,colors){
+  colors=colors||MIX;
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;width:3px;height:3px;background:${colors[i%colors.length]};opacity:0;left:${Math.random()*100}%;top:-5%;animation:pixelRain ${3+Math.random()*4}s linear ${Math.random()*4}s infinite;pointer-events:none;z-index:0`;
+    el.appendChild(d);
+  }
+}
+
+// 3. 별 반짝임 (회전 + 스케일)
+function fxStarTwinkle(el,n,colors){
+  colors=colors||['#ffd700','#ffe066','#ffb830'];
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');
+    const sz=4+Math.random()*6;
+    d.textContent='✦';
+    d.style.cssText=`position:absolute;font-size:${sz}px;color:${colors[i%colors.length]};opacity:.2;left:${5+Math.random()*90}%;top:${5+Math.random()*90}%;animation:starTwinkle ${2+Math.random()*3}s ease ${Math.random()*4}s infinite;pointer-events:none;z-index:0;line-height:1`;
+    el.appendChild(d);
+  }
+}
+
+// 4. 떠다니는 육각형
+function fxHexFloat(el,n,colors){
+  colors=colors||['rgba(255,200,60,.1)','rgba(255,160,40,.08)','rgba(255,220,80,.06)'];
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');
+    const sz=10+Math.random()*20;
+    d.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;border:1px solid ${colors[i%colors.length]};clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);left:${Math.random()*100}%;bottom:-30px;animation:hexFloat ${8+Math.random()*10}s linear ${Math.random()*6}s infinite;pointer-events:none;z-index:0`;
+    el.appendChild(d);
+  }
+}
+
+// 5. 링 펄스 (퍼져나가는 원)
+function fxRingPulse(el,n,color){
+  color=color||'rgba(255,200,60,.08)';
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;width:60px;height:60px;border-radius:50%;border:1px solid ${color};left:${10+Math.random()*80}%;top:${10+Math.random()*80}%;animation:ringPulse ${3+Math.random()*4}s ease ${Math.random()*5}s infinite;pointer-events:none;z-index:0;transform:translate(-50%,-50%)`;
+    el.appendChild(d);
+  }
+}
+
+// 6. 다이아몬드 떠오르기 (아래→위)
+function fxDiamond(el,n,colors){
+  colors=colors||['rgba(255,215,0,.1)','rgba(255,180,60,.08)','rgba(96,216,224,.06)'];
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');
+    const sz=4+Math.random()*8;
+    d.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;background:${colors[i%colors.length]};left:${Math.random()*100}%;bottom:-10px;animation:diamondDrift ${6+Math.random()*8}s linear ${Math.random()*5}s infinite;pointer-events:none;z-index:0`;
+    el.appendChild(d);
+  }
+}
+
+// 7. 십자 깜빡
+function fxCrossBlink(el,n,colors){
+  colors=colors||['#ffd040','#ff8060','#60e880'];
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');
+    d.textContent='+';
+    d.style.cssText=`position:absolute;font-size:${8+Math.random()*12}px;color:${colors[i%colors.length]};opacity:0;left:${5+Math.random()*90}%;top:${5+Math.random()*90}%;animation:crossBlink ${2+Math.random()*3}s ease ${Math.random()*4}s infinite;pointer-events:none;z-index:0;font-weight:900;line-height:1`;
+    el.appendChild(d);
+  }
+}
+
+// 8. 궤도 점 (중앙 기준 회전)
+function fxOrbitDots(el,n,colors){
+  colors=colors||['#ffd700','#ff8060','#60e880','#60d0e0','#ff80c0'];
+  const cx=170,cy=300;
+  for(let i=0;i<n;i++){
+    const wrapper=document.createElement('div');
+    const sz=3+Math.random()*4;
+    wrapper.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;left:${cx}px;top:${cy}px;animation:orbitDot ${4+Math.random()*6}s linear ${i*.5}s infinite;pointer-events:none;z-index:0`;
+    const dot=document.createElement('div');
+    dot.style.cssText=`width:100%;height:100%;background:${colors[i%colors.length]};border-radius:0;opacity:.2`;
+    wrapper.appendChild(dot);
+    el.appendChild(wrapper);
+  }
+}
+
+// 9. 먼지 파티클 (랜덤 방향)
+function fxDust(el,n,colors){
+  colors=colors||['rgba(255,200,60,.15)','rgba(255,180,80,.1)'];
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');
+    const sz=2+Math.random()*3;
+    const dx=(Math.random()-.5)*150;
+    const dy=(Math.random()-.5)*150;
+    d.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;background:${colors[i%colors.length]};left:${Math.random()*100}%;top:${Math.random()*100}%;--dx:${dx}px;--dy:${dy}px;animation:dustFloat ${4+Math.random()*6}s ease ${Math.random()*4}s infinite;pointer-events:none;z-index:0;border-radius:0`;
+    el.appendChild(d);
+  }
+}
+
+// 10. 웨이브 리플 (중앙에서 퍼짐)
+function fxWaveRipple(el,n){
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;width:4px;height:4px;background:rgba(255,200,60,.1);left:${20+Math.random()*60}%;top:${20+Math.random()*60}%;animation:waveRipple ${2+Math.random()*3}s ease ${Math.random()*4}s infinite;pointer-events:none;z-index:0;border-radius:0`;
+    el.appendChild(d);
+  }
+}
+
+/* SVG 원형 타이머 */
+function timerSVG(pct,danger){
+  const circ=2*Math.PI*34;const off=circ*(1-pct/100);
+  const strokeColor=danger?'#e04040':'url(#ctGrad)';
+  return `<div class="timer-wrap">
+    <svg class="timer-svg" viewBox="0 0 80 80">
+      <defs><linearGradient id="ctGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#2898a0"/><stop offset="100%" stop-color="#50e880"/></linearGradient></defs>
+      <circle class="ct-bg" cx="40" cy="40" r="34" stroke="#143838"/>
+      <circle class="ct-prog" cx="40" cy="40" r="34" stroke="${strokeColor}" stroke-dasharray="${circ}" stroke-dashoffset="${off}" ${danger?'style="animation:pulse .4s infinite"':''}/>
+    </svg>
+    <div class="dog-center"><canvas class="dog-cv" width="14" height="16"></canvas></div>
+  </div>`;
+}
+
+/* 키패드 */
+function keypadHTML(style){
+  const rows=[[1,2,3],[4,5,6],[7,8,9]];
+  let html='<div class="keypad">';
+  rows.forEach(row=>{
+    html+='<div class="keypad-row">';
+    row.forEach(n=>{html+=`<button class="key-btn" style="${style}">${n}</button>`});
+    html+='</div>';
+  });
+  html+='</div>';
+  return html;
+}
+
+/* 강아지 + 말풍선 */
+function dogBubble(msg,dogSize,dogAnim){
+  dogSize=dogSize||56;dogAnim=dogAnim||'bob 1.2s ease infinite';
+  return `<div class="dog-area">
+    <canvas class="dog-cv" width="14" height="16" style="width:${dogSize}px;height:${Math.round(dogSize*16/14)}px;image-rendering:pixelated;animation:${dogAnim}"></canvas>
+    <div class="bubble" style="color:#ffd700">${msg}</div>
+  </div>`;
+}
+
+const bgGrid=`background:linear-gradient(rgba(255,200,60,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,200,60,.02) 1px,transparent 1px),linear-gradient(135deg,#0a0e18 0%,#080a10 100%);background-size:8px 8px,8px 8px,auto`;
+const bgDots=`background:radial-gradient(circle,rgba(255,200,60,.03) 1px,transparent 1px),linear-gradient(135deg,#0a1418 0%,#081018 50%,#060c10 100%);background-size:6px 6px,auto`;
+const bgScan=`background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,220,100,.015) 2px,rgba(255,220,100,.015) 3px),radial-gradient(circle,rgba(255,200,60,.03) 1px,transparent 1px),linear-gradient(135deg,#0c1810 0%,#081410 50%,#060e0a 100%);background-size:auto,5px 5px,auto`;
+const bgCheck=`background:repeating-conic-gradient(rgba(255,210,80,.02) 0% 25%,transparent 0% 50%) 0 0/10px 10px,linear-gradient(135deg,#100c08 0%,#0c0a06 100%)`;
+
+const mockupInits={};
+
+function initMockup(n){
+  const w=document.getElementById('m'+n);if(!w)return;
+  w.querySelectorAll('.dog-cv').forEach(c=>drawPixelDog(c,'#f9a870','#e8e0d8','#ffb0b0',true));
+  w.querySelectorAll('.face-cv').forEach(c=>drawTauntFace(c,c.dataset.style||'0',c.dataset.color||'#ffd040'));
+  if(mockupInits[n])mockupInits[n](w);
+}
+
+function createAll(){
+const body=document.body;
+
+/* ============================================
+   #1: 반짝이 비 — 골드 스파클 + 픽셀비
+   강아지 + 네온 숫자 + 반짝이+픽셀비 동시
+   ============================================ */
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m1">
+  <div class="phone"><div class="phone-inner" id="m1inner" style="${bgGrid}">
+    <div class="hud" style="background:rgba(255,200,60,.03);border-bottom:2px solid rgba(255,200,60,.08)">
+      <div class="hud-col left">
+        <div class="hud-lbl" style="color:rgba(255,200,60,.35)">점 수</div>
+        <div class="hud-val" style="color:#ffd700;text-shadow:0 0 15px rgba(255,215,0,.4),3px 3px 0 #604800">1,250</div>
+      </div>
+      <div class="hud-col center">
+        <div class="hud-tier" style="color:#daa520">중급 12/30</div>
+        <div class="hud-lives" style="color:rgba(255,80,80,.5)">♥ ♥ ♥</div>
+      </div>
+      <div class="hud-col right">
+        <div class="hud-lbl" style="color:rgba(255,200,60,.35)">콤 보</div>
+        <div class="hud-val" style="color:#ffa830;text-shadow:0 0 10px rgba(255,168,48,.3)">5</div>
+      </div>
+    </div>
+    <div class="target-zone">
+      ${dogBubble('화이팅!',52)}
+      <div class="mode-badge" style="color:rgba(255,200,60,.4);border:1px solid rgba(255,200,60,.12);background:rgba(255,200,60,.03)">▶ 목 표</div>
+      <div class="target-num" style="font-size:88px;color:#ffe066;text-shadow:0 0 50px rgba(255,224,102,.5),5px 5px 0 #806010,0 0 25px rgba(255,180,0,.3)">23</div>
+      ${timerSVG(68,false)}
+      <div class="speed-mult" style="color:rgba(255,200,60,.25)">x1.2</div>
+    </div>
+    <div class="msg-slot"><span style="font-size:16px;color:#ffd700;text-shadow:0 0 10px rgba(255,215,0,.4)">천재! +300</span></div>
+    ${keypadHTML('background:rgba(255,200,60,.06);border:3px solid rgba(255,200,60,.15);color:#ffd700;font-family:DotGothic16,monospace;box-shadow:4px 4px 0 rgba(100,70,0,.2)')}
+  </div></div>
+  <div class="lbl">① 반짝이 비</div>
+  <div class="desc">골드 스파클 + 픽셀비 · 강아지 말풍선 · 네온 글로우 숫자</div>
+</div>`);
+mockupInits[1]=(w)=>{const el=w.querySelector('#m1inner');fxSparkle(el,15,['#ffd700','#ffe066','#ffcc00']);fxPixelRain(el,20,['#ffd040','#ffb830','#ffe060','#f0c030','#ffc848'])};
+
+/* #2: 별빛 우주 — 별 트윙클 + 궤도 점 */
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m2">
+  <div class="phone"><div class="phone-inner" id="m2inner" style="${bgDots}">
+    <div class="hud" style="background:rgba(255,200,60,.04);border-bottom:3px solid rgba(255,200,60,.12)">
+      <div class="hud-col left">
+        <div class="hud-lbl" style="color:rgba(255,180,60,.3)">점 수</div>
+        <div class="hud-val" style="color:#ffcc00;text-shadow:0 0 20px rgba(255,204,0,.5),3px 3px 0 #604800">3,780</div>
+      </div>
+      <div class="hud-col center">
+        <div class="hud-tier" style="color:#e8a820;text-shadow:0 0 8px rgba(232,168,32,.3)">고급 20/30</div>
+        <div class="hud-lives" style="color:rgba(255,60,60,.6)">♥ ♥ ♡</div>
+      </div>
+      <div class="hud-col right">
+        <div class="hud-lbl" style="color:rgba(255,180,60,.3)">콤 보</div>
+        <div class="hud-val" style="color:#ff8800;text-shadow:0 0 15px rgba(255,136,0,.5),3px 3px 0 #603000">8</div>
+      </div>
+    </div>
+    <div class="target-zone">
+      ${dogBubble('대단해!',48,'bob 1s ease infinite')}
+      <div class="mode-badge" style="color:#fbbf24;background:rgba(251,191,36,.08);border:2px solid rgba(251,191,36,.2)">★ 리 버 스</div>
+      <div class="target-num" style="font-size:84px;color:#ffd040;text-shadow:0 0 60px rgba(255,208,64,.6),5px 5px 0 #503800;animation:glowPulse 2s ease infinite">-15</div>
+      ${timerSVG(35,false)}
+      <div class="speed-mult" style="color:#ffa830">x2.0 🔥</div>
+    </div>
+    <div class="msg-slot"><span style="font-size:14px;color:#ffa830;text-shadow:0 0 8px rgba(255,168,48,.4)">콤보 x8! 연속 정답!</span></div>
+    ${keypadHTML('background:rgba(255,200,60,.08);border:3px solid rgba(255,200,60,.2);color:#ffe066;font-family:DotGothic16,monospace;box-shadow:5px 5px 0 rgba(80,56,0,.3);text-shadow:0 0 6px rgba(255,224,102,.3)')}
+  </div></div>
+  <div class="lbl">② 별빛 우주</div>
+  <div class="desc">별 트윙클 + 궤도 점 · 리버스 모드 · 글로우 펄스 숫자</div>
+</div>`);
+mockupInits[2]=(w)=>{const el=w.querySelector('#m2inner');fxStarTwinkle(el,20,['#ffd700','#ffe066','#ffb830','#fff']);fxOrbitDots(el,6)};
+
+/* #3: 다이아몬드 라이즈 — 다이아 떠오르기 + 십자 깜빡 */
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m3">
+  <div class="phone"><div class="phone-inner" id="m3inner" style="${bgScan}">
+    <div class="hud" style="background:rgba(255,200,60,.03);border-bottom:2px solid rgba(255,200,60,.08)">
+      <div class="hud-col left">
+        <div class="hud-lbl" style="color:rgba(255,200,60,.3)">점 수</div>
+        <div class="hud-val" style="color:#ffd700;text-shadow:0 0 12px rgba(255,215,0,.3),2px 2px 0 #503800">850</div>
+      </div>
+      <div class="hud-col center">
+        <div class="hud-tier" style="color:#c89820">초급 5/30</div>
+        <div class="hud-lives" style="color:rgba(255,80,80,.5)">♥ ♥ ♥</div>
+      </div>
+      <div class="hud-col right">
+        <div class="hud-lbl" style="color:rgba(255,200,60,.3)">콤 보</div>
+        <div class="hud-val" style="color:#ff9830;text-shadow:0 0 8px rgba(255,152,48,.3)">3</div>
+      </div>
+    </div>
+    <div class="target-zone">
+      ${dogBubble('잘하고 있어~',50)}
+      <div class="mode-badge" style="color:rgba(255,200,60,.4)">▶ 목 표</div>
+      <div class="target-num" style="font-size:80px;color:#ffe066;text-shadow:0 0 40px rgba(255,224,102,.4),4px 4px 0 #705808">8</div>
+      ${timerSVG(82,false)}
+      <div class="speed-mult" style="color:rgba(255,200,60,.2)">x1.0</div>
+    </div>
+    <div class="msg-slot"><span style="font-size:9px;color:rgba(255,200,60,.3)">숫자를 빼서 0을 만드세요</span></div>
+    ${keypadHTML('background:rgba(255,200,60,.05);border:2px solid rgba(255,200,60,.12);color:#ffd700;font-family:DotGothic16,monospace;box-shadow:3px 3px 0 rgba(80,56,0,.15)')}
+  </div></div>
+  <div class="lbl">③ 다이아몬드 라이즈</div>
+  <div class="desc">다이아 떠오르기 + 십자 깜빡 · 스캔라인 · 워밍업</div>
+</div>`);
+mockupInits[3]=(w)=>{const el=w.querySelector('#m3inner');fxDiamond(el,15);fxCrossBlink(el,10,['#ffd040','#ffe066','#ffb830'])};
+
+/* #4: 위험 경고 — 링 펄스 + 붉은 픽셀비 */
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m4">
+  <div class="phone"><div class="phone-inner" id="m4inner" style="${bgCheck}">
+    <div class="hud" style="background:rgba(255,60,60,.04);border-bottom:3px solid rgba(255,60,60,.15)">
+      <div class="hud-col left">
+        <div class="hud-lbl" style="color:rgba(255,100,60,.3)">점 수</div>
+        <div class="hud-val" style="color:#ff6040;text-shadow:0 0 15px rgba(255,96,64,.4),2px 2px 0 rgba(0,0,0,.4)">5,200</div>
+      </div>
+      <div class="hud-col center">
+        <div class="hud-tier" style="color:#ff4060">지옥 27/30</div>
+        <div class="hud-lives" style="color:rgba(255,60,60,.7)">♥ ♡ ♡</div>
+      </div>
+      <div class="hud-col right">
+        <div class="hud-lbl" style="color:rgba(255,100,60,.3)">콤 보</div>
+        <div class="hud-val" style="color:#ff8040;text-shadow:0 0 10px rgba(255,128,64,.3)">0</div>
+      </div>
+    </div>
+    <div class="target-zone">
+      ${dogBubble('위험해!!',44,'wiggle .5s ease infinite')}
+      <div class="mode-badge" style="color:#ff4d6d;background:rgba(255,77,109,.08);border:2px solid rgba(255,77,109,.2)">⚠ 금 지 수</div>
+      <div class="target-num" style="font-size:84px;color:#ff6040;text-shadow:0 0 40px rgba(255,96,64,.5),4px 4px 0 #601808;animation:neonFlicker 2s infinite">42</div>
+      <div style="font-size:10px;color:#ff4060;margin-top:2px">금지: 7</div>
+      ${timerSVG(15,true)}
+      <div class="speed-mult" style="color:#ff6040">x3.0 💀</div>
+    </div>
+    <div class="msg-slot"><span style="font-size:14px;color:#ff4060;text-shadow:0 0 8px rgba(255,64,96,.4)">⚡ 서둘러!!</span></div>
+    ${keypadHTML('background:rgba(255,60,60,.06);border:3px solid rgba(255,60,60,.15);color:#ff8060;font-family:DotGothic16,monospace;box-shadow:4px 4px 0 rgba(100,20,0,.2)')}
+  </div></div>
+  <div class="lbl">④ 위험 경고</div>
+  <div class="desc">링 펄스 + 붉은 픽셀비 · 금지수 모드 · 깜빡이는 네온</div>
+</div>`);
+mockupInits[4]=(w)=>{const el=w.querySelector('#m4inner');fxRingPulse(el,5,'rgba(255,60,60,.1)');fxPixelRain(el,18,['#ff4060','#ff6040','#ff8060','#ff3030','#e04040'])};
+
+/* #5: 피버 황금 — 육각형 + 별 + 먼지 */
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m5">
+  <div class="phone"><div class="phone-inner" id="m5inner" style="${bgGrid};border:2px solid rgba(255,200,60,.15)">
+    <div style="position:absolute;top:0;left:0;right:0;padding:6px;text-align:center;background:linear-gradient(90deg,rgba(255,180,40,.1),rgba(255,120,40,.15),rgba(255,180,40,.1));border-bottom:2px solid rgba(255,180,40,.2);z-index:5">
+      <span style="font-size:13px;color:#ffd040;letter-spacing:4px;text-shadow:0 0 10px rgba(255,208,64,.5)">🔥 피버타임! 🔥</span>
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:rgba(0,0,0,.3);z-index:5"><div style="width:65%;height:100%;background:linear-gradient(90deg,#ffd040,#ff8040)"></div></div>
+    <div class="hud" style="background:rgba(255,200,60,.06);border-bottom:2px solid rgba(255,200,60,.15);margin-top:28px">
+      <div class="hud-col left">
+        <div class="hud-lbl" style="color:rgba(255,200,60,.4)">점 수</div>
+        <div class="hud-val" style="color:#ffd700;text-shadow:0 0 20px rgba(255,215,0,.6),3px 3px 0 #604800;animation:pulse 1s infinite">8,450</div>
+      </div>
+      <div class="hud-col center">
+        <div class="hud-tier" style="color:#e8a820">마스터 25/30</div>
+        <div class="hud-lives" style="color:rgba(255,80,80,.5)">♥ ♥ ♥</div>
+      </div>
+      <div class="hud-col right">
+        <div class="hud-lbl" style="color:rgba(255,200,60,.4)">콤 보</div>
+        <div class="hud-val" style="color:#ff8800;text-shadow:0 0 15px rgba(255,136,0,.6),3px 3px 0 #603000;animation:pulse 1s .2s infinite">15</div>
+      </div>
+    </div>
+    <div class="target-zone">
+      ${dogBubble('최고야!!',60,'bob .8s ease infinite')}
+      <div class="mode-badge" style="color:#ffd040;background:rgba(255,208,64,.1);border:2px solid rgba(255,208,64,.25)">🔥 피 버</div>
+      <div class="target-num" style="font-size:92px;color:#ffe066;text-shadow:0 0 60px rgba(255,224,102,.7),5px 5px 0 #806010,0 0 30px rgba(255,180,0,.4);animation:glowPulse 1.5s ease infinite">0</div>
+      ${timerSVG(90,false)}
+      <div class="speed-mult" style="color:#ffd040">x2.5 ⚡</div>
+    </div>
+    <div class="msg-slot"><span style="font-size:18px;color:#ffd700;text-shadow:0 0 15px rgba(255,215,0,.5)">✨ 콤보 x15! ✨</span></div>
+    ${keypadHTML('background:rgba(255,200,60,.1);border:3px solid rgba(255,200,60,.25);color:#ffe066;font-family:DotGothic16,monospace;box-shadow:5px 5px 0 rgba(80,56,0,.3);text-shadow:0 0 8px rgba(255,224,102,.3)')}
+  </div></div>
+  <div class="lbl">⑤ 피버 황금</div>
+  <div class="desc">육각형 + 별 + 먼지 파티클 · 피버타임 · 거대 글로우 숫자</div>
+</div>`);
+mockupInits[5]=(w)=>{const el=w.querySelector('#m5inner');fxHexFloat(el,8);fxStarTwinkle(el,15,['#ffd700','#fff','#ffe066']);fxDust(el,20)};
+
+/* #6: 크리스탈 — 웨이브 리플 + 다이아 + 스파클 */
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m6">
+  <div class="phone"><div class="phone-inner" id="m6inner" style="background:#080c14">
+    <div class="hud" style="border-bottom:1px solid rgba(255,200,60,.08)">
+      <div class="hud-col left">
+        <div class="hud-lbl" style="color:rgba(255,200,60,.25)">점 수</div>
+        <div class="hud-val" style="color:#daa520;text-shadow:0 0 10px rgba(218,165,32,.3);font-size:24px">2,100</div>
+      </div>
+      <div class="hud-col center">
+        <div class="hud-tier" style="color:rgba(200,152,32,.6);font-size:11px">중급 15/30</div>
+        <div class="hud-lives" style="color:rgba(255,80,80,.35);font-size:12px">♥ ♥ ♥</div>
+      </div>
+      <div class="hud-col right">
+        <div class="hud-lbl" style="color:rgba(255,200,60,.25)">콤 보</div>
+        <div class="hud-val" style="color:#c89820;text-shadow:0 0 8px rgba(200,152,32,.3);font-size:24px">4</div>
+      </div>
+    </div>
+    <div class="target-zone">
+      ${dogBubble('좋아~',40,'floatBob 2s ease infinite')}
+      <div class="mode-badge" style="color:rgba(200,152,32,.3)">▶ 목 표</div>
+      <div class="target-num" style="font-size:76px;color:#daa520;text-shadow:0 0 30px rgba(218,165,32,.4),3px 3px 0 rgba(0,0,0,.5)">17</div>
+      ${timerSVG(55,false)}
+      <div class="speed-mult" style="color:rgba(200,152,32,.2)">x1.5</div>
+    </div>
+    <div class="msg-slot"></div>
+    ${keypadHTML('background:rgba(255,200,60,.03);border:2px solid rgba(255,200,60,.08);color:#c89820;font-family:DotGothic16,monospace;box-shadow:3px 3px 0 rgba(0,0,0,.3)')}
+  </div></div>
+  <div class="lbl">⑥ 크리스탈</div>
+  <div class="desc">웨이브 리플 + 다이아몬드 + 반짝이 · 미니멀 다크</div>
+</div>`);
+mockupInits[6]=(w)=>{const el=w.querySelector('#m6inner');fxWaveRipple(el,10);fxDiamond(el,10,['rgba(218,165,32,.08)','rgba(200,180,60,.06)','rgba(255,215,0,.05)']);fxSparkle(el,8,['#daa520','#c89820'])};
+
+/* #7: 네온 CRT — 그린 픽셀비 + 십자 깜빡 */
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m7">
+  <div class="phone"><div class="phone-inner" id="m7inner" style="${bgScan}">
+    <div class="hud" style="background:rgba(80,200,60,.03);border-bottom:2px solid rgba(80,200,60,.1)">
+      <div class="hud-col left">
+        <div class="hud-lbl" style="color:rgba(80,200,60,.3)">점 수</div>
+        <div class="hud-val" style="color:#60d848;text-shadow:0 0 15px rgba(96,216,72,.4),2px 2px 0 #204010">1,800</div>
+      </div>
+      <div class="hud-col center">
+        <div class="hud-tier" style="color:#50a838">중급 10/30</div>
+        <div class="hud-lives" style="color:rgba(255,80,80,.4)">♥ ♥ ♥</div>
+      </div>
+      <div class="hud-col right">
+        <div class="hud-lbl" style="color:rgba(80,200,60,.3)">콤 보</div>
+        <div class="hud-val" style="color:#a0d040;text-shadow:0 0 12px rgba(160,208,64,.4)">6</div>
+      </div>
+    </div>
+    <div class="target-zone">
+      ${dogBubble('집중!',44)}
+      <div class="mode-badge" style="color:rgba(96,216,72,.4)">▶ 목 표</div>
+      <div class="target-num" style="font-size:80px;color:#80f060;text-shadow:0 0 40px rgba(128,240,96,.5),4px 4px 0 #184010;animation:neonFlicker 3s infinite">31</div>
+      ${timerSVG(50,false)}
+      <div class="speed-mult" style="color:rgba(96,216,72,.25)">x1.8</div>
+    </div>
+    <div class="msg-slot"><span style="font-size:12px;color:#60d848;text-shadow:0 0 6px rgba(96,216,72,.3)">정답! +100</span></div>
+    ${keypadHTML('background:rgba(80,200,60,.05);border:2px solid rgba(80,200,60,.12);color:#80f060;font-family:DotGothic16,monospace;box-shadow:3px 3px 0 rgba(0,40,0,.3);text-shadow:0 0 4px rgba(128,240,96,.2)')}
+  </div></div>
+  <div class="lbl">⑦ 네온 CRT</div>
+  <div class="desc">그린 픽셀비 + 십자 깜빡 · 스캔라인 · 네온 플리커 숫자</div>
+</div>`);
+mockupInits[7]=(w)=>{const el=w.querySelector('#m7inner');fxPixelRain(el,15,['#60d848','#80f060','#a0d040','#40b830','#70e050']);fxCrossBlink(el,8,['#60d848','#80f060','#a0d040'])};
+
+/* #8: 메롱 파티 — 메롱 얼굴 + 강아지 + 색상 스파클 + 픽셀비 */
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m8">
+  <div class="phone"><div class="phone-inner" id="m8inner" style="${bgGrid}">
+    <div style="display:flex;gap:5px;padding:4px 10px;justify-content:space-between;align-items:center">
+      <div style="display:flex;gap:4px">
+        <canvas class="face-cv" data-style="0" data-color="#ffd040" width="14" height="14" style="width:22px;height:22px;image-rendering:pixelated;animation:wiggle .7s ease infinite"></canvas>
+        <canvas class="face-cv" data-style="3" data-color="#ff80c0" width="14" height="14" style="width:22px;height:22px;image-rendering:pixelated;animation:wiggle .8s ease .1s infinite"></canvas>
+      </div>
+      <canvas class="dog-cv" width="14" height="16" style="width:32px;height:36px;image-rendering:pixelated;animation:bob 1s ease infinite"></canvas>
+      <div style="display:flex;gap:4px">
+        <canvas class="face-cv" data-style="2" data-color="#60e880" width="14" height="14" style="width:22px;height:22px;image-rendering:pixelated;animation:wiggle .9s ease .2s infinite"></canvas>
+        <canvas class="face-cv" data-style="4" data-color="#60d0e0" width="14" height="14" style="width:22px;height:22px;image-rendering:pixelated;animation:wiggle 1s ease .3s infinite"></canvas>
+      </div>
+    </div>
+    <div class="hud" style="background:rgba(255,200,60,.04);border-bottom:2px solid rgba(255,200,60,.1)">
+      <div class="hud-col left">
+        <div class="hud-lbl" style="color:rgba(255,200,60,.35)">점 수</div>
+        <div class="hud-val" style="color:#ffd700;text-shadow:0 0 12px rgba(255,215,0,.3),2px 2px 0 #503800">4,560</div>
+      </div>
+      <div class="hud-col center">
+        <div class="hud-tier" style="color:#daa520">고급 18/30</div>
+        <div class="hud-lives" style="color:rgba(255,80,80,.5)">♥ ♥ ♥</div>
+      </div>
+      <div class="hud-col right">
+        <div class="hud-lbl" style="color:rgba(255,200,60,.35)">콤 보</div>
+        <div class="hud-val" style="color:#ffa830;text-shadow:0 0 10px rgba(255,168,48,.3)">10</div>
+      </div>
+    </div>
+    <div class="target-zone">
+      <div class="mode-badge" style="color:rgba(255,200,60,.4);border:1px solid rgba(255,200,60,.12);background:rgba(255,200,60,.03)">▶ 목 표</div>
+      <div class="target-num" style="font-size:86px;color:#ffe066;text-shadow:0 0 50px rgba(255,224,102,.5),4px 4px 0 #705808,0 0 25px rgba(255,180,0,.3)">28</div>
+      ${timerSVG(60,false)}
+      <div class="speed-mult" style="color:rgba(255,200,60,.3)">x2.0</div>
+    </div>
+    <div class="msg-slot"><span style="font-size:15px;color:#ffd700;text-shadow:0 0 10px rgba(255,215,0,.4)">✨ 천재! +300 ✨</span></div>
+    ${keypadHTML('background:rgba(255,200,60,.06);border:3px solid rgba(255,200,60,.15);color:#ffd700;font-family:DotGothic16,monospace;box-shadow:4px 4px 0 rgba(100,70,0,.2)')}
+  </div></div>
+  <div class="lbl">⑧ 메롱 파티</div>
+  <div class="desc">메롱 얼굴 + 강아지 · 컬러 스파클 + 픽셀비 · 파티 분위기</div>
+</div>`);
+mockupInits[8]=(w)=>{const el=w.querySelector('#m8inner');fxSparkle(el,12,MIX);fxPixelRain(el,15,MIX);fxStarTwinkle(el,8,MIX)};
+
+/* #9: 전설 폭발 — 모든 효과 콤보 */
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m9">
+  <div class="phone"><div class="phone-inner" id="m9inner" style="${bgDots}">
+    <div class="hud" style="background:rgba(255,200,60,.05);border-bottom:3px solid rgba(255,200,60,.15)">
+      <div class="hud-col left">
+        <div class="hud-lbl" style="color:rgba(255,200,60,.4)">점 수</div>
+        <div class="hud-val" style="color:#ffd700;text-shadow:0 0 20px rgba(255,215,0,.5),3px 3px 0 #604800;font-size:28px">12,300</div>
+      </div>
+      <div class="hud-col center">
+        <div class="hud-tier" style="color:#e0a020;text-shadow:0 0 8px rgba(224,160,32,.3)">전설 28/30</div>
+        <div class="hud-lives" style="color:rgba(255,80,80,.5)">♥ ♥ ♥</div>
+      </div>
+      <div class="hud-col right">
+        <div class="hud-lbl" style="color:rgba(255,200,60,.4)">콤 보</div>
+        <div class="hud-val" style="color:#ff6800;text-shadow:0 0 20px rgba(255,104,0,.6),3px 3px 0 #601800;font-size:28px;animation:pulse .8s infinite">20</div>
+      </div>
+    </div>
+    <div class="target-zone">
+      ${dogBubble('전설이다!!',56,'wiggle .6s ease infinite')}
+      <div class="mode-badge" style="color:#ffd040;background:rgba(255,208,64,.08);border:2px solid rgba(255,208,64,.2)">▶ 목 표</div>
+      <div class="target-num" style="font-size:96px;color:#fff;text-shadow:0 0 70px rgba(255,215,0,.8),5px 5px 0 #806010,0 0 40px rgba(255,136,0,.5);animation:glowPulse 1s ease infinite">56</div>
+      ${timerSVG(45,false)}
+      <div class="speed-mult" style="color:#ffa030;text-shadow:0 0 8px rgba(255,160,48,.4)">x2.8 ⚡</div>
+    </div>
+    <div class="msg-slot"><span style="font-size:20px;color:#ffd700;text-shadow:0 0 20px rgba(255,215,0,.6)">🔥🔥 콤보 x20!! 🔥🔥</span></div>
+    ${keypadHTML('background:rgba(255,200,60,.08);border:3px solid rgba(255,200,60,.2);color:#ffe066;font-family:DotGothic16,monospace;box-shadow:5px 5px 0 rgba(80,56,0,.3);text-shadow:0 0 8px rgba(255,224,102,.4)')}
+  </div></div>
+  <div class="lbl">⑨ 전설 폭발</div>
+  <div class="desc">별 + 육각형 + 스파클 + 픽셀비 + 리플 · 콤보 20x</div>
+</div>`);
+mockupInits[9]=(w)=>{const el=w.querySelector('#m9inner');fxStarTwinkle(el,18,['#ffd700','#fff','#ffe066','#ffb830']);fxHexFloat(el,6);fxSparkle(el,15,['#ffd700','#ff8060','#fff']);fxPixelRain(el,20,MIX);fxWaveRipple(el,8)};
+
+/* #10: 최종 하이브리드 — 모든 것 통합 */
+body.insertAdjacentHTML('beforeend',`
+<div class="wrap" id="m10">
+  <div class="phone"><div class="phone-inner" id="m10inner" style="${bgGrid}">
+    <div style="display:flex;gap:4px;padding:4px 10px;justify-content:center;align-items:center">
+      <canvas class="face-cv" data-style="0" data-color="#ffd040" width="14" height="14" style="width:18px;height:18px;image-rendering:pixelated;animation:wiggle .7s ease infinite"></canvas>
+      <canvas class="face-cv" data-style="1" data-color="#ff8060" width="14" height="14" style="width:18px;height:18px;image-rendering:pixelated;animation:wiggle .8s ease .1s infinite"></canvas>
+      <canvas class="dog-cv" width="14" height="16" style="width:36px;height:40px;image-rendering:pixelated;animation:bob .9s ease infinite"></canvas>
+      <canvas class="face-cv" data-style="3" data-color="#60e880" width="14" height="14" style="width:18px;height:18px;image-rendering:pixelated;animation:wiggle .9s ease .2s infinite"></canvas>
+      <canvas class="face-cv" data-style="4" data-color="#60d0e0" width="14" height="14" style="width:18px;height:18px;image-rendering:pixelated;animation:wiggle 1s ease .3s infinite"></canvas>
+    </div>
+    <div class="hud" style="background:rgba(255,200,60,.04);border-bottom:2px solid rgba(255,200,60,.1)">
+      <div class="hud-col left">
+        <div class="hud-lbl" style="color:rgba(255,200,60,.35)">점 수</div>
+        <div class="hud-val" style="color:#ffd700;text-shadow:0 0 15px rgba(255,215,0,.4),2px 2px 0 #503800">6,800</div>
+      </div>
+      <div class="hud-col center">
+        <div class="hud-tier" style="color:#daa520">마스터 22/30</div>
+        <div class="hud-lives" style="color:rgba(255,80,80,.5)">♥ ♥ ♥</div>
+      </div>
+      <div class="hud-col right">
+        <div class="hud-lbl" style="color:rgba(255,200,60,.35)">콤 보</div>
+        <div class="hud-val" style="color:#ffa830;text-shadow:0 0 12px rgba(255,168,48,.4)">12</div>
+      </div>
+    </div>
+    <div class="target-zone">
+      <div class="mode-badge" style="color:rgba(255,200,60,.4);border:1px solid rgba(255,200,60,.12);background:rgba(255,200,60,.03)">▶ 목 표</div>
+      <div class="target-num" style="font-size:90px;color:#ffe066;text-shadow:0 0 60px rgba(255,224,102,.6),5px 5px 0 #705808,0 0 30px rgba(255,180,0,.3);animation:glowPulse 2s ease infinite">35</div>
+      ${timerSVG(72,false)}
+      <div class="speed-mult" style="color:rgba(255,200,60,.3)">x2.2</div>
+    </div>
+    <div class="msg-slot"><span style="font-size:16px;color:#ffd700;text-shadow:0 0 12px rgba(255,215,0,.5)">🔥 콤보 x12!</span></div>
+    ${keypadHTML('background:rgba(255,200,60,.07);border:3px solid rgba(255,200,60,.18);color:#ffe066;font-family:DotGothic16,monospace;box-shadow:4px 4px 0 rgba(80,56,0,.25);text-shadow:0 0 6px rgba(255,224,102,.2)')}
+  </div></div>
+  <div class="lbl">⑩ 최종 하이브리드</div>
+  <div class="desc">메롱+강아지+별+다이아+스파클+픽셀비 · 완전체</div>
+</div>`);
+mockupInits[10]=(w)=>{const el=w.querySelector('#m10inner');fxStarTwinkle(el,12,MIX);fxDiamond(el,10);fxSparkle(el,12,['#ffd700','#ffe066','#fff']);fxPixelRain(el,15,MIX);fxDust(el,15);fxOrbitDots(el,4)};
+
+}// end createAll
+
+createAll();
+
+// 첫 번째 활성화
+document.getElementById('m1').classList.add('active');
+nav.children[0].classList.add('active');
+setTimeout(()=>initMockup(1),300);
+</script>
+</body>
+</html>
