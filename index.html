@@ -807,7 +807,7 @@ function applyTheme(t){
   if(t==='peach'){document.body.classList.add('peach');if(thumb)thumb.textContent='🍑'}
   else if(t==='lavender'){document.body.classList.add('lavender');if(thumb)thumb.textContent='🌸'}
   else{if(thumb)thumb.textContent='🌙'}
-  if(typeof initBgFx==='function'&&isPlaying)initBgFx();
+  try{if(typeof initBgFx==='function'&&isPlaying)initBgFx();}catch(e){}
 }
 const themeOrder=['peach','lavender','dark'];
 function toggleTheme(){const i=themeOrder.indexOf(currentTheme);applyTheme(themeOrder[(i+1)%themeOrder.length])}
