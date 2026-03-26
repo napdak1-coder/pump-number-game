@@ -13,23 +13,29 @@
   .bg-dot{position:absolute;border-radius:50%;background:rgba(204,136,255,0.08);animation:floatDot linear infinite}
   @keyframes floatDot{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-20vh) scale(1);opacity:0}}
   .info-bar{
-    flex-shrink:0;height:64px;
+    flex-shrink:0;height:68px;
     display:flex;align-items:center;justify-content:space-between;
-    padding:0 18px;
-    background:rgba(255,255,255,.03);
-    border-bottom:1px solid rgba(204,136,255,.08);
+    padding:6px 12px;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.15) 0px,rgba(0,0,0,.15) 1px,transparent 1px,transparent 3px),#0f0f1e;
+    border:4px solid #2a2a40;
+    box-shadow:inset 0 0 30px rgba(0,0,0,.5);
     z-index:10;
+    image-rendering:pixelated;
   }
   .info-left,.info-center,.info-right{display:flex;flex-direction:column;align-items:center}
   .info-left{align-items:flex-start}
   .info-right{align-items:flex-end}
-  .info-label{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:3px;margin-bottom:3px;font-weight:700}
-  .info-value{font-size:26px;font-weight:900;color:#dd99ff;transition:transform .15s,color .15s;text-shadow:0 0 10px rgba(221,153,255,.3)}
-  .info-value.combo{color:#44ddff;font-size:28px;text-shadow:0 0 10px rgba(68,221,255,.3)}
-  .info-value.tier{font-size:14px;letter-spacing:2px}
-  .info-value.score-pop{transform:scale(1.5);color:#ffdd44;text-shadow:0 0 16px rgba(255,221,68,.6)}
-  .info-value.combo-pop{transform:scale(1.6);color:#44ffaa;text-shadow:0 0 16px rgba(68,255,170,.6)}
-  .lives{font-size:13px;color:rgba(255,100,100,.65);letter-spacing:2px;margin-top:2px}
+  .info-label{font-size:6px;color:#888;letter-spacing:2px;margin-bottom:2px;font-weight:700;font-family:'DotGothic16','Press Start 2P',monospace}
+  .info-value{font-size:20px;font-weight:900;color:#f5c842;transition:transform .15s,color .15s;text-shadow:2px 2px 0 #c7901a,-1px 0 #e74c5b;font-family:'DotGothic16','Press Start 2P',monospace}
+  .info-value.combo{color:#e85d9a;font-size:20px;text-shadow:2px 2px 0 #a0365a,-1px 0 #34aadc}
+  .info-value.tier{font-size:7px;letter-spacing:2px;color:#888;opacity:1}
+  .info-value.score-pop{transform:scale(1.4);color:#ffe082;text-shadow:0 0 8px rgba(245,200,66,.5),2px 2px 0 #c7901a}
+  .info-value.combo-pop{transform:scale(1.5);color:#ff80c0;text-shadow:0 0 8px rgba(232,93,154,.5),2px 2px 0 #a0365a}
+  .info-faces{display:flex;gap:3px;justify-content:center;margin-bottom:2px}
+  .info-face{width:20px;height:20px;image-rendering:pixelated;transition:opacity .2s}
+  .info-face.dead{opacity:.15;filter:grayscale(1)}
+  .lives{display:none}
+  .info-gb-face{display:none}
   .score-float{position:fixed;font-size:24px;font-weight:900;color:#ffdd44;pointer-events:none;z-index:999;
     text-shadow:0 0 10px rgba(255,221,68,.7),0 2px 4px rgba(0,0,0,.5);
     animation:scoreFloat .8s ease-out forwards}
@@ -266,11 +272,11 @@
   body.lavender .message.genius{color:#00c853;text-shadow:0 0 15px rgba(0,200,83,0.4)}
   body.lavender .message.great{color:#7b1fa2;text-shadow:0 0 12px rgba(123,31,162,0.3)}
   body.lavender .message.good{color:#42a5f5;text-shadow:0 0 12px rgba(66,165,245,0.3)}
-  body.lavender .info-bar{background:rgba(171,71,188,.04);border-bottom-color:rgba(171,71,188,.08)}
-  body.lavender .info-label{color:rgba(90,50,120,.4)}
-  body.lavender .info-value{color:#7b1fa2}
-  body.lavender .info-value.combo{color:#42a5f5}
-  body.lavender .lives{color:rgba(233,30,99,.5)}
+  body.lavender .info-bar{background:repeating-linear-gradient(0deg,rgba(0,0,0,.1) 0px,rgba(0,0,0,.1) 1px,transparent 1px,transparent 3px),#1a102a;border-color:#6a3a8a;box-shadow:inset 0 0 30px rgba(0,0,0,.5)}
+  body.lavender .info-label{color:#a080c0;opacity:0.7}
+  body.lavender .info-value{color:#d4a0ff;text-shadow:2px 2px 0 #6a3a8a,-1px 0 #e85d9a}
+  body.lavender .info-value.combo{color:#e85d9a;text-shadow:2px 2px 0 #a0365a,-1px 0 #d4a0ff}
+  body.lavender .info-value.tier{color:#a080c0}
   body.lavender .target-area{background:transparent}
   body.lavender .message-slot{background:transparent}
   body.lavender .key-btn{
@@ -435,22 +441,17 @@
 
   /* === 인포바 — 게임 HUD === */
   body.peach .info-bar{
-    margin:0;height:auto;
-    padding:8px 10px 6px;
-    background:rgba(14,34,40,.5);
-    border:none;border-radius:0;
-    border-bottom:2px solid #143838;
-    backdrop-filter:none;box-shadow:none;
+    margin:0;height:68px;padding:6px 12px;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.1) 0px,rgba(0,0,0,.1) 1px,transparent 1px,transparent 3px),#1a1210;
+    border:4px solid #4a3020;border-radius:0;
+    box-shadow:inset 0 0 30px rgba(0,0,0,.5);backdrop-filter:none;
   }
-  body.peach .info-bar{padding:10px 14px 8px;height:auto}
-  body.peach .info-label{color:rgba(0,255,204,.5);font-size:9px;letter-spacing:2px;font-family:'Press Start 2P',monospace !important}
-  body.peach .info-value{color:#00ffcc;text-shadow:0 0 8px rgba(0,255,204,.15),2px 2px 0 #004422;font-size:24px;font-family:'Press Start 2P',monospace !important}
-  body.peach .info-value.combo{color:#44ff44;text-shadow:0 0 8px rgba(68,255,68,.15),2px 2px 0 #004400;font-size:24px}
-  body.peach .info-value.tier{color:#00ffcc;font-size:12px;letter-spacing:1px;text-shadow:none}
-  body.peach .info-value.score-pop{color:#ffcc00;text-shadow:0 0 15px rgba(255,204,0,.4)}
-  body.peach .info-value.combo-pop{color:#44ff44;text-shadow:0 0 15px rgba(68,255,68,.4)}
-  body.peach .lives{color:#ff0000;font-size:16px;letter-spacing:3px;text-shadow:0 0 6px rgba(255,0,0,.3);font-family:'Press Start 2P',monospace !important}
-
+  body.peach .info-label{color:#c0906a;opacity:0.7;font-size:6px;letter-spacing:2px}
+  body.peach .info-value{color:#f5c842;text-shadow:2px 2px 0 #c7901a,-1px 0 #e74c5b;font-size:20px}
+  body.peach .info-value.combo{color:#e85d9a;text-shadow:2px 2px 0 #a0365a,-1px 0 #34aadc;font-size:20px}
+  body.peach .info-value.tier{color:#c0906a;font-size:7px;letter-spacing:2px;text-shadow:none;opacity:1}
+  body.peach .info-value.score-pop{color:#ffe082;text-shadow:0 0 8px rgba(245,200,66,.5),2px 2px 0 #c7901a}
+  body.peach .info-value.combo-pop{color:#ff80c0;text-shadow:0 0 8px rgba(232,93,154,.5),2px 2px 0 #a0365a}
   /* === 캐릭터 바 (peach only) === */
   .char-bar{display:none}
   body.peach .char-bar{
@@ -800,15 +801,23 @@
 <!-- Info Bar (separated) -->
 <div class="info-bar">
   <div class="info-left">
-    <div class="info-label">점 수</div>
+    <div class="info-label">SCR</div>
     <div class="info-value" id="score">0</div>
   </div>
   <div class="info-center">
+    <div class="info-faces" id="infoFaces">
+      <canvas class="info-face" id="infoFace0" width="14" height="14"></canvas>
+      <canvas class="info-face" id="infoFace1" width="14" height="14"></canvas>
+      <canvas class="info-face" id="infoFace2" width="14" height="14"></canvas>
+      <canvas class="info-face" id="infoFace3" width="14" height="14"></canvas>
+      <canvas class="info-face" id="infoFace4" width="14" height="14"></canvas>
+    </div>
     <div class="info-value tier" id="level">워밍업</div>
-    <div class="lives" id="livesDisplay">♥ ♥ ♥</div>
+    <div class="lives" id="livesDisplay">■ ■ ■</div>
+    <div class="info-gb-face"></div>
   </div>
   <div class="info-right">
-    <div class="info-label">콤 보</div>
+    <div class="info-label">CMB</div>
     <div class="info-value combo" id="combo">0</div>
   </div>
 </div>
@@ -960,6 +969,32 @@ function drawPixelDog(canvas,bodyColor,earColor,cheekColor,armUp){
 })();
 
 /* === 메롱 픽셀 얼굴 (게임오버용) === */
+function initInfoFaces(){
+  const INFO_COLORS=['#ffd040','#ff8060','#60e880','#60d0e0','#ff80c0'];
+  for(let i=0;i<5;i++){
+    const fc=document.getElementById('infoFace'+i);
+    if(fc){
+      drawTauntFace(fc,i,INFO_COLORS[i]);
+      fc.style.width='20px';fc.style.height='20px';
+    }
+  }
+  updateInfoLives();
+}
+function updateInfoLives(){
+  const INFO_COLORS=['#ffd040','#ff8060','#60e880','#60d0e0','#ff80c0'];
+  for(let i=0;i<5;i++){
+    const fc=document.getElementById('infoFace'+i);
+    if(fc){
+      if(i<lives){
+        fc.classList.remove('dead');
+        drawTauntFace(fc,i,INFO_COLORS[i]);
+        fc.style.width='20px';fc.style.height='20px';
+      }else{
+        fc.classList.add('dead');
+      }
+    }
+  }
+}
 function drawTauntFace(canvas,style,mainColor){
   const W=14,H=14;canvas.width=W;canvas.height=H;
   canvas.style.imageRendering='pixelated';
@@ -1081,6 +1116,7 @@ function goCreateBgEffects(){
 
 // 캐릭터 바 초기화 (drawTauntFace, drawPixelDog 정의 후)
 initCharBar();
+initInfoFaces();
 
 /* === 9번 풀 이펙트 피버 — 배경 효과 라이브러리 (peach only) === */
 const FX_MIX=['#ffd040','#ff8060','#60e880','#60d0e0','#ff80c0'];
@@ -1276,7 +1312,7 @@ function startGame(){
   isPlaying=true;initBgFx();nextRound();
 }
 
-function updateLives(){livesDisplay.textContent=Array(lives).fill('♥').join(' ')+(lives<3?' '+Array(3-lives).fill('♡').join(' '):'')}
+function updateLives(){livesDisplay.textContent=Array(lives).fill('■').join(' ')+(lives<3?' '+Array(3-lives).fill('□').join(' '):'');if(typeof updateInfoLives==='function')updateInfoLives()}
 
 /* === TARGET HINT DISPLAY === */
 function displayTarget(num, el){
