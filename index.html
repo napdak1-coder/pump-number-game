@@ -285,13 +285,12 @@
   body.lavender .screen-flash{background:rgba(171,71,188,0.08)!important}
   body.lavender .key-btn.pressed{animation:btnPress3d .25s ease}
   body.lavender .key-btn.swipe-hover{
-    background:linear-gradient(180deg,rgba(0,150,80,.12) 0%,rgba(0,150,80,.05) 100%);
-    border-color:rgba(0,150,80,.5);color:#1b5e20;
-    box-shadow:0 2px 0 rgba(0,150,80,.12),0 4px 8px rgba(0,0,0,.04),0 0 18px rgba(0,150,80,.2);
+    background:linear-gradient(180deg,rgba(171,71,188,.15) 0%,rgba(171,71,188,.05) 100%);
+    border-color:rgba(171,71,188,.5);color:#4a148c;
+    box-shadow:0 2px 0 rgba(171,71,188,.12),0 4px 8px rgba(0,0,0,.04),0 0 18px rgba(171,71,188,.2);
   }
-  body.lavender .swipe-preview{color:#2e7d32;text-shadow:0 0 20px rgba(46,125,50,.4)}
-  body.lavender .swipe-confirm{color:#00c853;text-shadow:0 0 30px rgba(0,200,83,.4)}
-  body.lavender .swipe-dot{background:radial-gradient(circle,rgba(0,150,80,.85),rgba(0,200,83,.4));box-shadow:0 0 6px rgba(0,150,80,.6)}
+  body.lavender .swipe-preview{color:#7b1fa2;text-shadow:0 0 20px rgba(123,31,162,.4)}
+  body.lavender .swipe-confirm{color:#7b1fa2;text-shadow:0 0 30px rgba(123,31,162,.4)}
 
   /* === TIER UP POPUP === */
   .tier-up-popup{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;pointer-events:none;animation:tierUpFade 1.5s ease forwards}
@@ -344,34 +343,24 @@
   .fever-timer{position:fixed;top:46px;left:0;right:0;height:3px;z-index:201;pointer-events:none}
   .fever-timer-fill{height:100%;background:linear-gradient(90deg,#ff44aa,#44ddff);border-radius:2px;transition:width .1s linear}
 
-  /* === SWIPE KEYPAD — C: 파티클 스트림 === */
+  /* === SWIPE KEYPAD — G+I: 에코잔상 물흐르듯 === */
   .key-btn.swipe-hover{
-    background:linear-gradient(180deg,rgba(0,230,118,.15) 0%,rgba(0,230,118,.05) 100%);
-    border-color:rgba(0,230,118,.55);
+    background:linear-gradient(180deg,rgba(204,136,255,.18) 0%,rgba(204,136,255,.06) 100%);
+    border-color:rgba(204,136,255,.55);
     transform:translateY(1px) scale(1.05);
-    box-shadow:0 2px 0 rgba(0,0,0,.3),0 4px 8px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.08),0 0 20px rgba(0,230,118,.3),0 0 40px rgba(0,230,118,.1);
-    color:#b9f6ca;text-shadow:0 0 12px rgba(0,230,118,.6);
+    box-shadow:0 2px 0 rgba(0,0,0,.3),0 4px 8px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.08),0 0 20px rgba(204,136,255,.3),0 0 40px rgba(204,136,255,.08);
+    color:#e1bee7;text-shadow:0 0 12px rgba(204,136,255,.5);
     z-index:5;position:relative;
   }
-  .swipe-particles{position:fixed;pointer-events:none;z-index:200}
-  .swipe-dot{position:absolute;border-radius:50%;pointer-events:none;
-    background:radial-gradient(circle,rgba(0,230,118,.9),rgba(68,255,170,.4));
-    box-shadow:0 0 6px rgba(0,230,118,.7),0 0 12px rgba(0,230,118,.3);
-    animation:swipeDotFlow .6s ease-in-out infinite alternate}
-  .swipe-dot:nth-child(2){animation-delay:.1s;opacity:.8}
-  .swipe-dot:nth-child(3){animation-delay:.2s;opacity:.65}
-  .swipe-dot:nth-child(4){animation-delay:.3s;opacity:.5}
-  .swipe-dot:nth-child(5){animation-delay:.35s;opacity:.4}
-  .swipe-dot:nth-child(6){animation-delay:.4s;opacity:.3}
-  @keyframes swipeDotFlow{0%{transform:scale(1);filter:brightness(1)}100%{transform:scale(.6);filter:brightness(1.4)}}
+  .fluid-ghost{position:fixed;font-weight:900;pointer-events:none;z-index:300;will-change:transform,opacity,filter}
   .swipe-preview{position:fixed;top:38%;left:50%;transform:translate(-50%,-50%);
     font-size:min(14vw,64px);font-weight:900;pointer-events:none;z-index:160;
-    text-shadow:0 0 20px rgba(0,230,118,.6),0 0 40px rgba(0,230,118,.3);
-    color:#69f0ae;opacity:0;transition:opacity .12s}
+    text-shadow:0 0 20px rgba(204,136,255,.6),0 0 40px rgba(204,136,255,.3);
+    color:#cc88ff;opacity:0;transition:opacity .12s}
   .swipe-preview.show{opacity:1}
   .swipe-confirm{position:fixed;top:38%;left:50%;transform:translate(-50%,-50%) scale(0);
     font-size:min(16vw,72px);font-weight:900;pointer-events:none;z-index:165;
-    color:#00e676;text-shadow:0 0 30px rgba(0,230,118,.7),0 0 60px rgba(0,230,118,.3);
+    color:#cc88ff;text-shadow:0 0 30px rgba(204,136,255,.7),0 0 60px rgba(204,136,255,.3);
     animation:swipeConfirm .45s ease forwards}
   @keyframes swipeConfirm{0%{transform:translate(-50%,-50%) scale(1.4);opacity:1}
     60%{transform:translate(-50%,-50%) scale(1);opacity:.9}
@@ -424,7 +413,6 @@
   <span class="message" id="message" style="position:static;font-size:16px"></span>
   <span class="combo-text" id="comboText" style="position:static;font-size:13px;color:#44ddff"></span>
 </div>
-<div class="swipe-particles" id="swipeParticles"></div>
 <div class="swipe-preview" id="swipePreview"></div>
 <div class="bottom-area" id="keypadArea"><div class="keypad-row"><button class="key-btn" data-num="1">1</button><button class="key-btn" data-num="2">2</button><button class="key-btn" data-num="3">3</button></div><div class="keypad-row"><button class="key-btn" data-num="4">4</button><button class="key-btn" data-num="5">5</button><button class="key-btn" data-num="6">6</button></div><div class="keypad-row"><button class="key-btn" data-num="7">7</button><button class="key-btn" data-num="8">8</button><button class="key-btn" data-num="9">9</button></div></div>
 <div class="fever-overlay" id="feverOverlay"></div>
@@ -664,14 +652,88 @@ function pressKey(num, actualNum){
 
 /* === SWIPE KEYPAD SYSTEM === */
 const keypadArea=$('keypadArea');
-const swipeParticles=$('swipeParticles');
 const swipePreview=$('swipePreview');
 let swipeActive=false;
-let swipePath=[]; // 스와이프 경로에 포함된 버튼들 [{num, cx, cy}]
+let swipePath=[];
 let swipeStarted=false;
 
+/* ── G+I 물흐르듯 에코잔상 엔진 ── */
+function spawnFluidGhost(num, btn, color){
+  const r=btn.getBoundingClientRect();
+  const sx=r.left+r.width/2, sy=r.top+r.height/2;
+  const layers=4;
+  const isLav=document.body.classList.contains('lavender');
+  const c=color||(isLav?'rgba(123,31,162,':'rgba(204,136,255,');
+  for(let i=0;i<layers;i++){
+    const delay=i*40;
+    const dur=600+i*70;
+    const peakOp=0.75-i*0.16;
+    const fs=Math.min(r.width*0.55,38)-i*2;
+    const maxBlur=i*2.8;
+    const maxScale=1+i*0.16;
+    const drift=(i-1.5)*5;
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.className='fluid-ghost';
+      el.textContent=num;
+      el.style.fontSize=fs+'px';
+      el.style.color=c+'1)';
+      el.style.textShadow=`0 0 10px ${c}.5), 0 0 20px ${c}.25)`;
+      el.style.left=(sx-fs*0.3)+'px';
+      el.style.top=(sy-fs*0.35)+'px';
+      el.style.opacity='0';
+      document.body.appendChild(el);
+      const t0=performance.now();
+      function tick(now){
+        const p=Math.min((now-t0)/dur,1);
+        const ease=1-Math.pow(1-p,3);
+        const y=-85*ease;
+        const x=drift*ease*Math.sin(ease*Math.PI*0.7);
+        const sc=1+(maxScale-1)*ease;
+        const bl=maxBlur*ease;
+        let op;
+        if(p<0.1) op=peakOp*(p/0.1);
+        else op=peakOp*(1-(p-0.1)/0.9);
+        el.style.transform=`translate(${x}px,${y}px) scale(${sc})`;
+        el.style.filter=`blur(${bl}px)`;
+        el.style.opacity=Math.max(0,op);
+        if(p<1) requestAnimationFrame(tick);
+        else el.remove();
+      }
+      requestAnimationFrame(tick);
+    },delay);
+  }
+}
+
+function spawnTrailDots(btn1, btn2){
+  const r1=btn1.getBoundingClientRect(), r2=btn2.getBoundingClientRect();
+  const cx1=r1.left+r1.width/2, cy1=r1.top+r1.height/2;
+  const cx2=r2.left+r2.width/2, cy2=r2.top+r2.height/2;
+  const isLav=document.body.classList.contains('lavender');
+  const c=isLav?'123,31,162':'204,136,255';
+  for(let i=0;i<5;i++){
+    setTimeout(()=>{
+      const frac=(i+1)/6;
+      const dx=cx1+(cx2-cx1)*frac+(Math.random()-.5)*8;
+      const dy=cy1+(cy2-cy1)*frac+(Math.random()-.5)*8;
+      const sz=3+Math.random()*3;
+      const dot=document.createElement('div');
+      dot.style.cssText=`position:fixed;z-index:298;pointer-events:none;border-radius:50%;width:${sz}px;height:${sz}px;left:${dx-sz/2}px;top:${dy-sz/2}px;background:radial-gradient(circle,rgba(${c},.6),rgba(${c},.15));box-shadow:0 0 6px rgba(${c},.3);will-change:transform,opacity;`;
+      document.body.appendChild(dot);
+      const t0=performance.now();
+      function tick(now){
+        const p=Math.min((now-t0)/400,1);
+        const e=1-Math.pow(1-p,2);
+        dot.style.transform=`scale(${1-e*.7}) translateY(${-10*e}px)`;
+        dot.style.opacity=String(.55*(1-e));
+        if(p<1) requestAnimationFrame(tick); else dot.remove();
+      }
+      requestAnimationFrame(tick);
+    },i*30);
+  }
+}
+
 function getBtnFromPoint(x,y){
-  // elementFromPoint로 버튼 찾기
   const el=document.elementFromPoint(x,y);
   if(!el)return null;
   const btn=el.closest('.key-btn');
@@ -683,7 +745,6 @@ function getBtnFromPoint(x,y){
 }
 
 function addToSwipePath(info){
-  // 이미 경로에 있으면 무시, 최대 2개만
   if(swipePath.length>=2)return;
   if(swipePath.find(p=>p.num===info.num))return;
   const rect=info.btn.getBoundingClientRect();
@@ -691,50 +752,32 @@ function addToSwipePath(info){
   swipePath.push({num:info.num,btn:info.btn,cx,cy});
   info.btn.classList.add('swipe-hover');
   vibrate(15);
+  // 에코잔상 즉시 스폰
+  spawnFluidGhost(info.num, info.btn);
   updateSwipeVisual();
 }
 
 function updateSwipeVisual(){
   if(swipePath.length===0){
-    swipeParticles.innerHTML='';swipeParticles.style.display='none';
     swipePreview.classList.remove('show');
     return;
   }
   if(swipePath.length===1){
-    swipeParticles.innerHTML='';swipeParticles.style.display='none';
     swipePreview.textContent=swipePath[0].num;
     swipePreview.classList.add('show');
     return;
   }
-  // 2개: 파티클 스트림 + 합친 숫자
   const p1=swipePath[0], p2=swipePath[1];
   const combined=p1.num*10+p2.num;
   swipePreview.textContent=combined;
   swipePreview.classList.add('show');
-  // 파티클 도트 생성 (6개 점이 경로를 따라 배치)
-  const minX=Math.min(p1.cx,p2.cx)-12, minY=Math.min(p1.cy,p2.cy)-12;
-  const w=Math.abs(p2.cx-p1.cx)+24, h=Math.abs(p2.cy-p1.cy)+24;
-  swipeParticles.style.display='block';
-  swipeParticles.style.left=minX+'px';swipeParticles.style.top=minY+'px';
-  swipeParticles.style.width=w+'px';swipeParticles.style.height=h+'px';
-  let dots='';
-  const count=6;
-  for(let i=0;i<count;i++){
-    const t=(i+1)/(count+1);
-    const x=(p1.cx-minX)+(p2.cx-p1.cx)*t;
-    const y=(p1.cy-minY)+(p2.cy-p1.cy)*t;
-    const jx=(Math.random()-.5)*10;
-    const jy=(Math.random()-.5)*10;
-    const size=4+Math.random()*5;
-    dots+=`<div class="swipe-dot" style="left:${x+jx-size/2}px;top:${y+jy-size/2}px;width:${size}px;height:${size}px"></div>`;
-  }
-  swipeParticles.innerHTML=dots;
+  // 경로 잔상 도트
+  spawnTrailDots(p1.btn, p2.btn);
 }
 
 function clearSwipeVisual(){
   swipePath.forEach(p=>p.btn.classList.remove('swipe-hover'));
   swipePath=[];
-  swipeParticles.innerHTML='';swipeParticles.style.display='none';
   swipePreview.classList.remove('show');
 }
 
@@ -743,19 +786,16 @@ function executeSwipe(){
   if(isDemoMode){clearSwipeVisual();return;}
 
   if(swipePath.length===1){
-    // 단일 탭
     const num=swipePath[0].num;
     clearSwipeVisual();
     pressKey(num);
   }else{
-    // 2자리 스와이프
     const tens=swipePath[0].num;
     const ones=swipePath[1].num;
     const combined=tens*10+ones;
-    // 확인 이펙트
     const conf=document.createElement('div');
     conf.className='swipe-confirm';conf.textContent=combined;
-    document.body.appendChild(conf);setTimeout(()=>conf.remove(),450);
+    document.body.appendChild(conf);setTimeout(()=>conf.remove(),500);
     clearSwipeVisual();
     pressKey(ones, combined);
   }
@@ -1028,28 +1068,27 @@ function scheduleDemoTap(){
     if(!isDemoMode||!isPlaying||demoStopping)return;
     const choice=demoChooseNumber();
     if(choice.swipe){
-      // 스와이프 파티클 스트림 시뮬레이션
+      // 스와이프 에코잔상 시뮬레이션
       const btn1=document.querySelector(`.key-btn[data-num="${choice.tens}"]`);
       const btn2=document.querySelector(`.key-btn[data-num="${choice.ones}"]`);
       if(btn1&&btn2){
         btn1.classList.add('swipe-hover');
+        spawnFluidGhost(choice.tens, btn1);
         setTimeout(()=>{
           btn2.classList.add('swipe-hover');
-          // 파티클 도트 생성
-          const r1=btn1.getBoundingClientRect(), r2=btn2.getBoundingClientRect();
-          const cx1=r1.left+r1.width/2, cy1=r1.top+r1.height/2;
-          const cx2=r2.left+r2.width/2, cy2=r2.top+r2.height/2;
-          swipePath=[{num:choice.tens,btn:btn1,cx:cx1,cy:cy1},{num:choice.ones,btn:btn2,cx:cx2,cy:cy2}];
-          updateSwipeVisual();
+          spawnFluidGhost(choice.ones, btn2);
+          spawnTrailDots(btn1, btn2);
           swipePreview.textContent=choice.actualNum;
           swipePreview.classList.add('show');
-        },100);
+        },120);
         setTimeout(()=>{
-          clearSwipeVisual();
+          btn1.classList.remove('swipe-hover');
+          btn2.classList.remove('swipe-hover');
+          swipePreview.classList.remove('show');
           const conf=document.createElement('div');
           conf.className='swipe-confirm';conf.textContent=choice.actualNum;
-          document.body.appendChild(conf);setTimeout(()=>conf.remove(),450);
-        },350);
+          document.body.appendChild(conf);setTimeout(()=>conf.remove(),500);
+        },380);
       }
       pressKey(choice.num, choice.actualNum);
     }else{
