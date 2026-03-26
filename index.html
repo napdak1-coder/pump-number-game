@@ -54,6 +54,24 @@
   .target-number.success{color:#00ff88;text-shadow:0 0 30px #00ff88,0 0 60px rgba(0,255,136,0.4)}
   .target-number.fail{color:#ff2244;text-shadow:0 0 30px #ff2244,0 0 60px rgba(255,34,68,0.4)}
   .target-number.reverse-color{color:#fbbf24;text-shadow:0 0 30px rgba(251,191,36,0.7),0 0 60px rgba(251,191,36,0.3)}
+  /* === TARGET HINT FORMAT (십|일 분리) === */
+  .target-number .t-tens{color:#cc88ff;position:relative}
+  .target-number .t-sep{font-size:.45em;color:rgba(204,136,255,.35);vertical-align:middle;margin:0 2px;font-weight:400}
+  .target-number .t-ones{color:#44ddff;position:relative}
+  .target-number .t-digit-label{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:1px;font-weight:700;white-space:nowrap}
+  .target-number .t-tens .t-digit-label{color:rgba(204,136,255,.4)}
+  .target-number .t-ones .t-digit-label{color:rgba(68,221,255,.4)}
+  .target-number .t-hundreds{color:#ff44aa;position:relative}
+  .target-number .t-hundreds .t-digit-label{color:rgba(255,68,170,.4)}
+  /* success/fail 시에는 힌트 색 덮어씌움 */
+  .target-number.success .t-tens,.target-number.success .t-ones,.target-number.success .t-hundreds,.target-number.success .t-sep{color:#00ff88}
+  .target-number.fail .t-tens,.target-number.fail .t-ones,.target-number.fail .t-hundreds,.target-number.fail .t-sep{color:#ff2244}
+  .target-number.reverse-color .t-tens,.target-number.reverse-color .t-ones,.target-number.reverse-color .t-hundreds,.target-number.reverse-color .t-sep{color:#fbbf24}
+  /* lavender */
+  body.lavender .target-number .t-tens{color:#7b1fa2}
+  body.lavender .target-number .t-ones{color:#42a5f5}
+  body.lavender .target-number .t-hundreds{color:#c62828}
+  body.lavender .target-number .t-sep{color:rgba(90,50,120,.25)}
   .timer-bar-wrap{width:65%;max-width:280px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;margin-top:10px;overflow:hidden}
   .timer-bar{height:100%;background:linear-gradient(90deg,#ff44aa,#44ddff);border-radius:2px;transition:width .1s linear}
   .timer-bar.danger{background:linear-gradient(90deg,#ff2244,#ff6600);animation:timerPulse .4s infinite}
@@ -522,6 +540,21 @@ function startGame(){
 
 function updateLives(){livesDisplay.textContent=Array(lives).fill('♥').join(' ')+(lives<3?' '+Array(3-lives).fill('♡').join(' '):'')}
 
+/* === TARGET HINT DISPLAY === */
+function displayTarget(num, el){
+  el=el||targetEl;
+  const n=Math.abs(num);
+  if(n>=100){
+    const h=Math.floor(n/100), t=Math.floor((n%100)/10), o=n%10;
+    el.innerHTML=`<span class="t-hundreds">${h}<span class="t-digit-label">100</span></span><span class="t-sep">·</span><span class="t-tens">${t}<span class="t-digit-label">십</span></span><span class="t-sep">·</span><span class="t-ones">${o}<span class="t-digit-label">일</span></span>`;
+  }else if(n>=10){
+    const t=Math.floor(n/10), o=n%10;
+    el.innerHTML=`<span class="t-tens">${t}<span class="t-digit-label">십</span></span><span class="t-sep">·</span><span class="t-ones">${o}<span class="t-digit-label">일</span></span>`;
+  }else{
+    el.textContent=(num<0?'-':'')+n;
+  }
+}
+
 function nextRound(){
   if(demoStopping)return;
   const nextStage=stageCount+1;
@@ -537,7 +570,7 @@ function nextRound(){
   originalTarget=Math.floor(Math.random()*(cfg.max-cfg.min+1))+cfg.min;
 
   if(isReverse){currentValue=0;target=originalTarget;targetEl.textContent='0';targetEl.className='target-number reverse-color'}
-  else{target=originalTarget;currentValue=0;targetEl.textContent=target;targetEl.className='target-number'}
+  else{target=originalTarget;currentValue=0;displayTarget(target);targetEl.className='target-number'}
   tapCount=0;
   // minTaps: 스와이프로 최대 99까지 가능 (9→9 = 99)
   const maxSwipe=maxU*10+maxU; // e.g. 99
@@ -647,7 +680,7 @@ function pressKey(num, actualNum){
     target-=actualNum;
     if(target<0){spawnAfterimage(oldDisplay);targetEl.textContent=target;vibrate([80,40,80]);handleFail('FAIL!')}
     else if(target===0){spawnAfterimage(oldDisplay);targetEl.textContent='0';vibrate([40,25,40,25,60]);handleSuccess()}
-    else{spawnAfterimage(oldDisplay);targetEl.textContent=target;targetEl.classList.add('shake');setTimeout(()=>targetEl.classList.remove('shake'),350)}
+    else{spawnAfterimage(oldDisplay);displayTarget(target);targetEl.classList.add('shake');setTimeout(()=>targetEl.classList.remove('shake'),350)}
   }
 }
 
