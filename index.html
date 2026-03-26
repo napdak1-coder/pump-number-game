@@ -670,6 +670,14 @@
 
   /* 반짝이 */
   body.peach .sparkle-effect{color:rgba(217,119,6,.3)}
+
+  /* === 9번 풀 이펙트 피버 — 배경 애니메이션 (peach only) === */
+  @keyframes fxSparkleAnim{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
+  @keyframes fxPixelRainAnim{0%{transform:translateY(-10px);opacity:0}50%{opacity:.12}100%{transform:translateY(700px);opacity:0}}
+  @keyframes fxStarTwinkleAnim{0%,100%{opacity:.15;transform:scale(.5) rotate(0)}50%{opacity:1;transform:scale(1.2) rotate(180deg)}}
+  @keyframes fxHexFloatAnim{0%{transform:translateY(0) rotate(0);opacity:.06}50%{opacity:.12}100%{transform:translateY(-650px) rotate(360deg);opacity:0}}
+  @keyframes fxCometTrailAnim{0%{transform:translateX(-100px) translateY(100px);opacity:0}20%{opacity:.2}80%{opacity:.1}100%{transform:translateX(400px) translateY(-100px);opacity:0}}
+  @keyframes fxDustFloatAnim{0%{transform:translate(0,0);opacity:0}20%{opacity:.12}80%{opacity:.08}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
 </style>
 </head>
 <body>
@@ -799,6 +807,7 @@ function applyTheme(t){
   if(t==='peach'){document.body.classList.add('peach');if(thumb)thumb.textContent='🍑'}
   else if(t==='lavender'){document.body.classList.add('lavender');if(thumb)thumb.textContent='🌸'}
   else{if(thumb)thumb.textContent='🌙'}
+  if(typeof initBgFx==='function'&&isPlaying)initBgFx();
 }
 const themeOrder=['peach','lavender','dark'];
 function toggleTheme(){const i=themeOrder.indexOf(currentTheme);applyTheme(themeOrder[(i+1)%themeOrder.length])}
@@ -1026,6 +1035,40 @@ function goCreateBgEffects(){
 // 캐릭터 바 초기화 (drawTauntFace, drawPixelDog 정의 후)
 initCharBar();
 
+/* === 9번 풀 이펙트 피버 — 배경 효과 라이브러리 (peach only) === */
+const FX_MIX=['#ffd040','#ff8060','#60e880','#60d0e0','#ff80c0'];
+const FX_GOLD=['#ffd700','#ffe066','#ffcc00','#ffb830','#f0c030'];
+
+function fxSparkle(el,n,cs){cs=cs||FX_MIX;for(let i=0;i<n;i++){const d=document.createElement('div');d.className='fx-bg-el';d.style.cssText=`position:absolute;width:${3+Math.random()*3}px;height:${3+Math.random()*3}px;background:${cs[i%cs.length]};opacity:0;left:${5+Math.random()*90}%;top:${5+Math.random()*90}%;animation:fxSparkleAnim ${1+Math.random()*2}s ease ${Math.random()*3}s infinite;pointer-events:none;z-index:0`;el.appendChild(d)}}
+
+function fxPixelRain(el,n,cs){cs=cs||FX_MIX;for(let i=0;i<n;i++){const d=document.createElement('div');d.className='fx-bg-el';d.style.cssText=`position:absolute;width:3px;height:3px;background:${cs[i%cs.length]};opacity:0;left:${Math.random()*100}%;top:-5%;animation:fxPixelRainAnim ${3+Math.random()*4}s linear ${Math.random()*4}s infinite;pointer-events:none;z-index:0`;el.appendChild(d)}}
+
+function fxStarTwinkle(el,n,cs){cs=cs||['#ffd700','#fff','#ffe066'];for(let i=0;i<n;i++){const d=document.createElement('div');d.className='fx-bg-el';d.textContent='✦';d.style.cssText=`position:absolute;font-size:${4+Math.random()*7}px;color:${cs[i%cs.length]};opacity:.15;left:${5+Math.random()*90}%;top:${5+Math.random()*90}%;animation:fxStarTwinkleAnim ${2+Math.random()*3}s ease ${Math.random()*4}s infinite;pointer-events:none;z-index:0;line-height:1`;el.appendChild(d)}}
+
+function fxHexFloat(el,n){const cs=['rgba(255,200,60,.08)','rgba(255,160,40,.06)','rgba(255,220,80,.05)'];for(let i=0;i<n;i++){const d=document.createElement('div');d.className='fx-bg-el';const sz=10+Math.random()*20;d.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;border:1px solid ${cs[i%cs.length]};clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);left:${Math.random()*100}%;bottom:-30px;animation:fxHexFloatAnim ${8+Math.random()*10}s linear ${Math.random()*6}s infinite;pointer-events:none;z-index:0`;el.appendChild(d)}}
+
+function fxComet(el,n){const cs=['rgba(255,215,0,.15)','rgba(255,180,60,.1)','rgba(255,128,200,.08)'];for(let i=0;i<n;i++){const d=document.createElement('div');d.className='fx-bg-el';d.style.cssText=`position:absolute;width:${20+Math.random()*30}px;height:2px;background:linear-gradient(90deg,${cs[i%cs.length]},transparent);left:-100px;top:${10+Math.random()*80}%;animation:fxCometTrailAnim ${3+Math.random()*5}s linear ${Math.random()*6}s infinite;pointer-events:none;z-index:0;transform:rotate(-20deg)`;el.appendChild(d)}}
+
+function fxDust(el,n){const cs=['rgba(255,200,60,.12)','rgba(255,180,80,.08)'];for(let i=0;i<n;i++){const d=document.createElement('div');d.className='fx-bg-el';const sz=2+Math.random()*3;const dx=(Math.random()-.5)*150;const dy=(Math.random()-.5)*150;d.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;background:${cs[i%cs.length]};left:${Math.random()*100}%;top:${Math.random()*100}%;--dx:${dx}px;--dy:${dy}px;animation:fxDustFloatAnim ${4+Math.random()*6}s ease ${Math.random()*4}s infinite;pointer-events:none;z-index:0`;el.appendChild(d)}}
+
+function initBgFx(){
+  clearBgFx();
+  if(!document.body.classList.contains('peach'))return;
+  const el=document.querySelector('.target-area');
+  if(!el)return;
+  /* 9번 풀 이펙트 피버: 별+육각+혜성+픽셀비+스파클+먼지 */
+  fxStarTwinkle(el,18);
+  fxHexFloat(el,6);
+  fxComet(el,4);
+  fxPixelRain(el,20,FX_MIX);
+  fxSparkle(el,15,FX_MIX);
+  fxDust(el,15);
+}
+
+function clearBgFx(){
+  document.querySelectorAll('.fx-bg-el').forEach(e=>e.remove());
+}
+
 const AudioCtx=window.AudioContext||window.webkitAudioContext;let audioCtx;
 function initAudio(){if(!audioCtx)audioCtx=new AudioCtx()}
 function playTone(f,d,t,v){if(!settings.sound||!audioCtx)return;try{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||.15,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}catch(e){}}
@@ -1130,7 +1173,7 @@ function startGame(){
   score=0;comboCount=0;maxCombo=0;currentLevel=1;stageCount=0;lives=3;geniusCount=0;reverseClears=0;prevTier='';
   scoreEl.textContent=score.toLocaleString();levelEl.textContent='초급 0/30';comboEl.textContent=comboCount;updateLives();
   fastClears=0;if(isFever)endFever();
-  isPlaying=true;nextRound();
+  isPlaying=true;initBgFx();nextRound();
 }
 
 function updateLives(){livesDisplay.textContent=Array(lives).fill('♥').join(' ')+(lives<3?' '+Array(3-lives).fill('♡').join(' '):'')}
@@ -1555,7 +1598,7 @@ function handleFail(msg){
 }
 
 function showGameOver(){
-  isPlaying=false;sfxGameOver();const isNew=score>bestScore;
+  isPlaying=false;clearBgFx();sfxGameOver();const isNew=score>bestScore;
   if(isNew&&!isDemoMode){bestScore=score;localStorage.setItem('pumpBest',bestScore)}
   $('bestScoreStart').textContent='🏆 최고기록 '+bestScore;
   // 기존 배경효과 제거
