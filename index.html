@@ -126,7 +126,16 @@
   .particle{position:absolute;border-radius:50%;pointer-events:none;animation:particleFly .65s ease-out forwards}
   .star-particle{position:absolute;pointer-events:none;animation:starFly .75s ease-out forwards}
   .ripple{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,0.5);pointer-events:none;animation:rippleGrow .45s ease-out forwards}
+  /* 키패드 터치 물결 */
+  .key-ripple{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.4) 0%,rgba(255,255,255,0) 70%);pointer-events:none;animation:keyRipple .5s ease-out forwards;z-index:5}
+  @keyframes keyRipple{0%{transform:scale(0);opacity:1}100%{transform:scale(3);opacity:0}}
+  body.peach .key-ripple{background:radial-gradient(circle,rgba(0,255,204,.5) 0%,rgba(0,255,204,0) 70%)}
   .screen-flash{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99;animation:flash .15s ease-out forwards}
+  /* 스테이지 전환 와이프 */
+  .stage-wipe{position:fixed;inset:0;z-index:200;pointer-events:none;overflow:hidden}
+  .stage-wipe-bar{position:absolute;left:0;right:0;height:12%;background:linear-gradient(90deg,#00ffcc,#44ff44,#ffcc00);opacity:.9;animation:wipeSlide .35s ease-out forwards}
+  @keyframes wipeSlide{0%{transform:translateX(-100%);opacity:1}60%{transform:translateX(0%);opacity:.8}100%{transform:translateX(100%);opacity:0}}
+  body.peach .stage-wipe-bar{background:linear-gradient(90deg,#00ffcc,#44ff44);box-shadow:0 0 20px rgba(0,255,204,.4)}
   .breathe-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:300;opacity:0;pointer-events:none;transition:opacity .3s}
   .breathe-overlay.show{opacity:1;pointer-events:auto}
   .breathe-stage{font-size:14px;color:#dd99ff;letter-spacing:4px;margin-bottom:6px}
@@ -173,6 +182,8 @@
   .go-card-row{display:flex;gap:6px;width:80%;max-width:280px;margin-bottom:6px;z-index:2}
   .go-card-sm{flex:1;padding:8px 4px;background:rgba(255,200,60,.04);border:2px solid rgba(255,200,60,.12);text-align:center;border-radius:0}
   .go-retry{margin-top:8px;padding:14px 46px;background:linear-gradient(180deg,#e8b028,#c88818);border:3px solid #886010;color:#fff;font-size:17px;font-weight:900;letter-spacing:6px;cursor:pointer;font-family:'DotGothic16',monospace;box-shadow:5px 5px 0 #382008;border-radius:0;z-index:4;-webkit-tap-highlight-color:transparent}
+  .go-share{margin-top:6px;padding:10px 36px;background:linear-gradient(180deg,#3088e8,#2068c8);border:3px solid #104888;color:#fff;font-size:13px;font-weight:900;letter-spacing:4px;cursor:pointer;font-family:'DotGothic16',monospace;box-shadow:4px 4px 0 #082848;border-radius:0;z-index:4;-webkit-tap-highlight-color:transparent}
+  .go-share:active{transform:translateY(3px);box-shadow:1px 1px 0 #082848}
   .go-retry:active{transform:scale(.95)}
   .go-footer{margin-top:6px;font-size:8px;color:rgba(255,224,102,.15);letter-spacing:3px;z-index:2;font-family:'DotGothic16',monospace}
   .start-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(160deg,#0a0a14 0%,#0f0f20 40%,#14142a 70%,#0f0f20 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;transition:opacity .5s}
@@ -211,6 +222,12 @@
   @keyframes starFly{0%{transform:translate(0,0) scale(1) rotate(0deg);opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(0) rotate(360deg);opacity:0}}
   @keyframes rippleGrow{0%{width:0;height:0;opacity:.8}100%{width:200px;height:200px;margin-left:-100px;margin-top:-100px;opacity:0}}
   @keyframes flash{0%{background:rgba(255,255,255,.2)}100%{background:transparent}}
+  /* 실패 시 화면 흔들림 */
+  @keyframes screenShake{0%{transform:translate(0)}10%{transform:translate(-4px,2px)}20%{transform:translate(4px,-2px)}30%{transform:translate(-3px,-1px)}40%{transform:translate(3px,1px)}50%{transform:translate(-2px,2px)}60%{transform:translate(2px,-1px)}70%{transform:translate(-1px,1px)}80%{transform:translate(1px,-1px)}90%{transform:translate(-1px,0)}100%{transform:translate(0)}}
+  body.shake-screen{animation:screenShake .4s ease}
+  /* 성공 시 화면 번쩍 */
+  .success-flash{position:fixed;inset:0;background:radial-gradient(circle at center,rgba(0,255,136,.2),transparent 70%);pointer-events:none;z-index:98;animation:successGlow .4s ease-out forwards}
+  @keyframes successGlow{0%{opacity:1}100%{opacity:0}}
   @keyframes comboPulse{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
   @keyframes messageIn{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:1}}
   @keyframes breathePulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.05);opacity:1}}
@@ -735,20 +752,20 @@
   <div class="go-new-best" id="goNewBest" data-seq="1">★ 신기록! ★</div>
   <div class="go-taunt" data-seq="1">다시 해볼 자신 있어?</div>
   <div class="go-card go-card-score" data-seq="2">
-    <div class="go-card-label">TOTAL SCORE</div>
+    <div class="go-card-label">총 점수</div>
     <div class="go-card-val" id="goScore">0</div>
   </div>
   <div class="go-card-row">
     <div class="go-card go-card-sm" data-seq="3">
-      <div class="go-card-label">BEST</div>
+      <div class="go-card-label">최고기록</div>
       <div class="go-card-val sm" id="goBest">0</div>
     </div>
     <div class="go-card go-card-sm" data-seq="4">
-      <div class="go-card-label">COMBO</div>
+      <div class="go-card-label">콤보</div>
       <div class="go-card-val sm" id="goCombo">0</div>
     </div>
     <div class="go-card go-card-sm" data-seq="5">
-      <div class="go-card-label">STAGE</div>
+      <div class="go-card-label">스테이지</div>
       <div class="go-card-val sm" id="goStage">0</div>
     </div>
   </div>
@@ -763,6 +780,7 @@
     </div>
   </div>
   <button class="go-retry" data-seq="8" onclick="startGame()">🔥 재도전</button>
+  <button class="go-share" data-seq="8" onclick="shareResult()">📤 결과 공유</button>
   <div class="go-footer" data-seq="9">못 하면 인정하든가 ㅋ</div>
 </div>
 <div class="allclear-overlay" id="allclearOverlay"><div class="allclear-title">올 클리어!</div><div class="allclear-sub">30 스테이지 클리어!</div><div class="go-stats"><div class="go-stat-row"><span class="go-stat-label">최종 점수</span><span class="go-stat-val" id="acScore">0</span></div><div class="go-stat-row"><span class="go-stat-label">최고기록</span><span class="go-stat-val best" id="acBest">0</span></div><div class="go-stat-row"><span class="go-stat-label">최대 콤보</span><span class="go-stat-val" id="acCombo">0</span></div><div class="go-stat-row"><span class="go-stat-label">천재 횟수</span><span class="go-stat-val" id="acGenius">0</span></div></div><button class="go-retry" onclick="closeAllClearAndRestart()" style="margin-top:20px">다시 도전</button></div>
@@ -1183,7 +1201,7 @@ function updateBombFuse(pct){
   }
   if(bombFuseTime){
     const sec=(pct/100*10).toFixed(1);
-    bombFuseTime.textContent=sec+'s'+(isDanger?' \u{1F4A3}':'');
+    bombFuseTime.textContent=sec+'초'+(isDanger?' \u{1F4A3}':'');
     bombFuseTime.className='bomb-fuse-time'+(isDanger?' danger-time':'');
   }
 }
@@ -1350,6 +1368,7 @@ function pressKey(num, actualNum){
   const btn=document.querySelector(`.key-btn[data-num="${num}"]`);if(!btn)return;
   const rect=btn.getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
   tapCount++;btn.classList.remove('pressed');void btn.offsetWidth;btn.classList.add('pressed');
+  spawnKeyRipple(btn);
   if(isDemoMode){btn.classList.add('demo-highlight');setTimeout(()=>btn.classList.remove('demo-highlight'),200)}
   vibrate(actualNum>9?[40,20,40]:35);sfxTap(num);
   if(settings.explode)spawnExplodeNumber(actualNum);if(settings.particle)spawnParticles(cx,cy,false);if(settings.flash)spawnFlash();spawnRipple(cx,cy);
@@ -1357,12 +1376,12 @@ function pressKey(num, actualNum){
   const oldDisplay=targetEl.textContent;
   if(isReverse){
     currentValue+=actualNum;
-    if(currentValue>originalTarget){spawnAfterimage(oldDisplay);targetEl.textContent=currentValue;vibrate([80,40,80]);handleFail('OVER!')}
+    if(currentValue>originalTarget){spawnAfterimage(oldDisplay);targetEl.textContent=currentValue;vibrate([80,40,80]);handleFail('초과!')}
     else if(currentValue===originalTarget){spawnAfterimage(oldDisplay);targetEl.textContent=currentValue;vibrate([40,25,40,25,60]);handleSuccess()}
     else{spawnAfterimage(oldDisplay);targetEl.textContent=currentValue;targetEl.classList.add('shake');setTimeout(()=>targetEl.classList.remove('shake'),350)}
   }else{
     target-=actualNum;
-    if(target<0){spawnAfterimage(oldDisplay);targetEl.textContent=target;vibrate([80,40,80]);handleFail('FAIL!')}
+    if(target<0){spawnAfterimage(oldDisplay);targetEl.textContent=target;vibrate([80,40,80]);handleFail('실패!')}
     else if(target===0){spawnAfterimage(oldDisplay);targetEl.textContent='0';vibrate([40,25,40,25,60]);handleSuccess()}
     else{spawnAfterimage(oldDisplay);displayTarget(target);targetEl.classList.add('shake');setTimeout(()=>targetEl.classList.remove('shake'),350)}
   }
@@ -1612,7 +1631,8 @@ function handleSuccess(){
   if(speedMultiplier>1)msgText+=' (x'+speedMultiplier.toFixed(1)+')';
   showMessage(msgText,cls);setTimeout(()=>spawnRankPopup(rank,color),150);
   if(cls==='genius')sfxGenius();else sfxSuccess();
-  if(comboCount>=2){sfxCombo();comboTextEl.textContent='콤보 x'+comboCount;comboTextEl.classList.add('show');setTimeout(()=>comboTextEl.classList.remove('show'),1200)}
+  spawnSuccessFlash();
+  if(comboCount>=2){sfxCombo();comboTextEl.textContent=comboCount+'연속!';comboTextEl.classList.add('show');setTimeout(()=>comboTextEl.classList.remove('show'),1200)}
   updateEdgeGlow();checkKillStreak();
   if(settings.particle){const bc=cls==='genius'?5:3;for(let i=0;i<bc;i++)setTimeout(()=>spawnParticles(window.innerWidth*(.15+Math.random()*.7),window.innerHeight*(.1+Math.random()*.4),true),i*100)}
   buttons.forEach(b=>b.classList.add('disabled'));
@@ -1634,8 +1654,9 @@ function handleFail(msg){
   clearInterval(timerInterval);comboCount=0;lives--;comboEl.textContent=comboCount;updateLives();
   updateEdgeGlow();updateHeartbeat();
   targetEl.className='target-number fail shake';sfxFail();
+  shakeScreen();
   if(settings.flash)spawnFlash(true);
-  showMessage(msg+' ('+lives+' LEFT)','fail-msg');buttons.forEach(b=>b.classList.add('disabled'));
+  showMessage(msg+' (남은목숨 '+lives+')','fail-msg');buttons.forEach(b=>b.classList.add('disabled'));
   if(isDemoMode&&lives<=0){
     // Demo: auto-restart instead of game over screen
     setTimeout(()=>{
@@ -1688,7 +1709,7 @@ function showGameOver(){
 
 function showBreathe(){
   if(demoStopping)return;
-  // 숨고르기 제거 — 바로 다음 라운드 시작
+  spawnStageWipe();
   setTimeout(()=>{if(!demoStopping)nextRound()},350);
 }
 
@@ -1714,6 +1735,64 @@ function showAllClear(){
   sfxGenius();setTimeout(sfxGenius,300);setTimeout(sfxGenius,600);
 }
 function closeAllClearAndRestart(){$('allclearOverlay').classList.remove('show');startGame()}
+
+/* === 결과 공유 기능 === */
+function shareResult(){
+  const tier=getDifficulty(stageCount||1).tier;
+  const text='\u{1F3AE} 빼봐영 결과!\n'+
+    '\u{1F4CA} 점수: '+score.toLocaleString()+'\n'+
+    '\u{1F525} 최대콤보: '+maxCombo+'연속\n'+
+    '\u{1F4C8} 스테이지: '+stageCount+'/30 ('+tier+')\n'+
+    '\u{2B50} 천재: '+geniusCount+'회\n'+
+    '\u{1F3C6} 최고기록: '+bestScore.toLocaleString()+'\n\n'+
+    '도전해봐! \u{1F449} https://napdak1-coder.github.io/pump-number-game/';
+  if(navigator.share){
+    navigator.share({title:'빼봐영 결과',text:text}).catch(()=>{});
+  }else{
+    navigator.clipboard.writeText(text).then(()=>{
+      const btn=document.querySelector('.go-share');
+      if(btn){const orig=btn.textContent;btn.textContent='\u2705 복사됨!';setTimeout(()=>btn.textContent=orig,1500)}
+    }).catch(()=>{});
+  }
+}
+
+/* === 키패드 터치 물결(ripple) 효과 === */
+function spawnKeyRipple(btn,e){
+  const rect=btn.getBoundingClientRect();
+  const x=(e?e.clientX||e.touches?.[0]?.clientX:rect.left+rect.width/2)||rect.left+rect.width/2;
+  const y=(e?e.clientY||e.touches?.[0]?.clientY:rect.top+rect.height/2)||rect.top+rect.height/2;
+  const rip=document.createElement('div');rip.className='key-ripple';
+  const sz=Math.max(rect.width,rect.height);
+  rip.style.width=sz+'px';rip.style.height=sz+'px';
+  rip.style.left=(x-rect.left-sz/2)+'px';rip.style.top=(y-rect.top-sz/2)+'px';
+  btn.appendChild(rip);setTimeout(()=>rip.remove(),500);
+}
+
+/* === 스테이지 전환 와이프 효과 === */
+function spawnStageWipe(){
+  const wrap=document.createElement('div');wrap.className='stage-wipe';
+  const bars=6;for(let i=0;i<bars;i++){
+    const bar=document.createElement('div');bar.className='stage-wipe-bar';
+    bar.style.top=(i*(100/bars))+'%';
+    bar.style.animationDelay=(i*0.04)+'s';
+    wrap.appendChild(bar);
+  }
+  document.body.appendChild(wrap);setTimeout(()=>wrap.remove(),600);
+}
+
+/* === 실패 시 화면 흔들림 === */
+function shakeScreen(){
+  document.body.classList.remove('shake-screen');
+  void document.body.offsetWidth;
+  document.body.classList.add('shake-screen');
+  setTimeout(()=>document.body.classList.remove('shake-screen'),400);
+}
+
+/* === 성공 시 화면 번쩍 === */
+function spawnSuccessFlash(){
+  const el=document.createElement('div');el.className='success-flash';
+  document.body.appendChild(el);setTimeout(()=>el.remove(),400);
+}
 
 function showMessage(t,c){messageEl.textContent=t;messageEl.className='message '+c+' show';setTimeout(()=>{messageEl.className='message'},1500)}
 function spawnScoreFloat(text){
@@ -1756,10 +1835,13 @@ function updateEdgeGlow(){
 
 /* === 8. KILL STREAK TEXT === */
 const streakDefs=[
+  {combo:3,text:'좋은데?!',color:'#44ddff',size:'min(10vw,44px)'},
   {combo:5,text:'불타오르다!',color:'#44ffaa',size:'min(12vw,52px)'},
+  {combo:7,text:'미쳤다!',color:'#ffaa44',size:'min(12vw,52px)'},
   {combo:10,text:'멈출수없다!',color:'#dd99ff',size:'min(13vw,56px)'},
   {combo:15,text:'압도적!',color:'#ff44aa',size:'min(14vw,60px)'},
   {combo:20,text:'신의경지!',color:'#ffd700',size:'min(15vw,64px)'},
+  {combo:25,text:'인간승리!',color:'#ff6600',size:'min(15vw,64px)'},
   {combo:30,text:'전설!',color:'#ff2244',size:'min(16vw,70px)'},
 ];
 function checkKillStreak(){
