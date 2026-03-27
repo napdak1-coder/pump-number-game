@@ -51,7 +51,7 @@ body{background:#000;display:flex;align-items:center;justify-content:center;min-
 
 /* ★★★ 픽셀 타이틀 ★★★ */
 .title-area{margin:4px 0 16px}
-#titleCanvas{width:280px;height:90px;image-rendering:pixelated}
+#titleCanvas{width:270px;height:90px;image-rendering:pixelated}
 
 .gem-area{margin:8px 0 20px}
 #gemCanvas{width:72px;height:72px;image-rendering:pixelated;animation:gemFloat 2.5s ease infinite}
@@ -263,7 +263,7 @@ body{background:#000;display:flex;align-items:center;justify-content:center;min-
       <div id="meteorContainer"></div>
       <div class="content">
         <div class="char-row" id="charRow"></div>
-        <div class="title-area"><canvas id="titleCanvas" width="560" height="180"></canvas></div>
+        <div class="title-area"><canvas id="titleCanvas" width="90" height="30"></canvas></div>
         <div class="gem-area"><canvas id="gemCanvas" width="72" height="72"></canvas></div>
         <div class="best-score">BEST SCORE <span>12,450</span></div>
         <button class="start-btn">시작하기</button>
@@ -396,41 +396,25 @@ function drawDog(canvas,bc,ec,cc,armsUp){
   px(ctx,3,13,o,s);px(ctx,4,13,bc,s);px(ctx,5,13,o,s);px(ctx,8,13,o,s);px(ctx,9,13,bc,s);px(ctx,10,13,o,s);
 }
 
-// ★★★ "빼봐영" 픽셀 타이틀 (Canvas 픽셀아트) ★★★
+// ★★★ "빼봐영" 픽셀 타이틀 (22px 극저해상도 + 3배 확대) ★★★
 function drawPixelTitle(canvas){
   const ctx=canvas.getContext('2d');
   ctx.imageSmoothingEnabled=false;
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  // 픽셀 스타일 — DotGothic16 폰트 사용하되 하드 그림자
-  const sz=68;
-  ctx.font=`900 ${sz}px 'DotGothic16',monospace`;
+  ctx.font="900 22px 'DotGothic16',monospace";
   ctx.textAlign='center';
   ctx.textBaseline='middle';
 
   const cx=canvas.width/2, cy=canvas.height/2;
 
-  // 하드 그림자 (3단계)
-  ctx.fillStyle='#301800';
-  ctx.fillText('빼봐영',cx+6,cy+6);
-
+  // 하드 그림자
   ctx.fillStyle='#604010';
-  ctx.fillText('빼봐영',cx+3,cy+3);
+  ctx.fillText('빼봐영',cx+1,cy+1);
 
-  // 메인 그라디언트
-  const g=ctx.createLinearGradient(cx-120,cy-30,cx-120,cy+30);
-  g.addColorStop(0,'#ffe080');
-  g.addColorStop(0.3,'#ffa830');
-  g.addColorStop(0.6,'#e07020');
-  g.addColorStop(1,'#b05010');
-  ctx.fillStyle=g;
+  // 메인 컬러
+  ctx.fillStyle='#f0a030';
   ctx.fillText('빼봐영',cx,cy);
-
-  // 인라인 하이라이트
-  ctx.globalAlpha=.12;
-  ctx.fillStyle='#fff';
-  ctx.fillText('빼봐영',cx-1,cy-2);
-  ctx.globalAlpha=1;
 }
 
 // ===== 보석 =====
