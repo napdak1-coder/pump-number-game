@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>빼봐영 Unity 앱 목업 — 모바일 앱 프리뷰</title>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DotGothic16','Courier New',monospace;background:#060810;color:#c0e8ff;overflow-x:hidden}
+
+/* === 네비게이션 === */
+.nav{position:fixed;top:0;left:0;right:0;z-index:999;background:#040a14;border-bottom:2px solid #143040;display:flex;gap:3px;padding:5px 6px;overflow-x:auto;white-space:nowrap}
+.nav button{padding:6px 12px;border:2px solid #143040;background:#081828;color:#4888a8;font-size:10px;font-weight:700;cursor:pointer;flex-shrink:0;font-family:'DotGothic16',monospace;transition:all .2s}
+.nav button.active{background:#143040;border-color:#2880a0;color:#70d0e8;box-shadow:0 0 8px rgba(40,128,160,.3)}
+.nav button:hover{border-color:#2880a0}
+
+/* === 화면 래퍼 === */
+.wrap{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:56px 10px 20px}
+.wrap.active{display:flex}
+
+/* === 스마트폰 프레임 === */
+.phone{width:360px;height:740px;border-radius:38px;overflow:hidden;position:relative;border:3px solid #2a2a3a;box-shadow:0 0 40px rgba(30,30,60,.3),0 20px 60px rgba(0,0,0,.5);background:#000}
+.phone-inner{width:100%;height:100%;position:relative;overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(160deg,#0a0a14 0%,#0f0f20 40%,#14142a 70%,#0f0f20 100%)}
+
+/* === 모바일 상태바 (iOS 스타일) === */
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px 6px;flex-shrink:0;z-index:50;height:44px}
+.status-bar .time{font-size:13px;font-weight:700;color:#fff;font-family:-apple-system,sans-serif}
+.status-bar .icons{display:flex;gap:5px;align-items:center}
+.status-bar .icons span{font-size:11px;color:#fff;font-family:-apple-system,sans-serif}
+.sb-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:28px;background:#000;border-radius:0 0 18px 18px;z-index:51}
+
+/* === 홈 인디케이터 === */
+.home-indicator{flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:6px 0 8px;z-index:50}
+.home-indicator .bar{width:134px;height:5px;border-radius:3px;background:rgba(255,255,255,.2)}
+
+/* === 설명 라벨 === */
+.lbl{margin-top:10px;font-size:10px;color:rgba(112,208,232,.3);text-align:center;letter-spacing:1px}
+.desc{margin-top:4px;font-size:11px;color:rgba(112,208,232,.4);text-align:center;max-width:360px;line-height:1.5;margin-bottom:16px}
+.badge{display:inline-block;padding:2px 8px;font-size:9px;border:1px solid #2880a0;color:#70d0e8;border-radius:3px;margin-top:6px;letter-spacing:1px}
+
+/* ================================================================
+   화면 1: 시작 화면
+   ================================================================ */
+.start-bg{background:linear-gradient(160deg,#0a0e18 0%,#101828 50%,#0a0e18 100%)}
+.start-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px}
+.start-title{font-size:52px;font-weight:900;color:#ffd700;text-shadow:0 0 40px rgba(255,215,0,.5),4px 4px 0 #705808;letter-spacing:4px;animation:glowPulse 3s ease infinite}
+.start-subtitle{font-size:12px;color:rgba(255,200,60,.4);letter-spacing:6px;margin-top:-4px}
+.start-dog-area{width:80px;height:80px;margin:16px auto}
+.start-dog-area canvas{width:80px;height:80px;image-rendering:pixelated}
+.start-best{font-size:11px;color:rgba(255,200,60,.3);letter-spacing:2px;margin-top:8px}
+.start-best span{color:#ffd700;font-size:14px}
+.start-btn{margin-top:20px;padding:16px 60px;font-size:18px;font-weight:900;color:#0a0e18;background:linear-gradient(180deg,#ffd700,#daa520);border:none;border-radius:0;cursor:pointer;font-family:'DotGothic16',monospace;box-shadow:4px 4px 0 #705808,0 0 30px rgba(255,215,0,.3);letter-spacing:4px;animation:btnPulse 2s ease infinite}
+.start-ver{font-size:9px;color:rgba(255,200,60,.15);margin-top:20px;letter-spacing:1px}
+
+@keyframes glowPulse{0%,100%{text-shadow:0 0 20px rgba(255,215,0,.3),4px 4px 0 #705808}50%{text-shadow:0 0 60px rgba(255,215,0,.7),4px 4px 0 #705808,0 0 80px rgba(255,180,0,.3)}}
+@keyframes btnPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+
+/* === 시작화면 배경 파티클 === */
+.start-bg .bg-dot{position:absolute;border-radius:50%;background:rgba(255,215,0,.06);animation:floatDot linear infinite}
+@keyframes floatDot{0%{transform:translateY(100%) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-20%) scale(1);opacity:0}}
+
+/* ================================================================
+   화면 2: 게임플레이
+   ================================================================ */
+
+/* 캐릭터바 */
+.char-bar{display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 14px 4px;position:relative;flex-shrink:0;z-index:2}
+.char-bar canvas.face{width:24px;height:24px;image-rendering:pixelated;animation:cbWiggle .8s ease infinite}
+.char-bar canvas.face:nth-child(2){animation-delay:.15s}
+.char-bar canvas.dog{width:34px;height:38px;image-rendering:pixelated;animation:cbBob 1.2s ease infinite}
+@keyframes cbWiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+@keyframes cbBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+
+/* HUD */
+.hud{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 6px;flex-shrink:0;border-bottom:2px solid rgba(255,200,60,.08);background:rgba(14,34,40,.4);z-index:2}
+.hud-col{display:flex;flex-direction:column}
+.hud-col.left{align-items:flex-start}
+.hud-col.center{align-items:center}
+.hud-col.right{align-items:flex-end}
+.hud-lbl{font-size:10px;letter-spacing:2px;margin-bottom:2px;color:rgba(255,200,60,.35)}
+.hud-val{font-size:26px;font-weight:900;color:#ffd700;text-shadow:0 0 10px rgba(255,215,0,.3),2px 2px 0 rgba(0,0,0,.4)}
+.hud-val.combo{color:#ffa830;text-shadow:0 0 10px rgba(255,168,48,.3),2px 2px 0 rgba(0,0,0,.4)}
+.hud-tier{font-size:13px;letter-spacing:2px;color:#daa520}
+.hud-lives{font-size:14px;letter-spacing:3px;margin-top:2px;color:rgba(255,80,80,.5)}
+
+/* 타겟 영역 */
+.target-zone{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;z-index:1}
+.mode-badge-gp{font-size:10px;letter-spacing:3px;padding:3px 10px;margin-bottom:4px;font-weight:900;color:rgba(255,200,60,.4);border:1px solid rgba(255,200,60,.12);background:rgba(255,200,60,.03)}
+.target-num{font-size:88px;font-weight:900;letter-spacing:2px;z-index:2}
+.target-num .t-tens{color:#cc88ff}
+.target-num .t-sep{font-size:.45em;color:rgba(204,136,255,.35);vertical-align:middle;margin:0 2px;font-weight:400}
+.target-num .t-ones{color:#44ddff}
+
+/* 원형 타이머 */
+.timer-wrap{width:70px;height:70px;position:relative;margin:6px auto 2px;z-index:2}
+.timer-svg{position:absolute;top:0;left:0;width:70px;height:70px;transform:rotate(-90deg)}
+.ct-bg{fill:none;stroke-width:5;stroke:#143838}
+.ct-prog{fill:none;stroke-width:5;stroke-linecap:square;stroke:url(#ctGrad);transition:stroke-dashoffset .1s linear}
+.dog-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+.dog-center canvas{width:28px;height:28px;image-rendering:pixelated}
+.speed-mult{font-size:10px;letter-spacing:2px;color:rgba(255,200,60,.3);z-index:2}
+
+/* 메시지 슬롯 */
+.msg-slot{text-align:center;padding:4px;flex-shrink:0;min-height:24px;z-index:2}
+.msg-genius{font-size:16px;font-weight:900;color:#44ffaa;text-shadow:0 0 20px #44ffaa;letter-spacing:2px;animation:flashMsg 1s ease infinite}
+@keyframes flashMsg{0%,100%{opacity:1}50%{opacity:.7}}
+
+/* 키패드 */
+.keypad{padding:4px 10px 6px;flex-shrink:0;z-index:2}
+.keypad-row{display:flex;gap:6px;justify-content:center;margin-bottom:6px}
+.key-btn{width:90px;height:50px;font-size:26px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:0;background:rgba(255,200,60,.06);border:3px solid rgba(255,200,60,.15);color:#ffd700;font-family:'DotGothic16',monospace;box-shadow:4px 4px 0 rgba(100,70,0,.2)}
+
+/* ================================================================
+   화면 3: 게임오버
+   ================================================================ */
+.go-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:8px;background:linear-gradient(160deg,#0a0e18 0%,#101020 50%,#0a0e18 100%)}
+.go-title{font-size:32px;font-weight:900;color:#ffd700;text-shadow:0 0 40px rgba(255,215,0,.5),3px 3px 0 #705808;letter-spacing:4px}
+.go-score-block{text-align:center;margin:8px 0}
+.go-score-lbl{font-size:10px;color:rgba(255,200,60,.35);letter-spacing:3px}
+.go-score-val{font-size:48px;font-weight:900;color:#ffd700;text-shadow:0 0 30px rgba(255,215,0,.5),3px 3px 0 #705808}
+.go-best{font-size:11px;color:#ffa830;letter-spacing:2px}
+.go-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin:12px 0;text-align:center}
+.go-stat-lbl{font-size:9px;color:rgba(255,200,60,.3);letter-spacing:2px}
+.go-stat-val{font-size:18px;font-weight:900;color:#ffe066}
+.go-rank{font-size:24px;font-weight:900;margin:8px 0;padding:6px 20px;border:2px solid rgba(255,200,60,.2);background:rgba(255,200,60,.04)}
+.go-rank.genius{color:#44ffaa;border-color:rgba(68,255,170,.3);text-shadow:0 0 15px #44ffaa}
+.go-retry-btn{margin-top:12px;padding:14px 50px;font-size:16px;font-weight:900;color:#0a0e18;background:linear-gradient(180deg,#ffd700,#daa520);border:none;border-radius:0;cursor:pointer;font-family:'DotGothic16',monospace;box-shadow:4px 4px 0 #705808;letter-spacing:3px}
+.go-home-btn{margin-top:8px;padding:8px 30px;font-size:11px;font-weight:700;color:rgba(255,200,60,.4);background:none;border:2px solid rgba(255,200,60,.15);cursor:pointer;font-family:'DotGothic16',monospace;letter-spacing:2px}
+
+/* === 게임오버 폭죽 파티클 === */
+.go-firework{position:absolute;width:6px;height:6px;border-radius:50%;animation:fwBurst 1.5s ease-out forwards}
+@keyframes fwBurst{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--fx),var(--fy)) scale(0)}}
+
+/* ================================================================
+   배경 이펙트 (풀 이펙트 피버 #9)
+   ================================================================ */
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
+@keyframes pixelRain{0%{transform:translateY(-10px);opacity:0}50%{opacity:.12}100%{transform:translateY(700px);opacity:0}}
+@keyframes starTwinkle{0%,100%{opacity:.15;transform:scale(.5) rotate(0)}50%{opacity:1;transform:scale(1.2) rotate(180deg)}}
+@keyframes hexFloat{0%{transform:translateY(0) rotate(0);opacity:.06}50%{opacity:.12}100%{transform:translateY(-650px) rotate(360deg);opacity:0}}
+@keyframes cometTrail{0%{transform:translateX(-100px) translateY(100px);opacity:0}20%{opacity:.2}80%{opacity:.1}100%{transform:translateX(400px) translateY(-100px);opacity:0}}
+@keyframes dustFloat{0%{transform:translate(0,0);opacity:0}20%{opacity:.12}80%{opacity:.08}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
+
+/* === Unity 뱃지 === */
+.unity-badge{position:absolute;top:50px;right:10px;font-size:8px;letter-spacing:1px;color:rgba(112,208,232,.2);background:rgba(20,48,64,.3);padding:2px 6px;border:1px solid rgba(40,128,160,.2);z-index:60}
+
+/* === 앱 전환 애니메이션 힌트 === */
+.screen-transition{position:absolute;inset:0;background:#000;z-index:100;opacity:0;pointer-events:none;transition:opacity .3s}
+
+/* === 반응형 === */
+@media(max-width:400px){
+  .phone{width:320px;height:660px;border-radius:32px}
+  .target-num{font-size:72px}
+  .key-btn{width:80px;height:44px;font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<!-- 네비게이션 -->
+<div class="nav">
+  <button class="active" onclick="show(0)">① 시작화면</button>
+  <button onclick="show(1)">② 게임플레이</button>
+  <button onclick="show(2)">③ 게임오버</button>
+</div>
+
+<!-- ================================================================
+     화면 1: 시작 화면
+     ================================================================ -->
+<div class="wrap active" id="w0">
+  <div class="phone">
+    <div class="sb-notch"></div>
+    <div class="phone-inner start-bg" id="startBg">
+      <!-- 상태바 -->
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="icons"><span>▮▮▮</span> <span>WiFi</span> <span>100%</span></div>
+      </div>
+      <div class="unity-badge">UNITY BUILD</div>
+
+      <div class="start-content">
+        <div class="start-title">빼봐영</div>
+        <div class="start-subtitle">숫자 뺄셈 아케이드</div>
+        <div class="start-dog-area"><canvas id="startDog" width="56" height="64"></canvas></div>
+        <div class="start-best">BEST SCORE <span>12,450</span></div>
+        <div class="start-btn">▶ START</div>
+        <div class="start-ver">v1.0.0 · Unity 2022.3 LTS</div>
+      </div>
+
+      <!-- 홈 인디케이터 -->
+      <div class="home-indicator"><div class="bar"></div></div>
+    </div>
+  </div>
+  <div class="lbl">화면 1 / 3 — 시작 화면</div>
+  <div class="desc">앱 실행 시 첫 화면. Unity 스플래시 후 이 화면이 나타남.<br>PlayerPrefs에서 최고 점수를 불러와 표시.</div>
+  <div class="badge">StartScreenController.cs</div>
+</div>
+
+<!-- ================================================================
+     화면 2: 게임플레이
+     ================================================================ -->
+<div class="wrap" id="w1">
+  <div class="phone">
+    <div class="sb-notch"></div>
+    <div class="phone-inner" id="gameplayBg">
+      <div class="status-bar">
+        <span class="time">9:42</span>
+        <div class="icons"><span>▮▮▮</span> <span>WiFi</span> <span>98%</span></div>
+      </div>
+      <div class="unity-badge">UNITY BUILD</div>
+
+      <!-- 캐릭터바 -->
+      <div class="char-bar" id="charBar"></div>
+
+      <!-- HUD -->
+      <div class="hud">
+        <div class="hud-col left">
+          <div class="hud-lbl">SCORE</div>
+          <div class="hud-val" id="hudScore">3,280</div>
+        </div>
+        <div class="hud-col center">
+          <div class="hud-lbl">STAGE</div>
+          <div class="hud-tier" id="hudTier">중급 III</div>
+          <div class="hud-lives" id="hudLives">♥ ♥ ♥</div>
+        </div>
+        <div class="hud-col right">
+          <div class="hud-lbl">COMBO</div>
+          <div class="hud-val combo" id="hudCombo">×7</div>
+        </div>
+      </div>
+
+      <!-- 타겟 영역 (배경 이펙트 적용) -->
+      <div class="target-zone" id="targetZone">
+        <div class="mode-badge-gp">NORMAL</div>
+        <div class="target-num">
+          <span class="t-tens">4</span><span class="t-sep">│</span><span class="t-ones">7</span>
+        </div>
+        <div class="timer-wrap">
+          <svg class="timer-svg" viewBox="0 0 70 70">
+            <defs>
+              <linearGradient id="ctGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#ffd700"/>
+                <stop offset="100%" stop-color="#ff8c00"/>
+              </linearGradient>
+            </defs>
+            <circle class="ct-bg" cx="35" cy="35" r="28"/>
+            <circle class="ct-prog" cx="35" cy="35" r="28" stroke-dasharray="175.93" stroke-dashoffset="44" id="timerCircle"/>
+          </svg>
+          <div class="dog-center"><canvas id="timerDog" width="28" height="32"></canvas></div>
+        </div>
+        <div class="speed-mult">×1.2 SPEED</div>
+      </div>
+
+      <!-- 메시지 -->
+      <div class="msg-slot"><span class="msg-genius">★ GENIUS! ★</span></div>
+
+      <!-- 키패드 -->
+      <div class="keypad">
+        <div class="keypad-row">
+          <div class="key-btn">1</div><div class="key-btn">2</div><div class="key-btn">3</div>
+        </div>
+        <div class="keypad-row">
+          <div class="key-btn">4</div><div class="key-btn">5</div><div class="key-btn">6</div>
+        </div>
+        <div class="keypad-row">
+          <div class="key-btn">7</div><div class="key-btn">8</div><div class="key-btn">9</div>
+        </div>
+      </div>
+
+      <div class="home-indicator"><div class="bar"></div></div>
+    </div>
+  </div>
+  <div class="lbl">화면 2 / 3 — 게임플레이 (풀 이펙트 피버 #9)</div>
+  <div class="desc">GameManager + HUDController + KeypadController 연동.<br>배경: ParticleSystem 6종 (starTwinkle·hexFloat·comet·pixelRain·sparkle·dust).<br>원형 타이머: UI Image (Fill Amount) + 코루틴 업데이트.</div>
+  <div class="badge">GameManager.cs + HUDController.cs + KeypadController.cs + ParticleEffects.cs</div>
+</div>
+
+<!-- ================================================================
+     화면 3: 게임오버
+     ================================================================ -->
+<div class="wrap" id="w2">
+  <div class="phone">
+    <div class="sb-notch"></div>
+    <div class="phone-inner" id="gameoverBg">
+      <div class="status-bar">
+        <span class="time">9:45</span>
+        <div class="icons"><span>▮▮▮</span> <span>WiFi</span> <span>95%</span></div>
+      </div>
+      <div class="unity-badge">UNITY BUILD</div>
+
+      <div class="go-content" id="goContent">
+        <div class="go-title">GAME OVER</div>
+
+        <div class="go-score-block">
+          <div class="go-score-lbl">FINAL SCORE</div>
+          <div class="go-score-val" id="goScore">8,750</div>
+        </div>
+        <div class="go-best">★ NEW BEST! ★</div>
+
+        <div class="go-stats">
+          <div>
+            <div class="go-stat-lbl">STAGE</div>
+            <div class="go-stat-val">고급 II</div>
+          </div>
+          <div>
+            <div class="go-stat-lbl">MAX COMBO</div>
+            <div class="go-stat-val">×12</div>
+          </div>
+          <div>
+            <div class="go-stat-lbl">TOTAL TAPS</div>
+            <div class="go-stat-val">147</div>
+          </div>
+          <div>
+            <div class="go-stat-lbl">GENIUS</div>
+            <div class="go-stat-val">8회</div>
+          </div>
+        </div>
+
+        <div class="go-rank genius">★ S RANK ★</div>
+
+        <div class="go-retry-btn">▶ 재도전</div>
+        <div class="go-home-btn">홈으로</div>
+      </div>
+
+      <div class="home-indicator"><div class="bar"></div></div>
+    </div>
+  </div>
+  <div class="lbl">화면 3 / 3 — 게임오버</div>
+  <div class="desc">GameOverController.cs — 순차 등장 애니메이션 (ZoomBounce + CountUp).<br>점수 카운트업: easeOutCubic + bounce. PlayerPrefs에 최고 점수 저장.</div>
+  <div class="badge">GameOverController.cs + GameState.cs</div>
+</div>
+
+<script>
+// ================================================================
+// 네비게이션
+// ================================================================
+function show(idx){
+  document.querySelectorAll('.wrap').forEach((w,i)=>{
+    w.classList.toggle('active',i===idx);
+  });
+  document.querySelectorAll('.nav button').forEach((b,i)=>{
+    b.classList.toggle('active',i===idx);
+  });
+}
+
+// ================================================================
+// 픽셀 아트 그리기 유틸
+// ================================================================
+const O=[51,51,51,255],W=[255,255,255,255],CL=[0,0,0,0];
+
+function px(ctx,x,y,c,s=1){
+  ctx.fillStyle=`rgba(${c[0]},${c[1]},${c[2]},${(c[3]||255)/255})`;
+  ctx.fillRect(x*s,y*s,s,s);
+}
+
+// 메롱 얼굴 (14x14)
+function drawTauntFace(canvas,style,mainColor){
+  const s=Math.floor(canvas.width/14);
+  canvas.width=14*s;canvas.height=14*s;
+  const ctx=canvas.getContext('2d');
+  ctx.imageSmoothingEnabled=false;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const fc=mainColor,o=O;
+  const tongue=[255,107,107,255],tongueDeep=[255,64,64,255];
+  // 얼굴 윤곽
+  for(let i=4;i<=9;i++)px(ctx,i,0,o,s);
+  px(ctx,3,1,o,s);for(let i=4;i<=9;i++)px(ctx,i,1,fc,s);px(ctx,10,1,o,s);
+  for(let y=2;y<=9;y++){px(ctx,2,y,o,s);for(let i=3;i<=10;i++)px(ctx,i,y,fc,s);px(ctx,11,y,o,s);}
+  px(ctx,3,10,o,s);for(let i=4;i<=9;i++)px(ctx,i,10,fc,s);px(ctx,10,10,o,s);
+  for(let i=4;i<=9;i++)px(ctx,i,11,o,s);
+  // 표정
+  const st=style%5;
+  if(st===0){
+    px(ctx,4,4,o,s);px(ctx,5,4,o,s);px(ctx,6,4,o,s);
+    px(ctx,8,3,o,s);px(ctx,9,3,o,s);px(ctx,8,4,W,s);px(ctx,9,4,o,s);px(ctx,8,5,o,s);px(ctx,9,5,o,s);
+    px(ctx,5,7,o,s);px(ctx,6,7,o,s);px(ctx,7,7,o,s);px(ctx,8,7,o,s);
+    px(ctx,5,8,o,s);px(ctx,6,8,tongue,s);px(ctx,7,8,tongue,s);px(ctx,8,8,o,s);
+    px(ctx,6,9,tongue,s);px(ctx,7,9,tongue,s);px(ctx,6,10,o,s);px(ctx,7,10,o,s);
+  } else if(st===1){
+    px(ctx,4,4,o,s);px(ctx,5,4,o,s);px(ctx,6,4,o,s);
+    px(ctx,8,4,o,s);px(ctx,9,4,o,s);px(ctx,10,4,o,s);
+    px(ctx,3,5,[255,143,143,255],s);px(ctx,10,5,[255,143,143,255],s);
+    for(let i=5;i<=9;i++)px(ctx,i,7,o,s);
+    px(ctx,6,8,o,s);px(ctx,7,8,[255,84,84,255],s);px(ctx,8,8,o,s);
+    px(ctx,7,9,[255,84,84,255],s);px(ctx,7,10,[255,84,84,255],s);px(ctx,7,11,o,s);
+  } else if(st===2){
+    px(ctx,4,3,o,s);px(ctx,6,3,o,s);px(ctx,5,4,o,s);px(ctx,4,5,o,s);px(ctx,6,5,o,s);
+    px(ctx,8,3,o,s);px(ctx,10,3,o,s);px(ctx,9,4,o,s);px(ctx,8,5,o,s);px(ctx,10,5,o,s);
+    for(let i=5;i<=9;i++)px(ctx,i,7,o,s);
+    px(ctx,6,8,tongue,s);px(ctx,7,8,tongue,s);px(ctx,8,8,tongue,s);
+    px(ctx,6,9,o,s);px(ctx,7,9,tongueDeep,s);px(ctx,8,9,o,s);px(ctx,7,10,o,s);
+  } else if(st===3){
+    px(ctx,4,3,o,s);px(ctx,5,3,o,s);px(ctx,6,3,o,s);px(ctx,4,4,o,s);px(ctx,6,4,o,s);
+    px(ctx,8,3,o,s);px(ctx,9,3,o,s);px(ctx,10,3,o,s);px(ctx,8,4,o,s);px(ctx,10,4,o,s);
+    px(ctx,3,5,[255,176,176,255],s);px(ctx,10,5,[255,176,176,255],s);
+    px(ctx,5,7,o,s);px(ctx,6,7,o,s);px(ctx,7,7,o,s);px(ctx,8,7,o,s);
+    px(ctx,6,8,[255,112,112,255],s);px(ctx,7,8,[255,112,112,255],s);
+    px(ctx,5,9,o,s);px(ctx,6,9,[255,79,79,255],s);px(ctx,7,9,o,s);
+  } else {
+    px(ctx,4,3,o,s);px(ctx,5,3,o,s);px(ctx,4,4,W,s);px(ctx,5,4,o,s);
+    px(ctx,8,3,o,s);px(ctx,9,3,o,s);px(ctx,8,4,W,s);px(ctx,9,4,o,s);
+    px(ctx,5,7,o,s);px(ctx,6,7,o,s);px(ctx,7,7,o,s);px(ctx,8,7,o,s);px(ctx,9,6,o,s);
+    px(ctx,6,8,tongue,s);px(ctx,7,8,tongue,s);px(ctx,6,9,o,s);px(ctx,7,9,o,s);
+  }
+}
+
+// 픽셀 강아지 (14x16)
+function drawPixelDog(canvas,bc,ec,cc,armsUp){
+  const s=Math.floor(canvas.width/14);
+  canvas.width=14*s;canvas.height=16*s;
+  const ctx=canvas.getContext('2d');
+  ctx.imageSmoothingEnabled=false;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const o=O;
+  // 귀
+  px(ctx,2,0,o,s);px(ctx,3,0,o,s);px(ctx,10,0,o,s);px(ctx,11,0,o,s);
+  px(ctx,1,1,o,s);px(ctx,2,1,ec,s);px(ctx,3,1,ec,s);px(ctx,4,1,o,s);
+  px(ctx,9,1,o,s);px(ctx,10,1,ec,s);px(ctx,11,1,ec,s);px(ctx,12,1,o,s);
+  px(ctx,1,2,o,s);px(ctx,2,2,ec,s);px(ctx,3,2,ec,s);px(ctx,4,2,o,s);
+  px(ctx,9,2,o,s);px(ctx,10,2,ec,s);px(ctx,11,2,ec,s);px(ctx,12,2,o,s);
+  // 머리 윤곽
+  for(let i=3;i<=10;i++)px(ctx,i,3,o,s);
+  // 얼굴
+  px(ctx,2,4,o,s);for(let i=3;i<=10;i++)px(ctx,i,4,bc,s);px(ctx,11,4,o,s);
+  px(ctx,2,5,o,s);for(let i=3;i<=10;i++)px(ctx,i,5,bc,s);px(ctx,11,5,o,s);
+  px(ctx,4,5,W,s);px(ctx,5,5,o,s);px(ctx,8,5,W,s);px(ctx,9,5,o,s);
+  px(ctx,2,6,o,s);for(let i=3;i<=10;i++)px(ctx,i,6,bc,s);px(ctx,11,6,o,s);
+  px(ctx,6,6,o,s);px(ctx,7,6,o,s);px(ctx,3,6,cc,s);px(ctx,10,6,cc,s);
+  px(ctx,2,7,o,s);for(let i=3;i<=10;i++)px(ctx,i,7,bc,s);px(ctx,11,7,o,s);
+  // 몸통
+  for(let y=8;y<=11;y++){px(ctx,3,y,o,s);for(let i=4;i<=9;i++)px(ctx,i,y,bc,s);px(ctx,10,y,o,s);}
+  // 팔
+  if(armsUp){
+    px(ctx,2,8,o,s);px(ctx,3,8,bc,s);px(ctx,3,7,o,s);px(ctx,2,7,bc,s);
+    px(ctx,10,8,bc,s);px(ctx,11,8,o,s);px(ctx,10,7,o,s);px(ctx,11,7,bc,s);
+  } else {
+    px(ctx,3,9,o,s);px(ctx,2,10,o,s);px(ctx,10,9,o,s);px(ctx,11,10,o,s);
+  }
+  // 다리
+  px(ctx,4,12,o,s);px(ctx,5,12,o,s);px(ctx,8,12,o,s);px(ctx,9,12,o,s);
+  px(ctx,3,13,o,s);px(ctx,4,13,bc,s);px(ctx,5,13,o,s);
+  px(ctx,8,13,o,s);px(ctx,9,13,bc,s);px(ctx,10,13,o,s);
+}
+
+// ================================================================
+// MIX 색상 팔레트
+// ================================================================
+const MIX=[[255,208,64],[255,128,96],[96,232,128],[96,208,224],[255,128,192]];
+const FACE_COLORS=[[255,160,60,255],[60,210,255,255],[255,100,150,255],[100,255,160,255],[255,200,60,255]];
+
+// ================================================================
+// 시작화면 초기화
+// ================================================================
+function initStartScreen(){
+  const c=document.getElementById('startDog');
+  drawPixelDog(c,[255,208,100,255],[200,140,60,255],[255,160,160,255],true);
+
+  // 배경 파티클
+  const bg=document.getElementById('startBg');
+  for(let i=0;i<20;i++){
+    const d=document.createElement('div');
+    d.className='bg-dot';
+    d.style.cssText=`left:${Math.random()*100}%;width:${3+Math.random()*6}px;height:${3+Math.random()*6}px;animation-duration:${8+Math.random()*12}s;animation-delay:${Math.random()*10}s`;
+    bg.querySelector('.start-content').appendChild(d);
+  }
+}
+
+// ================================================================
+// 게임플레이 초기화
+// ================================================================
+function initGameplay(){
+  // 캐릭터바
+  const bar=document.getElementById('charBar');
+  bar.innerHTML='';
+  for(let i=0;i<3;i++){
+    const c=document.createElement('canvas');
+    c.className='face';c.width=24;c.height=24;
+    drawTauntFace(c,i,FACE_COLORS[i]);
+    bar.appendChild(c);
+  }
+  const dog=document.createElement('canvas');
+  dog.className='dog';dog.width=34;dog.height=38;
+  drawPixelDog(dog,[255,208,100,255],[200,140,60,255],[255,160,160,255],true);
+  bar.appendChild(dog);
+
+  // 타이머 강아지
+  const td=document.getElementById('timerDog');
+  drawPixelDog(td,[255,208,100,255],[200,140,60,255],[255,160,160,255],false);
+
+  // 배경 이펙트 (풀 이펙트 피버 #9)
+  initBgEffects();
+
+  // 타이머 애니메이션
+  animateTimer();
+}
+
+// ================================================================
+// 풀 이펙트 피버 #9 배경 효과
+// ================================================================
+function initBgEffects(){
+  const el=document.getElementById('targetZone');
+
+  // 1. starTwinkle (18개)
+  for(let i=0;i<18;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;width:${3+Math.random()*5}px;height:${3+Math.random()*5}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:${randMixCSS()};clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);animation:starTwinkle ${2+Math.random()*4}s ease infinite;animation-delay:${Math.random()*4}s;z-index:0`;
+    el.appendChild(d);
+  }
+  // 2. hexFloat (6개)
+  for(let i=0;i<6;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;width:${12+Math.random()*18}px;height:${12+Math.random()*18}px;left:${Math.random()*100}%;bottom:-20px;background:none;border:1px solid ${randMixCSS(.15)};clip-path:polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%);animation:hexFloat ${10+Math.random()*8}s linear infinite;animation-delay:${Math.random()*10}s;z-index:0`;
+    el.appendChild(d);
+  }
+  // 3. comet (4개)
+  for(let i=0;i<4;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;width:${30+Math.random()*30}px;height:2px;top:${Math.random()*80}%;left:-50px;background:linear-gradient(90deg,${randMixCSS(.2)},transparent);animation:cometTrail ${5+Math.random()*6}s linear infinite;animation-delay:${Math.random()*8}s;z-index:0`;
+    el.appendChild(d);
+  }
+  // 4. pixelRain (20개)
+  for(let i=0;i<20;i++){
+    const d=document.createElement('div');
+    const sz=2+Math.random()*3;
+    d.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:-5px;background:${randMixCSS(.15)};animation:pixelRain ${4+Math.random()*6}s linear infinite;animation-delay:${Math.random()*6}s;z-index:0`;
+    el.appendChild(d);
+  }
+  // 5. sparkle (15개)
+  for(let i=0;i<15;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;width:${4+Math.random()*4}px;height:${4+Math.random()*4}px;left:${Math.random()*100}%;top:${Math.random()*100}%;border-radius:50%;background:${randMixCSS(.3)};animation:sparkle ${2+Math.random()*3}s ease infinite;animation-delay:${Math.random()*3}s;z-index:0`;
+    el.appendChild(d);
+  }
+  // 6. dust (15개)
+  for(let i=0;i<15;i++){
+    const d=document.createElement('div');
+    const dx=(Math.random()-.5)*120,dy=(Math.random()-.5)*120;
+    d.style.cssText=`position:absolute;width:${2+Math.random()*2}px;height:${2+Math.random()*2}px;left:${Math.random()*100}%;top:${Math.random()*100}%;border-radius:50%;background:rgba(255,200,60,.1);--dx:${dx}px;--dy:${dy}px;animation:dustFloat ${6+Math.random()*6}s linear infinite;animation-delay:${Math.random()*6}s;z-index:0`;
+    el.appendChild(d);
+  }
+}
+
+function randMixCSS(a){
+  const c=MIX[Math.floor(Math.random()*MIX.length)];
+  return a!=null?`rgba(${c[0]},${c[1]},${c[2]},${a})`:`rgb(${c[0]},${c[1]},${c[2]})`;
+}
+
+// 타이머 애니메이션
+function animateTimer(){
+  const circle=document.getElementById('timerCircle');
+  const circumference=2*Math.PI*28;
+  let offset=0;
+  setInterval(()=>{
+    offset=(offset+1)%176;
+    circle.style.strokeDashoffset=offset;
+  },100);
+}
+
+// ================================================================
+// 게임오버 초기화
+// ================================================================
+function initGameOver(){
+  const content=document.getElementById('goContent');
+  // 폭죽 파티클
+  const colors=['#ffd700','#ff6b6b','#44ffaa','#44ddff','#ff80c0','#ffa830'];
+  for(let burst=0;burst<3;burst++){
+    setTimeout(()=>{
+      for(let i=0;i<20;i++){
+        const p=document.createElement('div');
+        p.className='go-firework';
+        const angle=Math.random()*Math.PI*2;
+        const dist=60+Math.random()*100;
+        p.style.cssText=`left:${30+Math.random()*40}%;top:${20+Math.random()*30}%;background:${colors[Math.floor(Math.random()*colors.length)]};--fx:${Math.cos(angle)*dist}px;--fy:${Math.sin(angle)*dist}px;animation-delay:${Math.random()*.3}s;animation-duration:${1+Math.random()}s`;
+        content.appendChild(p);
+      }
+    },burst*800);
+  }
+
+  // 점수 카운트업 애니메이션
+  const scoreEl=document.getElementById('goScore');
+  let current=0;const target=8750;
+  const dur=1500;const start=Date.now();
+  function countUp(){
+    const t=Math.min((Date.now()-start)/dur,1);
+    const ease=1-Math.pow(1-t,3);
+    current=Math.round(target*ease);
+    scoreEl.textContent=current.toLocaleString();
+    if(t<1)requestAnimationFrame(countUp);
+  }
+  setTimeout(countUp,500);
+}
+
+// ================================================================
+// 초기화
+// ================================================================
+window.addEventListener('load',()=>{
+  initStartScreen();
+  initGameplay();
+  initGameOver();
+});
+</script>
+</body>
+</html>
