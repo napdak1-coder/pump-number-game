@@ -3,43 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>빼봐영 — Unity 앱 목업 (Full Pixel)</title>
+<title>빼봐영 — 통합 게임 목업</title>
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;
   font-family:'DotGothic16','Press Start 2P',monospace;image-rendering:pixelated}
 
-/* ===== 네비 ===== */
-.nav{position:fixed;top:0;left:0;right:0;z-index:999;background:#040a10;border-bottom:3px solid #1a2830;display:flex;gap:4px;padding:6px 8px;image-rendering:pixelated}
-.nav button{padding:6px 14px;border:3px solid #1a2830;background:#081420;color:#4888a8;font-size:10px;font-weight:700;cursor:pointer;font-family:'DotGothic16',monospace;border-radius:0;box-shadow:2px 2px 0 #000;transition:all .15s}
-.nav button.active{background:#1a3050;border-color:#30a0c0;color:#70e0ff;box-shadow:2px 2px 0 #0a1820}
-.nav button:hover{border-color:#30a0c0}
+/* ===== TAB BAR ===== */
+.tab-bar{position:fixed;top:0;left:0;right:0;z-index:999;background:#040a10;border-bottom:3px solid #1a2830;display:flex;gap:0;padding:0;image-rendering:pixelated;height:40px}
+.tab-btn{flex:1;border:3px solid #1a2830;background:#081420;color:#4888a8;font-size:10px;font-weight:700;cursor:pointer;font-family:'DotGothic16',monospace;border-radius:0;box-shadow:inset 0 -2px 0 #000;transition:all .15s;padding:8px 0;display:flex;align-items:center;justify-content:center}
+.tab-btn.active{background:#1a3050;border-color:#30a0c0;color:#70e0ff;box-shadow:inset 0 -3px 0 #30a0c0}
+.tab-btn:hover{border-color:#30a0c0}
 
-/* ===== 패널 ===== */
-.panel{display:none;width:100%;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:50px 10px 20px}
-.panel.active{display:flex}
+/* ===== PHONE FRAME ===== */
+.screen{display:none;width:360px;height:720px;background:#080c18;border-radius:36px;border:3px solid #1a2a40;overflow:hidden;position:relative;margin-top:50px;box-shadow:0 0 40px rgba(0,0,0,.8)}
+.screen.active{display:flex;flex-direction:column}
 
-/* ===== 폰 프레임 ===== */
-.phone{width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:3px solid #1a1a2e;box-shadow:0 0 60px rgba(20,20,60,.3);background:#000}
-.phone-inner{width:100%;height:100%;position:relative;overflow:hidden}
+/* ===== SCREEN 1: 시작화면 ===== */
+.screen-start{justify-content:center;align-items:center}
+.start-header{position:absolute;top:12px;left:0;right:0;display:flex;justify-content:space-between;padding:0 16px;z-index:10}
+.start-header button{padding:4px 10px;border:2px solid #2a3a50;background:#0a0e1a;color:#4888a8;font-size:8px;font-family:'DotGothic16',monospace;cursor:pointer;border-radius:0}
+.start-header button:hover{border-color:#30a0c0;color:#30a0c0}
 
-/* ===== 우주 배경 ===== */
-.space-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,#0c1028 0%,#060812 40%,#020206 100%)}
-#constellationCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}
-.star{position:absolute;z-index:2}
-.star.tiny{width:2px;height:2px;background:#fff;animation:twinkle 3s ease infinite}
-.star.small{width:3px;height:3px;background:#ffeedd;animation:twinkle 4s ease infinite;box-shadow:0 0 4px 1px rgba(255,238,200,.4)}
-.star.medium{width:5px;height:5px;background:#fff8e0;animation:twinkleBright 3s ease infinite;box-shadow:0 0 8px 2px rgba(255,248,200,.3)}
-.star.large{width:7px;height:7px;background:#ffe8a0;animation:twinkleBright 4s ease infinite;box-shadow:0 0 15px 4px rgba(255,220,100,.4)}
-.star.glow{width:10px;height:10px;background:radial-gradient(circle,#fff 0%,#ffd060 40%,transparent 70%);animation:twinkleBright 5s ease infinite}
-@keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
-@keyframes twinkleBright{0%,100%{opacity:.5;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
-.meteor{position:absolute;z-index:2;width:80px;height:2px;background:linear-gradient(90deg,transparent,rgba(100,180,255,.6),#fff);animation:meteorFall linear infinite;opacity:0}
-@keyframes meteorFall{0%{transform:translateX(0) translateY(0);opacity:0}5%{opacity:.8}80%{opacity:.4}100%{transform:translateX(200px) translateY(200px);opacity:0}}
+.start-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,#0c1028 0%,#060812 40%,#020206 100%)}
+.constellation-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}
 
-/* ===== 시작화면 컨텐츠 ===== */
-.content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;padding:40px 20px}
+.start-content{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;text-align:center}
 .char-row{display:flex;gap:8px;margin-bottom:12px}
 .char-row canvas{width:52px;height:52px;image-rendering:pixelated;animation:charBob 1.5s ease infinite}
 .char-row canvas:nth-child(1){animation-delay:0s}
@@ -49,7 +39,6 @@ body{background:#000;display:flex;align-items:center;justify-content:center;min-
 .char-row canvas:nth-child(5){animation-delay:.6s}
 @keyframes charBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 
-/* ★★★ 픽셀 타이틀 ★★★ */
 .title-area{margin:4px 0 16px}
 #titleCanvas{width:270px;height:90px;image-rendering:pixelated}
 
@@ -57,7 +46,6 @@ body{background:#000;display:flex;align-items:center;justify-content:center;min-
 #gemCanvas{width:72px;height:72px;image-rendering:pixelated;animation:gemFloat 2.5s ease infinite}
 @keyframes gemFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.05)}}
 
-/* ★★★ 픽셀 시작 버튼 ★★★ */
 .start-btn{
   padding:14px 60px;
   font-size:18px;font-weight:900;
@@ -70,453 +58,857 @@ body{background:#000;display:flex;align-items:center;justify-content:center;min-
   box-shadow:4px 4px 0 #7a4000,inset -2px -2px 0 #c07818,inset 2px 2px 0 #ffe080;
   image-rendering:pixelated;
   animation:btnPulse 2.5s ease infinite;
-  position:relative;
 }
 .start-btn:active{box-shadow:2px 2px 0 #7a4000;transform:translate(2px,2px)}
 @keyframes btnPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
 
-.best-score{font-size:11px;color:rgba(255,200,60,.4);letter-spacing:2px;margin-bottom:12px;font-family:'DotGothic16',monospace}
+.best-score{font-size:11px;color:rgba(255,200,60,.4);letter-spacing:2px;margin-top:12px;font-family:'DotGothic16',monospace}
 .best-score span{color:#ffd700;font-size:13px}
-.ver-text{font-size:8px;color:rgba(255,200,60,.12);margin-top:20px;letter-spacing:1px;font-family:'DotGothic16',monospace}
 
-/* ================================================================
-   게임플레이 — 전체 픽셀화
-   ================================================================ */
-.gp-inner{width:100%;height:100%;position:relative;overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(160deg,#0a0a14,#0f0f20,#14142a,#0f0f20);font-family:'DotGothic16',monospace;image-rendering:pixelated}
-.gp-status{display:flex;align-items:center;justify-content:space-between;padding:14px 28px 6px;flex-shrink:0;z-index:50}
-.gp-status span{font-size:12px;color:#fff;font-family:'DotGothic16',monospace}
-.gp-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:28px;background:#000;border-radius:0 0 18px 18px;z-index:51}
+/* ===== SCREEN 2: 게임플레이 ===== */
+.screen-gameplay{flex-direction:column;position:relative}
+.gp-bg{position:absolute;inset:0;background:linear-gradient(160deg,#0a0a14,#0f0f20,#14142a,#0f0f20);z-index:0}
+.gp-canvas-bg{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.gp-content{position:relative;z-index:2;display:flex;flex-direction:column;height:100%;overflow:hidden}
 
-/* ★★★ 픽셀 캐릭터바 ★★★ */
-.gp-charbar{display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 14px 4px;flex-shrink:0;z-index:2}
-.gp-charbar canvas.face{width:24px;height:24px;image-rendering:pixelated;animation:cbWiggle .8s ease infinite}
-.gp-charbar canvas.face:nth-child(2){animation-delay:.15s}
-.gp-charbar canvas.dog{width:34px;height:38px;image-rendering:pixelated;animation:cbBob2 1.2s ease infinite}
-@keyframes cbWiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
-@keyframes cbBob2{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.gp-status{display:flex;align-items:center;justify-content:space-between;padding:10px 20px 0;font-size:10px;color:#8a9ab0;flex-shrink:0}
+.gp-topchars{display:flex;justify-content:center;gap:4px;padding:4px 0;flex-shrink:0}
+.gp-topchars canvas{width:28px;height:28px;image-rendering:pixelated}
 
-/* ★★★ 픽셀 HUD (점수판) ★★★ */
-.gp-hud{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:8px 14px 6px;flex-shrink:0;z-index:2;
-  border-bottom:3px solid rgba(255,200,60,.1);
+.gp-hud{display:flex;justify-content:space-between;align-items:center;padding:6px 14px;margin:0 10px;flex-shrink:0;
   background:repeating-linear-gradient(0deg,rgba(0,0,0,.12) 0px,rgba(0,0,0,.12) 1px,transparent 1px,transparent 3px),rgba(14,34,40,.5);
-  image-rendering:pixelated;
-}
-.gp-hud-col{display:flex;flex-direction:column}
-.gp-hud-col.left{align-items:flex-start}
-.gp-hud-col.center{align-items:center}
-.gp-hud-col.right{align-items:flex-end}
-.gp-hud-lbl{font-size:8px;letter-spacing:3px;margin-bottom:2px;color:rgba(255,200,60,.3);font-family:'DotGothic16',monospace}
-.gp-hud-val{
-  font-size:24px;font-weight:900;color:#ffd700;
-  font-family:'DotGothic16',monospace;
-  text-shadow:2px 2px 0 #705808,-1px 0 #e74c5b;
-  image-rendering:pixelated;
-}
-.gp-hud-val.combo{color:#ffa830;text-shadow:2px 2px 0 #804000,-1px 0 #34aadc}
-.gp-hud-tier{font-size:11px;letter-spacing:2px;color:#daa520;font-family:'DotGothic16',monospace}
-.gp-hud-lives{font-size:14px;letter-spacing:3px;margin-top:2px;color:rgba(255,80,80,.5)}
+  border:2px solid rgba(255,200,60,.15)}
+.gp-hud-item{text-align:center}
+.gp-hud-label{font-size:7px;color:#4888a8;letter-spacing:2px}
+.gp-hud-val{font-size:16px;color:#ffd700}
+.gp-hearts{color:#e04060;font-size:13px;letter-spacing:2px}
+.gp-combo{color:#40e0d0;font-size:16px}
 
-/* ★★★ 픽셀 타겟 넘버 ★★★ */
-.gp-target{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;z-index:1}
-.gp-mode{
-  font-size:9px;letter-spacing:4px;padding:4px 12px;margin-bottom:6px;font-weight:900;
-  color:rgba(255,200,60,.5);
-  border:2px solid rgba(255,200,60,.15);background:rgba(255,200,60,.04);
-  font-family:'DotGothic16',monospace;
-  box-shadow:2px 2px 0 rgba(0,0,0,.3);
-}
-.gp-num{
-  font-size:90px;font-weight:900;letter-spacing:4px;z-index:2;
-  font-family:'DotGothic16',monospace;
-  image-rendering:pixelated;
-}
-.gp-num .t-tens{color:#cc88ff;text-shadow:3px 3px 0 #4a2080}
-.gp-num .t-sep{font-size:.4em;color:rgba(204,136,255,.3);vertical-align:middle;margin:0 4px}
-.gp-num .t-ones{color:#44ddff;text-shadow:3px 3px 0 #105060}
+.gp-target{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;position:relative;overflow:hidden}
+.gp-difficulty{font-size:9px;color:#8a9ab0;border:1px solid #2a3a50;padding:2px 10px;letter-spacing:3px}
+#gpNumCanvas{image-rendering:pixelated}
 
-/* ★★★ 픽셀 원형 타이머 ★★★ */
-.gp-timer{width:70px;height:70px;position:relative;margin:8px auto 2px;z-index:2}
-.gp-timer svg{position:absolute;top:0;left:0;width:70px;height:70px;transform:rotate(-90deg)}
-.gp-timer .bg{fill:none;stroke-width:5;stroke:#143838}
-.gp-timer .prog{fill:none;stroke-width:5;stroke-linecap:square;stroke:#ffd700;stroke-dasharray:175.93;stroke-dashoffset:44}
-.gp-timer .dog-c{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
-.gp-timer .dog-c canvas{width:28px;height:28px;image-rendering:pixelated}
-.gp-speed{font-size:9px;letter-spacing:3px;color:rgba(255,200,60,.25);z-index:2;font-family:'DotGothic16',monospace}
+.char-wrap{display:flex;flex-direction:column;align-items:center;gap:3px}
+.char-wrap canvas{width:44px;height:44px;image-rendering:pixelated;border:2px solid #ffd700;border-radius:50%}
+.gp-speed{font-size:8px;color:#6a8898;letter-spacing:2px}
 
-/* ★★★ 픽셀 메시지 ★★★ */
-.gp-msg{text-align:center;padding:4px;flex-shrink:0;min-height:24px;z-index:2}
-.gp-msg span{font-size:14px;font-weight:900;color:#44ffaa;text-shadow:2px 2px 0 #0a4030,0 0 10px #44ffaa;letter-spacing:3px;font-family:'DotGothic16',monospace;animation:flashM 1s ease infinite}
-@keyframes flashM{0%,100%{opacity:1}50%{opacity:.7}}
+.fever-banner{font-size:13px;text-align:center;letter-spacing:2px;padding:3px;height:22px;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .3s;flex-shrink:0}
+.genius-text{font-size:11px;color:#40e0d0;text-align:center;letter-spacing:3px;padding:3px;flex-shrink:0}
 
-/* ★★★ 픽셀 키패드 ★★★ */
-.gp-keypad{padding:4px 10px 6px;flex-shrink:0;z-index:2}
-.gp-krow{display:flex;gap:6px;justify-content:center;margin-bottom:6px}
-.gp-key{
-  width:100px;height:54px;
-  font-size:28px;font-weight:900;
-  display:flex;align-items:center;justify-content:center;
-  border-radius:0;
-  background:linear-gradient(180deg,rgba(255,200,60,.1) 0%,rgba(255,200,60,.04) 100%);
-  border:3px solid rgba(255,200,60,.2);
-  color:#ffd700;
-  font-family:'DotGothic16',monospace;
-  box-shadow:4px 4px 0 rgba(80,60,0,.3),inset -2px -2px 0 rgba(255,200,60,.05),inset 2px 2px 0 rgba(255,255,200,.05);
-  image-rendering:pixelated;
-  text-shadow:1px 1px 0 #806000;
-  cursor:pointer;
-  transition:all .05s;
-}
-.gp-key:active{box-shadow:1px 1px 0 rgba(80,60,0,.3);transform:translate(3px,3px)}
-.gp-home{flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:6px 0 8px;z-index:50}
-.gp-home .bar{width:134px;height:5px;background:rgba(255,255,255,.2)}
+.combo-meter{height:20px;background:#1a1a2a;border:1px solid #2a3a50;margin:0 10px 2px;overflow:hidden;position:relative;flex-shrink:0}
+.combo-fill{height:100%;transition:width .4s,background .4s}
+.combo-label{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:8px;color:#fff;z-index:1}
+.combo-next{font-size:8px;color:#6a8898;text-align:right;padding:0 10px;flex-shrink:0}
 
-/* ===== 배경 이펙트 ===== */
-.gp-target [data-fx]{position:absolute;z-index:0}
+.theme-bar{display:flex;justify-content:center;gap:4px;padding:2px 0;flex-shrink:0}
+.theme-btn{padding:2px 8px;font-size:8px;font-family:'DotGothic16',monospace;border:1px solid #2a3a50;background:transparent;color:#6a8898;cursor:pointer;border-radius:0}
+.theme-btn.active{background:rgba(255,255,255,.1);color:#ffd700;border-color:#ffd700}
 
-/* ================================================================
-   게임오버 — 전체 픽셀화
-   ================================================================ */
-.go-inner{width:100%;height:100%;position:relative;overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(160deg,#0a0e18,#101020,#0a0e18);font-family:'DotGothic16',monospace;image-rendering:pixelated}
+.gp-keypad{padding:4px 10px 12px;flex-shrink:0;display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.gp-key{height:44px;font-size:22px;font-weight:900;border-radius:0;background:linear-gradient(180deg,rgba(255,200,60,.1) 0%,rgba(255,200,60,.04) 100%);
+  border:3px solid rgba(255,200,60,.2);color:#ffd700;font-family:'DotGothic16',monospace;
+  box-shadow:4px 4px 0 rgba(80,60,0,.3),inset -2px -2px 0 rgba(255,200,60,.05),inset 2px 2px 0 rgba(255,255,200,.05);cursor:pointer;transition:transform .08s,box-shadow .08s}
+.gp-key:active{transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(80,60,0,.3)}
 
-/* ★★★ 픽셀 게임오버 UI ★★★ */
-.go-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:8px}
-.go-title{
-  font-size:30px;font-weight:900;color:#ffd700;
-  text-shadow:3px 3px 0 #705808,-1px -1px 0 #ffa020;
-  letter-spacing:6px;font-family:'DotGothic16',monospace;
-}
+.fx-overlay{position:absolute;top:0;left:0;width:100%;height:100%;z-index:3;pointer-events:none}
+.shake{animation:shake .3s ease}
+@keyframes shake{0%,100%{transform:translate(0)}10%{transform:translate(-6px,4px)}20%{transform:translate(5px,-3px)}30%{transform:translate(-4px,6px)}40%{transform:translate(4px,-5px)}50%{transform:translate(-3px,2px)}}
+.wrong-flash{animation:wflash .3s}
+@keyframes wflash{0%{background:rgba(255,0,0,.2)}100%{background:transparent}}
+
+/* ===== SCREEN 3: 게임오버 ===== */
+.screen-gameover{justify-content:center;align-items:center;background:linear-gradient(160deg,#0a0e18,#101020,#0a0e18)}
+
+.go-content{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:8px;z-index:5;position:relative}
+.go-title{font-size:30px;font-weight:900;color:#ffd700;text-shadow:3px 3px 0 #705808,-1px -1px 0 #ffa020;letter-spacing:6px;font-family:'DotGothic16',monospace}
 .go-slbl{font-size:8px;color:rgba(255,200,60,.3);letter-spacing:4px;font-family:'DotGothic16',monospace}
-.go-sval{
-  font-size:44px;font-weight:900;color:#ffd700;
-  text-shadow:3px 3px 0 #705808,0 0 20px rgba(255,215,0,.3);
-  font-family:'DotGothic16',monospace;
-}
-.go-best{font-size:10px;color:#ffa830;letter-spacing:3px;font-family:'DotGothic16',monospace}
-.go-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin:12px 0;text-align:center}
-.go-stlbl{font-size:7px;color:rgba(255,200,60,.25);letter-spacing:3px;font-family:'DotGothic16',monospace}
-.go-stval{font-size:16px;font-weight:900;color:#ffe066;font-family:'DotGothic16',monospace;text-shadow:2px 2px 0 #604800}
-.go-rank{
-  font-size:22px;font-weight:900;margin:8px 0;padding:8px 24px;
-  border:3px solid rgba(68,255,170,.3);color:#44ffaa;
-  text-shadow:2px 2px 0 #0a4030,0 0 15px #44ffaa;
-  background:rgba(68,255,170,.04);
-  font-family:'DotGothic16',monospace;
-  box-shadow:3px 3px 0 rgba(0,40,30,.4);
-}
-.go-retry{
-  margin-top:12px;padding:14px 50px;
-  font-size:16px;font-weight:900;
-  color:#1a0800;
-  background:#ffd700;
-  border:none;border-radius:0;
-  font-family:'DotGothic16',monospace;
-  box-shadow:4px 4px 0 #705808,inset -2px -2px 0 #c09818,inset 2px 2px 0 #ffe880;
-  letter-spacing:4px;cursor:pointer;
-}
-.go-retry:active{box-shadow:2px 2px 0 #705808;transform:translate(2px,2px)}
-.go-home-btn{
-  margin-top:8px;padding:8px 30px;
-  font-size:10px;color:rgba(255,200,60,.4);
-  background:none;
-  border:3px solid rgba(255,200,60,.15);border-radius:0;
-  font-family:'DotGothic16',monospace;
-  letter-spacing:3px;cursor:pointer;
-  box-shadow:3px 3px 0 rgba(60,40,0,.2);
-}
-.go-home-btn:active{box-shadow:1px 1px 0 rgba(60,40,0,.2);transform:translate(2px,2px)}
-.go-fw{position:absolute;width:6px;height:6px;animation:fwB 1.5s ease-out forwards}
-@keyframes fwB{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--fx),var(--fy)) scale(0)}}
+.go-sval{font-size:44px;font-weight:900;color:#ffd700;text-shadow:3px 3px 0 #705808,0 0 20px rgba(255,215,0,.3);font-family:'DotGothic16',monospace}
 
-/* ===== FX 키프레임 ===== */
-@keyframes starTw{0%,100%{opacity:.15;transform:scale(.5) rotate(0)}50%{opacity:1;transform:scale(1.2) rotate(180deg)}}
-@keyframes hexF{0%{transform:translateY(0) rotate(0);opacity:.06}50%{opacity:.12}100%{transform:translateY(-650px) rotate(360deg);opacity:0}}
-@keyframes cometT{0%{transform:translateX(-100px) translateY(100px);opacity:0}20%{opacity:.2}80%{opacity:.1}100%{transform:translateX(400px) translateY(-100px);opacity:0}}
-@keyframes pxRain{0%{transform:translateY(-10px);opacity:0}50%{opacity:.12}100%{transform:translateY(500px);opacity:0}}
-@keyframes sparkleA{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
-@keyframes dustF{0%{transform:translate(0,0);opacity:0}20%{opacity:.12}80%{opacity:.08}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
+.go-msg-area{margin:12px 0;text-align:center}
+.go-msg{font-size:11px;color:#40e0d0;letter-spacing:1px;margin:3px 0;font-family:'DotGothic16',monospace}
+.go-progress-bar{width:200px;height:10px;background:#1a1a2a;border:1px solid #2a3a50;margin:6px auto;position:relative;overflow:hidden}
+.go-progress-fill{height:100%;background:linear-gradient(90deg,#ffd700,#ff8c00);width:25%}
 
-/* ===== 설명 라벨 ===== */
-.info{margin-top:10px;font-size:9px;color:rgba(112,208,232,.3);text-align:center;letter-spacing:1px;font-family:'DotGothic16',monospace}
-.info2{margin-top:4px;font-size:10px;color:rgba(112,208,232,.35);text-align:center;max-width:380px;line-height:1.6;margin-bottom:10px;font-family:'DotGothic16',monospace}
-.badge{display:inline-block;padding:3px 10px;font-size:8px;border:2px solid #2880a0;color:#70d0e8;margin-top:4px;letter-spacing:1px;font-family:'DotGothic16',monospace;box-shadow:2px 2px 0 #0a2030}
+.go-buttons{display:flex;gap:8px;margin-top:16px}
+.go-btn{padding:8px 20px;border:2px solid #ffd700;background:#1a2a1a;color:#ffd700;font-family:'DotGothic16',monospace;font-size:10px;cursor:pointer;border-radius:0}
+.go-btn:hover{background:#2a3a2a}
 
-@media(max-width:420px){.phone{width:100vw;height:100vh;border-radius:0;border:none}}
+/* ===== SCREEN 4: 수집 ===== */
+.screen-collection{flex-direction:column;overflow:hidden}
+.coll-tabs{display:flex;border-bottom:2px solid #1a2840;flex-shrink:0}
+.coll-tab{flex:1;padding:10px 0;text-align:center;font-size:11px;color:#4a6080;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:1px;background:#0a0e1a;font-family:'DotGothic16',monospace}
+.coll-tab.active{color:#ffd700;border-bottom-color:#ffd700;background:rgba(255,215,0,.05)}
+
+.coll-page{flex:1;overflow-y:auto;padding:12px;display:none;flex-direction:column;gap:10px}
+.coll-page.active{display:flex}
+
+.coll-header{text-align:center;padding:8px 0}
+.coll-title{font-size:14px;color:#ffd700;letter-spacing:2px;font-family:'DotGothic16',monospace}
+.coll-progress{margin-top:6px}
+.progress-bar{width:100%;height:12px;background:#1a1a2a;border:1px solid #2a3a50;position:relative;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#ffd700,#ff8c00);transition:width .5s}
+.progress-text{font-size:9px;color:#8a9ab0;text-align:center;margin-top:3px;font-family:'DotGothic16',monospace}
+
+.skin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.skin-card{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border:2px solid #1a2840;background:#0a0e1a;cursor:pointer;transition:all .2s;position:relative}
+.skin-card:hover{border-color:#ffd700}
+.skin-card.locked{opacity:.5}
+.skin-card.locked::after{content:'🔒';position:absolute;top:4px;right:4px;font-size:10px}
+.skin-card.selected{border-color:#40e0d0;background:rgba(64,224,208,.08)}
+.skin-card canvas{width:40px;height:40px;image-rendering:pixelated}
+.skin-name{font-size:8px;color:#6a8898;text-align:center;font-family:'DotGothic16',monospace}
+.skin-req{font-size:7px;color:#4a3060;text-align:center;margin-top:2px;font-family:'DotGothic16',monospace}
+
+.achieve-card{display:flex;align-items:center;gap:10px;padding:10px;border:2px solid #1a2840;background:#0a0e1a}
+.achieve-card.done{border-color:#ffd700;background:rgba(255,215,0,.03)}
+.achieve-icon{font-size:24px;width:40px;text-align:center}
+.achieve-info{flex:1}
+.achieve-title{font-size:11px;color:#e0e0e0;letter-spacing:1px;font-family:'DotGothic16',monospace}
+.achieve-desc{font-size:9px;color:#6a8898;margin-top:2px;font-family:'DotGothic16',monospace}
+.achieve-progress{margin-top:4px}
+.achieve-bar{width:100%;height:6px;background:#1a1a2a;overflow:hidden}
+.achieve-fill{height:100%;background:#40e0d0;transition:width .3s}
+.achieve-reward{font-size:8px;color:#ffd700;margin-top:3px;font-family:'DotGothic16',monospace}
+.achieve-badge{font-size:10px;color:#ffd700;font-weight:bold}
+
+.title-list{display:flex;flex-direction:column;gap:6px}
+.title-card{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid #1a2840;background:#0a0e1a}
+.title-card.equipped{border-color:#ff69b4;background:rgba(255,105,180,.05)}
+.title-card.locked{opacity:.4}
+.title-name{font-size:12px;letter-spacing:2px;font-family:'DotGothic16',monospace}
+.title-cond{font-size:8px;color:#6a8898;font-family:'DotGothic16',monospace}
+.equip-btn{font-size:8px;padding:3px 8px;border:1px solid #40e0d0;color:#40e0d0;background:transparent;cursor:pointer;font-family:'DotGothic16',monospace;border-radius:0}
+
+/* ===== SCREEN 5: 랭킹 ===== */
+.screen-ranking{flex-direction:column;overflow:hidden}
+.rank-header{text-align:center;padding:12px 0 6px}
+.rank-header-title{font-size:16px;color:#ffd700;letter-spacing:3px;font-family:'DotGothic16',monospace}
+.rank-header-sub{font-size:9px;color:#6a8898;margin-top:4px;letter-spacing:1px;font-family:'DotGothic16',monospace}
+
+.rank-tabs{display:flex;border-bottom:2px solid #1a2840;margin:0 12px;flex-shrink:0}
+.rank-tab{flex:1;padding:8px 0;text-align:center;font-size:10px;color:#4a6080;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:1px;font-family:'DotGothic16',monospace}
+.rank-tab.active{color:#40e0d0;border-bottom-color:#40e0d0}
+
+.my-rank{margin:10px 12px;padding:12px;background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(64,224,208,.05));border:2px solid #ffd700;position:relative;flex-shrink:0}
+.my-rank-badge{position:absolute;top:-8px;left:12px;background:#ffd700;color:#402000;font-size:8px;padding:2px 8px;font-weight:bold;letter-spacing:1px;font-family:'DotGothic16',monospace}
+.my-rank-row{display:flex;align-items:center;gap:10px}
+.my-rank-num{font-size:28px;color:#ffd700;width:48px;text-align:center;font-family:'DotGothic16',monospace}
+.my-rank-info{flex:1}
+.my-rank-name{font-size:13px;color:#e0e0e0;display:flex;align-items:center;gap:6px;font-family:'DotGothic16',monospace}
+.my-rank-title{font-size:8px;color:#ff69b4;border:1px solid #ff69b4;padding:1px 5px;font-family:'DotGothic16',monospace}
+.my-rank-score{font-size:11px;color:#ffd700;margin-top:3px;font-family:'DotGothic16',monospace}
+.my-rank-stats{font-size:8px;color:#6a8898;margin-top:2px;font-family:'DotGothic16',monospace}
+.my-rank-change{font-size:10px;text-align:right;font-family:'DotGothic16',monospace}
+.rank-up{color:#40e060}
+.rank-down{color:#e04060}
+
+.rank-list{flex:1;overflow-y:auto;padding:6px 12px}
+.rank-row{display:flex;align-items:center;padding:8px;gap:8px;border-bottom:1px solid #0e1420;transition:background .2s}
+.rank-row:hover{background:rgba(255,255,255,.02)}
+.rank-pos{width:30px;text-align:center;font-size:14px;font-family:'DotGothic16',monospace}
+.rank-pos.gold{color:#ffd700;font-size:18px}
+.rank-pos.silver{color:#c0c0c0;font-size:16px}
+.rank-pos.bronze{color:#cd7f32;font-size:16px}
+.rank-avatar{width:28px;height:28px;image-rendering:pixelated}
+.rank-info{flex:1}
+.rank-name{font-size:11px;color:#c0d0e0;display:flex;align-items:center;gap:4px;font-family:'DotGothic16',monospace}
+.rank-title-tag{font-size:7px;padding:1px 4px;border:1px solid;border-radius:0;font-family:'DotGothic16',monospace}
+.rank-score{font-size:10px;color:#8a9ab0;margin-top:2px;font-family:'DotGothic16',monospace}
+.rank-change-small{width:30px;text-align:right;font-size:9px;font-family:'DotGothic16',monospace}
+
+.rank-footer{padding:10px 12px;border-top:2px solid #1a2840;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.reset-timer{font-size:9px;color:#4a6080;font-family:'DotGothic16',monospace}
+.reset-timer span{color:#40e0d0}
+.share-btn{font-size:9px;padding:4px 12px;border:1px solid #ffd700;color:#ffd700;background:transparent;cursor:pointer;font-family:'DotGothic16',monospace;border-radius:0}
 </style>
 </head>
 <body>
 
-<div class="nav">
-  <button class="active" onclick="showP(0)">① 시작화면</button>
-  <button onclick="showP(1)">② 게임플레이</button>
-  <button onclick="showP(2)">③ 게임오버</button>
+<!-- TAB NAVIGATION -->
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="0">① 시작</button>
+  <button class="tab-btn" data-tab="1">② 게임</button>
+  <button class="tab-btn" data-tab="2">③ 종료</button>
+  <button class="tab-btn" data-tab="3">④ 수집</button>
+  <button class="tab-btn" data-tab="4">⑤ 랭킹</button>
 </div>
 
-<!-- ===== 패널1: 시작화면 ===== -->
-<div class="panel active" id="p0">
-  <div class="phone">
-    <div class="phone-inner">
-      <div class="space-bg"></div>
-      <canvas id="constellationCanvas"></canvas>
-      <div id="starsContainer"></div>
-      <div id="meteorContainer"></div>
-      <div class="content">
-        <div class="char-row" id="charRow"></div>
-        <div class="title-area"><canvas id="titleCanvas" width="90" height="30"></canvas></div>
-        <div class="gem-area"><canvas id="gemCanvas" width="72" height="72"></canvas></div>
-        <div class="best-score">BEST SCORE <span>12,450</span></div>
-        <button class="start-btn">시작하기</button>
-        <div class="ver-text">v1.0.0 · UNITY BUILD</div>
-      </div>
-    </div>
+<!-- SCREEN 1: 시작화면 -->
+<div class="screen screen-start active" id="screen0">
+  <div class="start-bg"></div>
+  <canvas class="constellation-canvas" id="constellationCanvas"></canvas>
+  <div class="start-header">
+    <button onclick="showScreen(3)">컬렉션</button>
+    <button onclick="showScreen(4)">랭킹</button>
   </div>
-  <div class="info">화면 1 / 3 — 시작 화면 (Full Pixel)</div>
-  <div class="info2">전체 UI 픽셀화: DotGothic16 폰트 + 하드 box-shadow + border-radius:0</div>
-  <div class="badge">StartScreenController.cs + PixelCharacters.cs</div>
+  <div class="start-content">
+    <div class="char-row" id="startChars"></div>
+    <div class="title-area">
+      <canvas id="titleCanvas" width="270" height="90"></canvas>
+    </div>
+    <div class="gem-area">
+      <canvas id="gemCanvas" width="72" height="72"></canvas>
+    </div>
+    <button class="start-btn" onclick="showScreen(1)">시작</button>
+    <div class="best-score">최고기록 <span>28,740점</span></div>
+  </div>
 </div>
 
-<!-- ===== 패널2: 게임플레이 ===== -->
-<div class="panel" id="p1">
-  <div class="phone">
-    <div class="gp-notch"></div>
-    <div class="gp-inner">
-      <div class="gp-status"><span>9:42</span><div style="display:flex;gap:5px"><span>▮▮▮</span><span>WiFi</span><span>98%</span></div></div>
-      <div class="gp-charbar" id="gpCharBar"></div>
-      <div class="gp-hud">
-        <div class="gp-hud-col left"><div class="gp-hud-lbl">SCORE</div><div class="gp-hud-val">3,280</div></div>
-        <div class="gp-hud-col center"><div class="gp-hud-lbl">STAGE</div><div class="gp-hud-tier">중급 III</div><div class="gp-hud-lives">♥ ♥ ♥</div></div>
-        <div class="gp-hud-col right"><div class="gp-hud-lbl">COMBO</div><div class="gp-hud-val combo">×7</div></div>
+<!-- SCREEN 2: 게임플레이 -->
+<div class="screen screen-gameplay" id="screen1">
+  <div class="gp-bg"></div>
+  <canvas class="gp-canvas-bg" id="gpBgCanvas"></canvas>
+  <div class="gp-content">
+    <div class="gp-status"><span>9:42</span><span>■■■ WiFi 98%</span></div>
+    <div class="gp-topchars" id="gpTopChars"></div>
+    <div class="gp-hud" id="gpHud">
+      <div class="gp-hud-item"><div class="gp-hud-label">SCORE</div><div class="gp-hud-val" id="gpScoreVal">3,280</div></div>
+      <div class="gp-hud-item"><div class="gp-hud-label">STAGE</div><div style="font-size:10px;color:#aaa">중급 III</div><div class="gp-hearts" id="gpHearts">♥ ♥ ♥</div></div>
+      <div class="gp-hud-item"><div class="gp-hud-label">COMBO</div><div class="gp-combo" id="gpComboVal">x7</div></div>
+    </div>
+    <div class="combo-next" id="gpComboNext" style="display:none;margin:0 10px;padding:0 0;text-align:right">다음: 골드 콤보까지 3콤보!</div>
+    <div class="gp-target" id="gpTarget">
+      <div class="gp-difficulty">N O R M A L</div>
+      <canvas id="gpNumCanvas" width="80" height="50" style="width:240px;height:150px"></canvas>
+      <div class="char-wrap">
+        <canvas id="gpFaceChar" width="16" height="16"></canvas>
+        <div class="gp-speed">x1.2 SPEED</div>
       </div>
-      <div class="gp-target" id="gpTarget">
-        <div class="gp-mode">NORMAL</div>
-        <div class="gp-num"><span class="t-tens">4</span><span class="t-sep">│</span><span class="t-ones">7</span></div>
-        <div class="gp-timer">
-          <svg viewBox="0 0 70 70"><circle class="bg" cx="35" cy="35" r="28"/><circle class="prog" cx="35" cy="35" r="28"/></svg>
-          <div class="dog-c"><canvas id="gpTimerDog" width="28" height="32"></canvas></div>
-        </div>
-        <div class="gp-speed">×1.2 SPEED</div>
-      </div>
-      <div class="gp-msg"><span>★ GENIUS! ★</span></div>
-      <div class="gp-keypad">
-        <div class="gp-krow"><div class="gp-key">1</div><div class="gp-key">2</div><div class="gp-key">3</div></div>
-        <div class="gp-krow"><div class="gp-key">4</div><div class="gp-key">5</div><div class="gp-key">6</div></div>
-        <div class="gp-krow"><div class="gp-key">7</div><div class="gp-key">8</div><div class="gp-key">9</div></div>
-      </div>
-      <div class="gp-home"><div class="bar"></div></div>
+    </div>
+    <div class="fever-banner" id="gpFeverBanner" style="opacity:0">🔥 피버 타임! 지금부터 점수 두배! 🔥</div>
+    <div class="genius-text" id="gpGeniusText">★ 천 재 ! ★</div>
+    <div class="combo-meter"><div class="combo-fill" id="gpComboFill"></div><div class="combo-label" id="gpComboLabel"></div></div>
+    <div class="theme-bar" id="gpThemeBar"></div>
+    <div class="gp-keypad" id="gpKeypad">
+      <button class="gp-key" data-n="1">1</button><button class="gp-key" data-n="2">2</button><button class="gp-key" data-n="3">3</button>
+      <button class="gp-key" data-n="4">4</button><button class="gp-key" data-n="5">5</button><button class="gp-key" data-n="6">6</button>
+      <button class="gp-key" data-n="7">7</button><button class="gp-key" data-n="8">8</button><button class="gp-key" data-n="9">9</button>
+      <button class="gp-key" data-n="back" style="border-color:rgba(255,60,60,.3);color:#ff6060">←</button>
+      <button class="gp-key" data-n="0">0</button>
+      <button class="gp-key" data-n="ok" style="border-color:rgba(60,255,60,.3);color:#60ff60">OK</button>
     </div>
   </div>
-  <div class="info">화면 2 / 3 — 게임플레이 (Full Pixel)</div>
-  <div class="info2">점수판·타겟넘버·키패드 전부 DotGothic16 + 8bit 하드섀도우</div>
-  <div class="badge">GameManager.cs + HUDController.cs + KeypadController.cs</div>
+  <canvas class="fx-overlay" id="gpFxCanvas"></canvas>
 </div>
 
-<!-- ===== 패널3: 게임오버 ===== -->
-<div class="panel" id="p2">
-  <div class="phone">
-    <div class="gp-notch"></div>
-    <div class="go-inner">
-      <div class="gp-status"><span>9:45</span><div style="display:flex;gap:5px"><span>▮▮▮</span><span>WiFi</span><span>95%</span></div></div>
-      <div class="go-content" id="goContent">
-        <div class="go-title">GAME OVER</div>
-        <div><div class="go-slbl">FINAL SCORE</div><div class="go-sval" id="goScore">0</div></div>
-        <div class="go-best">★ NEW BEST! ★</div>
-        <div class="go-stats">
-          <div><div class="go-stlbl">STAGE</div><div class="go-stval">고급 II</div></div>
-          <div><div class="go-stlbl">MAX COMBO</div><div class="go-stval">×12</div></div>
-          <div><div class="go-stlbl">TOTAL TAPS</div><div class="go-stval">147</div></div>
-          <div><div class="go-stlbl">GENIUS</div><div class="go-stval">8회</div></div>
-        </div>
-        <div class="go-rank">★ S RANK ★</div>
-        <button class="go-retry">▶ 재도전</button>
-        <button class="go-home-btn">홈으로</button>
-      </div>
-      <div class="gp-home"><div class="bar"></div></div>
+<!-- SCREEN 3: 게임오버 -->
+<div class="screen screen-gameover" id="screen2">
+  <div class="go-content">
+    <div class="go-title">GAME OVER</div>
+    <div class="go-slbl">SCORE</div>
+    <div class="go-sval">12,450</div>
+    <div class="go-msg-area">
+      <div class="go-msg">🔥 아깝다 연출</div>
+      <div class="go-msg">다음 스테이지까지 3문제 남았어요!</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:70%"></div></div>
+      <div class="go-msg">최고기록까지 120점 부족!</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:43%"></div></div>
+    </div>
+    <div class="go-buttons">
+      <button class="go-btn" onclick="showScreen(1)">재시도</button>
+      <button class="go-btn" onclick="showScreen(0)">처음으로</button>
     </div>
   </div>
-  <div class="info">화면 3 / 3 — 게임오버 (Full Pixel)</div>
-  <div class="info2">점수·스탯·랭크·버튼 전부 픽셀 스타일</div>
-  <div class="badge">GameOverController.cs + GameState.cs</div>
+</div>
+
+<!-- SCREEN 4: 수집 -->
+<div class="screen screen-collection" id="screen3">
+  <div class="coll-tabs">
+    <div class="coll-tab active" data-page="skins">캐릭터</div>
+    <div class="coll-tab" data-page="achieve">업적</div>
+    <div class="coll-tab" data-page="titles">칭호</div>
+  </div>
+
+  <div class="coll-page active" id="skins">
+    <div class="coll-header">
+      <div class="coll-title">캐릭터 컬렉션</div>
+      <div class="coll-progress">
+        <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+        <div class="progress-text">6 / 10 수집 완료 (60%)</div>
+      </div>
+    </div>
+    <div class="skin-grid" id="skinGrid"></div>
+  </div>
+
+  <div class="coll-page" id="achieve">
+    <div style="text-align:center;font-size:13px;color:#ffd700;padding:6px;letter-spacing:2px;font-family:'DotGothic16',monospace">업적 목록</div>
+    <div id="achieveList"></div>
+  </div>
+
+  <div class="coll-page" id="titles">
+    <div style="text-align:center;font-size:13px;color:#ffd700;padding:6px;letter-spacing:2px;font-family:'DotGothic16',monospace">내 칭호</div>
+    <div style="text-align:center;font-size:9px;color:#6a8898;margin-bottom:8px;font-family:'DotGothic16',monospace">게임 중 닉네임 옆에 표시됩니다</div>
+    <div class="title-list" id="titleList"></div>
+  </div>
+</div>
+
+<!-- SCREEN 5: 랭킹 -->
+<div class="screen screen-ranking" id="screen4">
+  <div class="rank-header">
+    <div class="rank-header-title">🏆 주간 랭킹</div>
+    <div class="rank-header-sub">2026.03.23 ~ 03.29</div>
+  </div>
+
+  <div class="rank-tabs">
+    <div class="rank-tab active">전체</div>
+    <div class="rank-tab">친구</div>
+    <div class="rank-tab">내 지역</div>
+  </div>
+
+  <div class="my-rank">
+    <div class="my-rank-badge">내 순위</div>
+    <div class="my-rank-row">
+      <div class="my-rank-num">#23</div>
+      <div class="my-rank-info">
+        <div class="my-rank-name">Park <span class="my-rank-title">🌙 올빼미</span></div>
+        <div class="my-rank-score">⭐ 12,450점</div>
+        <div class="my-rank-stats">최고콤보 x18 · S랭크 1회 · GENIUS 34회</div>
+      </div>
+      <div class="my-rank-change rank-up">▲5<br><span style="font-size:8px">어제보다</span></div>
+    </div>
+  </div>
+
+  <div class="rank-list" id="rankList"></div>
+
+  <div class="rank-footer">
+    <div class="reset-timer">초기화까지 <span id="timer">2일 14시간</span></div>
+    <button class="share-btn">📤 공유하기</button>
+  </div>
 </div>
 
 <script>
-function showP(i){
-  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
-  document.querySelectorAll('.nav button').forEach((b,j)=>b.classList.toggle('active',j===i));
+const W=360,H=720;
+
+// ===== TAB NAVIGATION =====
+function showScreen(idx){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen'+idx).classList.add('active');
+  document.querySelector(`.tab-btn[data-tab="${idx}"]`).classList.add('active');
 }
+document.querySelectorAll('.tab-btn').forEach(btn=>btn.onclick=()=>showScreen(parseInt(btn.dataset.tab)));
 
-// ===== 픽셀 유틸 =====
-function px(ctx,x,y,c,s){ctx.fillStyle=`rgba(${c[0]},${c[1]},${c[2]},${(c[3]??255)/255})`;ctx.fillRect(x*s,y*s,s,s)}
-const O=[40,40,40,255],W=[255,255,255,255];
+// ===== SCREEN 1: START SCREEN =====
 
-// ===== 5색 캐릭터 =====
-function drawFace(canvas,bodyColor,cheekColor,eyeStyle,mouthStyle){
-  const s=Math.floor(canvas.width/14);
-  canvas.width=14*s;canvas.height=14*s;
-  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,canvas.width,canvas.height);
-  const bc=bodyColor,ck=cheekColor,o=O;
-  for(let i=3;i<=10;i++)px(ctx,i,0,o,s);
-  px(ctx,2,1,o,s);for(let i=3;i<=10;i++)px(ctx,i,1,bc,s);px(ctx,11,1,o,s);
-  for(let y=2;y<=10;y++){px(ctx,1,y,o,s);for(let i=2;i<=11;i++)px(ctx,i,y,bc,s);px(ctx,12,y,o,s)}
-  px(ctx,2,11,o,s);for(let i=3;i<=10;i++)px(ctx,i,11,bc,s);px(ctx,11,11,o,s);
-  for(let i=3;i<=10;i++)px(ctx,i,12,o,s);
-  px(ctx,3,2,[255,255,255,60],s);px(ctx,4,2,[255,255,255,40],s);px(ctx,3,3,[255,255,255,30],s);
-  px(ctx,3,7,ck,s);px(ctx,3,8,ck,s);px(ctx,10,7,ck,s);px(ctx,10,8,ck,s);
-  const es=eyeStyle%5;
-  if(es===0){px(ctx,4,4,o,s);px(ctx,5,4,o,s);px(ctx,4,5,o,s);px(ctx,5,5,W,s);px(ctx,8,4,o,s);px(ctx,9,4,o,s);px(ctx,8,5,o,s);px(ctx,9,5,W,s)}
-  else if(es===1){px(ctx,4,5,o,s);px(ctx,5,5,o,s);px(ctx,6,5,o,s);px(ctx,8,4,o,s);px(ctx,9,4,o,s);px(ctx,8,5,o,s);px(ctx,9,5,W,s)}
-  else if(es===2){px(ctx,4,4,o,s);px(ctx,5,4,o,s);px(ctx,4,5,W,s);px(ctx,5,5,o,s);px(ctx,8,4,o,s);px(ctx,9,4,o,s);px(ctx,8,5,W,s);px(ctx,9,5,o,s)}
-  else if(es===3){px(ctx,4,4,o,s);px(ctx,5,4,o,s);px(ctx,6,4,o,s);px(ctx,5,5,o,s);px(ctx,8,4,o,s);px(ctx,9,4,o,s);px(ctx,10,4,o,s);px(ctx,9,5,o,s)}
-  else{px(ctx,4,4,o,s);px(ctx,5,4,W,s);px(ctx,6,4,o,s);px(ctx,5,3,o,s);px(ctx,5,5,o,s);px(ctx,8,4,o,s);px(ctx,9,4,W,s);px(ctx,10,4,o,s);px(ctx,9,3,o,s);px(ctx,9,5,o,s)}
-  const ms=mouthStyle%5;const tg=[255,100,100,255];
-  if(ms===0){px(ctx,5,8,o,s);px(ctx,6,8,o,s);px(ctx,7,8,o,s);px(ctx,8,8,o,s);px(ctx,6,9,tg,s);px(ctx,7,9,tg,s);px(ctx,6,10,o,s);px(ctx,7,10,o,s)}
-  else if(ms===1){px(ctx,4,8,o,s);for(let i=5;i<=8;i++)px(ctx,i,8,o,s);px(ctx,9,8,o,s);px(ctx,5,9,o,s);px(ctx,8,9,o,s)}
-  else if(ms===2){px(ctx,6,8,o,s);px(ctx,7,8,o,s);px(ctx,5,7,o,s);px(ctx,8,7,o,s)}
-  else if(ms===3){px(ctx,6,7,o,s);px(ctx,7,7,o,s);px(ctx,5,8,o,s);px(ctx,8,8,o,s);px(ctx,6,9,o,s);px(ctx,7,9,o,s)}
-  else{px(ctx,5,8,o,s);px(ctx,6,8,o,s);px(ctx,7,8,o,s);px(ctx,8,8,o,s);px(ctx,9,7,o,s)}
+// Constellation background
+const constellationCv=document.getElementById('constellationCanvas');
+constellationCv.width=W;constellationCv.height=H;
+const constellationCtx=constellationCv.getContext('2d');
+function drawConstellation(){
+  constellationCtx.clearRect(0,0,W,H);
+  for(let i=0;i<200;i++){
+    const x=Math.random()*W,y=Math.random()*H;
+    const s=Math.random()*1.5+0.5;
+    constellationCtx.fillStyle=`rgba(255,255,255,${Math.random()*.5+.3})`;
+    constellationCtx.beginPath();constellationCtx.arc(x,y,s,0,Math.PI*2);constellationCtx.fill();
+  }
+  requestAnimationFrame(drawConstellation);
 }
+drawConstellation();
 
-// ===== 강아지 =====
-function drawDog(canvas,bc,ec,cc,armsUp){
-  const s=Math.floor(canvas.width/14);canvas.width=14*s;canvas.height=16*s;
-  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,canvas.width,canvas.height);
-  const o=O;
-  px(ctx,2,0,o,s);px(ctx,3,0,o,s);px(ctx,10,0,o,s);px(ctx,11,0,o,s);
-  px(ctx,1,1,o,s);px(ctx,2,1,ec,s);px(ctx,3,1,ec,s);px(ctx,4,1,o,s);px(ctx,9,1,o,s);px(ctx,10,1,ec,s);px(ctx,11,1,ec,s);px(ctx,12,1,o,s);
-  px(ctx,1,2,o,s);px(ctx,2,2,ec,s);px(ctx,3,2,ec,s);px(ctx,4,2,o,s);px(ctx,9,2,o,s);px(ctx,10,2,ec,s);px(ctx,11,2,ec,s);px(ctx,12,2,o,s);
-  for(let i=3;i<=10;i++)px(ctx,i,3,o,s);
-  px(ctx,2,4,o,s);for(let i=3;i<=10;i++)px(ctx,i,4,bc,s);px(ctx,11,4,o,s);
-  px(ctx,2,5,o,s);for(let i=3;i<=10;i++)px(ctx,i,5,bc,s);px(ctx,11,5,o,s);px(ctx,4,5,W,s);px(ctx,5,5,o,s);px(ctx,8,5,W,s);px(ctx,9,5,o,s);
-  px(ctx,2,6,o,s);for(let i=3;i<=10;i++)px(ctx,i,6,bc,s);px(ctx,11,6,o,s);px(ctx,6,6,o,s);px(ctx,7,6,o,s);px(ctx,3,6,cc,s);px(ctx,10,6,cc,s);
-  px(ctx,2,7,o,s);for(let i=3;i<=10;i++)px(ctx,i,7,bc,s);px(ctx,11,7,o,s);
-  for(let y=8;y<=11;y++){px(ctx,3,y,o,s);for(let i=4;i<=9;i++)px(ctx,i,y,bc,s);px(ctx,10,y,o,s)}
-  if(armsUp){px(ctx,2,8,o,s);px(ctx,3,8,bc,s);px(ctx,2,7,bc,s);px(ctx,11,8,o,s);px(ctx,10,8,bc,s);px(ctx,11,7,bc,s)}
-  else{px(ctx,3,9,o,s);px(ctx,2,10,o,s);px(ctx,10,9,o,s);px(ctx,11,10,o,s)}
-  px(ctx,4,12,o,s);px(ctx,5,12,o,s);px(ctx,8,12,o,s);px(ctx,9,12,o,s);
-  px(ctx,3,13,o,s);px(ctx,4,13,bc,s);px(ctx,5,13,o,s);px(ctx,8,13,o,s);px(ctx,9,13,bc,s);px(ctx,10,13,o,s);
+// Title canvas (픽셀 "빼봐영" 22px 3x upscale)
+const titleCv=document.getElementById('titleCanvas');
+const titleCtx=titleCv.getContext('2d');
+function drawTitle(){
+  titleCtx.clearRect(0,0,270,90);
+  titleCtx.imageSmoothingEnabled=false;
+  titleCtx.fillStyle='#ffd700';
+  titleCtx.font='bold 66px "DotGothic16",monospace';
+  titleCtx.textAlign='center';titleCtx.textBaseline='middle';
+  titleCtx.fillText('빼봐영',135,45);
 }
+drawTitle();
 
-// ★★★ "빼봐영" 픽셀 타이틀 (22px 극저해상도 + 3배 확대) ★★★
-function drawPixelTitle(canvas){
-  const ctx=canvas.getContext('2d');
-  ctx.imageSmoothingEnabled=false;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  ctx.font="900 22px 'DotGothic16',monospace";
-  ctx.textAlign='center';
-  ctx.textBaseline='middle';
-
-  const cx=canvas.width/2, cy=canvas.height/2;
-
-  // 하드 그림자
-  ctx.fillStyle='#604010';
-  ctx.fillText('빼봐영',cx+1,cy+1);
-
-  // 메인 컬러
-  ctx.fillStyle='#f0a030';
-  ctx.fillText('빼봐영',cx,cy);
+// Gem canvas
+const gemCv=document.getElementById('gemCanvas');
+const gemCtx=gemCv.getContext('2d');
+function drawGem(){
+  gemCtx.clearRect(0,0,72,72);
+  gemCtx.fillStyle='#ff4488';
+  gemCtx.beginPath();gemCtx.moveTo(36,8);gemCtx.lineTo(56,32);gemCtx.lineTo(56,56);gemCtx.lineTo(36,64);gemCtx.lineTo(16,56);gemCtx.lineTo(16,32);gemCtx.closePath();gemCtx.fill();
+  gemCtx.fillStyle='#ff66aa';
+  gemCtx.beginPath();gemCtx.moveTo(36,20);gemCtx.lineTo(48,32);gemCtx.lineTo(36,48);gemCtx.closePath();gemCtx.fill();
 }
+drawGem();
 
-// ===== 보석 =====
-function drawGem(canvas){
-  const s=Math.floor(canvas.width/16);canvas.width=16*s;canvas.height=16*s;
-  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,canvas.width,canvas.height);
-  const o=O,gm=[160,80,200,255],gd=[120,50,160,255],gl=[200,140,240,255];
-  for(let i=6;i<=9;i++)px(ctx,i,1,o,s);
-  px(ctx,5,2,o,s);for(let i=6;i<=9;i++)px(ctx,i,2,gl,s);px(ctx,10,2,o,s);
-  px(ctx,4,3,o,s);for(let i=5;i<=10;i++)px(ctx,i,3,gl,s);px(ctx,11,3,o,s);
-  px(ctx,3,4,o,s);for(let i=4;i<=11;i++)px(ctx,i,4,gm,s);px(ctx,12,4,o,s);
-  for(let y=5;y<=10;y++){px(ctx,2,y,o,s);for(let i=3;i<=12;i++)px(ctx,i,y,gm,s);px(ctx,13,y,o,s)}
-  px(ctx,4,5,gl,s);px(ctx,5,5,gl,s);px(ctx,4,6,gl,s);px(ctx,10,5,gd,s);px(ctx,11,5,gd,s);px(ctx,11,6,gd,s);
-  px(ctx,3,11,o,s);for(let i=4;i<=11;i++)px(ctx,i,11,gd,s);px(ctx,12,11,o,s);
-  px(ctx,4,12,o,s);for(let i=5;i<=10;i++)px(ctx,i,12,gd,s);px(ctx,11,12,o,s);
-  px(ctx,5,13,o,s);for(let i=6;i<=9;i++)px(ctx,i,13,gd,s);px(ctx,10,13,o,s);
-  for(let i=6;i<=9;i++)px(ctx,i,14,o,s);
-  px(ctx,5,7,o,s);px(ctx,6,7,o,s);px(ctx,5,8,o,s);px(ctx,6,8,W,s);
-  px(ctx,9,7,o,s);px(ctx,10,7,o,s);px(ctx,9,8,o,s);px(ctx,10,8,W,s);
-  px(ctx,4,9,[255,150,200,80],s);px(ctx,11,9,[255,150,200,80],s);
-  px(ctx,7,10,o,s);px(ctx,8,10,o,s);
-}
+// Start screen characters
+const startCharsDiv=document.getElementById('startChars');
+['#9050c0','#e04080','#e09020','#30b030','#3080e0'].forEach(c=>{
+  const cv=document.createElement('canvas');cv.width=16;cv.height=16;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle=c;for(let y=2;y<14;y++)for(let x=2;x<14;x++)ctx.fillRect(x,y,1,1);
+  ctx.fillStyle='#fff';ctx.fillRect(5,5,2,2);ctx.fillRect(9,5,2,2);
+  ctx.fillStyle='#000';ctx.fillRect(6,5,1,1);ctx.fillRect(10,5,1,1);ctx.fillRect(6,10,4,1);
+  ctx.fillStyle='#ffcc66';ctx.fillRect(3,9,2,2);ctx.fillRect(11,9,2,2);
+  cv.style.imageRendering='pixelated';startCharsDiv.appendChild(cv);
+});
 
-// ===== 별자리 =====
-function drawConstellations(){
-  const canvas=document.getElementById('constellationCanvas');
-  const phone=canvas.parentElement;
-  canvas.width=phone.offsetWidth;canvas.height=phone.offsetHeight;
-  const ctx=canvas.getContext('2d');
-  const W2=canvas.width,H=canvas.height;
-  const cs=[
-    {s:[[.08,.08],[.15,.05],[.22,.1],[.18,.18],[.1,.16]],c:'rgba(100,160,255,.25)'},
-    {s:[[.75,.06],[.82,.03],[.88,.08],[.92,.15],[.85,.18]],c:'rgba(100,160,255,.2)'},
-    {s:[[.05,.55],[.12,.5],[.18,.58],[.08,.65]],c:'rgba(150,180,255,.2)'},
-    {s:[[.85,.5],[.9,.45],[.95,.55],[.88,.6]],c:'rgba(120,170,255,.2)'},
-    {s:[[.7,.75],[.78,.7],[.85,.78],[.82,.85],[.72,.88]],c:'rgba(100,150,255,.18)'},
-    {s:[[.15,.8],[.22,.75],[.28,.82],[.2,.9]],c:'rgba(140,170,255,.18)'},
-    {s:[[.4,.05],[.48,.02],[.55,.08]],c:'rgba(100,160,255,.15)'},
-    {s:[[.5,.85],[.58,.82],[.62,.9]],c:'rgba(120,160,255,.15)'}
-  ];
-  cs.forEach(c=>{
-    const pts=c.s.map(p=>({x:p[0]*W2,y:p[1]*H}));
-    ctx.strokeStyle=c.c;ctx.lineWidth=1;ctx.beginPath();
-    pts.forEach((p,i)=>{if(!i)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y)});
-    ctx.stroke();
-    pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,1.5,0,Math.PI*2);ctx.fillStyle='rgba(180,210,255,.5)';ctx.fill()});
+// ===== SCREEN 2: GAMEPLAY =====
+
+const themes=[
+  {name:'🌌 우주',bg1:'#060812',bg2:'#0a1028',particle:'star',accent:'#ffd700'},
+  {name:'🌊 바다',bg1:'#041828',bg2:'#082038',particle:'bubble',accent:'#40d0e0'},
+  {name:'🌲 숲',bg1:'#041808',bg2:'#082810',particle:'leaf',accent:'#60e060'},
+  {name:'🌃 네온',bg1:'#0a0418',bg2:'#180828',particle:'neon',accent:'#ff40ff'}
+];
+let curTheme=0;
+const themeBar=document.getElementById('gpThemeBar');
+themes.forEach((t,i)=>{
+  const b=document.createElement('button');b.className='theme-btn'+(i===0?' active':'');
+  b.textContent=t.name;
+  b.onclick=()=>{curTheme=i;bgParticles=[];document.querySelectorAll('#gpThemeBar .theme-btn').forEach((x,j)=>x.className='theme-btn'+(j===i?' active':''));};
+  themeBar.appendChild(b);
+});
+
+// GP Background canvas
+const gpBgCv=document.getElementById('gpBgCanvas');gpBgCv.width=W;gpBgCv.height=H;
+const gpBgCtx=gpBgCv.getContext('2d');
+let bgParticles=[],feverMode=false,comboCount=7;
+
+function drawGpBg(){
+  const t=themes[curTheme];
+  const g=gpBgCtx.createLinearGradient(0,0,0,H);
+  if(feverMode){
+    const h1=280+Math.sin(Date.now()/500)*20;
+    const h2=30+Math.sin(Date.now()/500+1)*20;
+    g.addColorStop(0,`hsl(${h1},60%,12%)`);g.addColorStop(1,`hsl(${h2},60%,12%)`);
+  }else{
+    g.addColorStop(0,t.bg1);g.addColorStop(1,t.bg2);
+  }
+  gpBgCtx.fillStyle=g;gpBgCtx.fillRect(0,0,W,H);
+
+  if(Math.random()<0.12){
+    const p=t.particle;
+    if(p==='star') bgParticles.push({x:Math.random()*W,y:0,vy:.5+Math.random(),s:Math.random()*1.5+.5,c:'rgba(200,220,255,0.5)'});
+    else if(p==='bubble') bgParticles.push({x:Math.random()*W,y:H,vy:-(0.5+Math.random()),s:Math.random()*3+2,c:'rgba(100,200,240,0.3)',type:'circle'});
+    else if(p==='leaf') bgParticles.push({x:Math.random()*W,y:0,vy:.8+Math.random(),vx:Math.sin(Date.now()/500)*.5,s:Math.random()*2+2,c:'rgba(80,200,80,0.4)'});
+    else bgParticles.push({x:Math.random()*W,y:Math.random()*H,vy:0,s:Math.random()*2+1,c:`hsla(${Math.random()*360},100%,60%,0.4)`,life:1,decay:.008});
+  }
+  if(feverMode&&Math.random()<.3){
+    const side=Math.random()<.5?10+Math.random()*30:W-40+Math.random()*30;
+    bgParticles.push({x:side,y:H,vy:-(2+Math.random()*3),vx:(Math.random()-.5),s:Math.random()*4+2,c:['#ff4500','#ff8c00','#ffd700','#ff69b4'][Math.floor(Math.random()*4)],life:1,decay:.012});
+  }
+  bgParticles.forEach(p=>{
+    p.y+=(p.vy||0);p.x+=(p.vx||0);
+    if(p.life!==undefined){p.life-=(p.decay||.01);gpBgCtx.globalAlpha=Math.max(0,p.life);}
+    gpBgCtx.fillStyle=p.c;
+    if(p.type==='circle'){gpBgCtx.beginPath();gpBgCtx.arc(p.x,p.y,p.s,0,Math.PI*2);gpBgCtx.fill();}
+    else gpBgCtx.fillRect(p.x,p.y,p.s,p.s);
   });
+  gpBgCtx.globalAlpha=1;
+  bgParticles=bgParticles.filter(p=>p.y>-10&&p.y<H+10&&(p.life===undefined||p.life>0));
+
+  if(feverMode){
+    const pulse=.2+Math.sin(Date.now()/200)*.1;
+    const eg1=gpBgCtx.createLinearGradient(0,0,30,0);
+    eg1.addColorStop(0,`rgba(255,69,0,${pulse})`);eg1.addColorStop(1,'transparent');
+    gpBgCtx.fillStyle=eg1;gpBgCtx.fillRect(0,0,50,H);
+    const eg2=gpBgCtx.createLinearGradient(W,0,W-30,0);
+    eg2.addColorStop(0,`rgba(255,69,0,${pulse})`);eg2.addColorStop(1,'transparent');
+    gpBgCtx.fillStyle=eg2;gpBgCtx.fillRect(W-50,0,50,H);
+  }
+  requestAnimationFrame(drawGpBg);
+}
+drawGpBg();
+
+// GP FX Canvas
+const gpFxCv=document.getElementById('gpFxCanvas');gpFxCv.width=W;gpFxCv.height=H;
+const gpFxCtx=gpFxCv.getContext('2d');
+let fxParticles=[];
+const pColors=['#ffd700','#ff8c00','#ff4500','#ffeb3b','#ff6f00','#40e0d0','#ff69b4','#a0ff60'];
+
+function spawnCorrectFx(){
+  for(let i=0;i<50;i++){
+    const a=Math.random()*Math.PI*2,sp=Math.random()*7+2;
+    fxParticles.push({x:W/2,y:280,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2,
+      s:Math.random()*5+2,c:pColors[Math.floor(Math.random()*pColors.length)],life:1,decay:Math.random()*.02+.01});
+  }
+}
+function spawnWrongFx(){
+  for(let i=0;i<15;i++){
+    fxParticles.push({x:W/2+(Math.random()-.5)*80,y:280+(Math.random()-.5)*40,vx:(Math.random()-.5)*2,vy:-Math.random()*2,
+      s:Math.random()*3+1,c:'#ff2020',life:1,decay:.025});
+  }
+}
+function spawnReactFx(type){
+  const symbols=type==='correct'?['★','✦','⭐']:type==='wrong'?['💧','✕']:['🔥','✦','💥'];
+  const cols=type==='correct'?['#ffd700','#40e0d0']:type==='wrong'?['#4080ff','#ff4060']:['#ff4500','#ff8c00','#ffd700'];
+  for(let i=0;i<8;i++){
+    fxParticles.push({x:W/2+(Math.random()-.5)*60,y:380+(Math.random()-.5)*30,vx:(Math.random()-.5)*2,vy:-Math.random()*2-1,
+      text:symbols[Math.floor(Math.random()*symbols.length)],c:cols[Math.floor(Math.random()*cols.length)],size:Math.random()*10+8,life:1,decay:.018});
+  }
 }
 
-function createStars(){
-  const ct=document.getElementById('starsContainer');
-  [{cls:'tiny',n:40},{cls:'small',n:20},{cls:'medium',n:8},{cls:'large',n:4},{cls:'glow',n:3}].forEach(t=>{
-    for(let i=0;i<t.n;i++){const d=document.createElement('div');d.className=`star ${t.cls}`;d.style.left=Math.random()*100+'%';d.style.top=Math.random()*100+'%';d.style.animationDelay=Math.random()*5+'s';d.style.animationDuration=(2+Math.random()*4)+'s';ct.appendChild(d)}
+function animateFx(){
+  gpFxCtx.clearRect(0,0,W,H);
+  const glowPulse=Math.sin(Date.now()/400)*.3+.7;
+  const gc=feverMode?{r:255,g:100,b:0}:{r:64,g:224,b:208};
+  for(let l=3;l>=0;l--){
+    gpFxCtx.globalAlpha=.04*glowPulse*(3-l);
+    gpFxCtx.fillStyle=`rgb(${gc.r},${gc.g},${gc.b})`;
+    gpFxCtx.beginPath();gpFxCtx.arc(W/2,270,40+l*15,0,Math.PI*2);gpFxCtx.fill();
+  }
+  gpFxCtx.globalAlpha=1;
+
+  fxParticles.forEach(p=>{
+    p.x+=p.vx;p.y+=(p.vy||0);p.vy=(p.vy||0)+.1;p.life-=p.decay;
+    if(p.life>0){
+      gpFxCtx.globalAlpha=p.life;
+      if(p.text){gpFxCtx.fillStyle=p.c;gpFxCtx.font=`${p.size}px 'DotGothic16'`;gpFxCtx.textAlign='center';gpFxCtx.fillText(p.text,p.x,p.y);}
+      else{gpFxCtx.fillStyle=p.c;gpFxCtx.fillRect(Math.floor(p.x),Math.floor(p.y),Math.floor(p.s),Math.floor(p.s));}
+    }
   });
+  gpFxCtx.globalAlpha=1;
+  fxParticles=fxParticles.filter(p=>p.life>0);
+  requestAnimationFrame(animateFx);
 }
-function createMeteors(){
-  const ct=document.getElementById('meteorContainer');
-  for(let i=0;i<5;i++){const m=document.createElement('div');m.className='meteor';m.style.top=Math.random()*60+'%';m.style.left=Math.random()*40+'%';m.style.transform=`rotate(${30+Math.random()*20}deg)`;m.style.animationDuration=(3+Math.random()*4)+'s';m.style.animationDelay=(Math.random()*8)+'s';m.style.width=(50+Math.random()*60)+'px';ct.appendChild(m)}
+animateFx();
+
+// GP Slot Machine Numbers
+const gpNumCv=document.getElementById('gpNumCanvas');
+const gpNumCtx=gpNumCv.getContext('2d');gpNumCv.width=80;gpNumCv.height=50;
+let currentNum=47,targetNum=47,slotY=0,slotSpeed=0,slotRunning=false;
+
+function drawGpNum(){
+  gpNumCtx.clearRect(0,0,80,50);
+  gpNumCtx.imageSmoothingEnabled=false;
+  if(slotRunning){
+    for(let i=-2;i<=2;i++){
+      const n=((targetNum+i+100)%100);
+      const yy=25+i*18-(slotY%18);
+      const dist=Math.abs(yy-25);
+      gpNumCtx.globalAlpha=Math.max(0,1-dist/40);
+      const display=n<10?'0'+n:''+n;
+      gpNumCtx.font=`900 ${dist<8?32:26}px 'DotGothic16',monospace`;
+      gpNumCtx.textAlign='center';gpNumCtx.textBaseline='middle';
+      gpNumCtx.fillStyle=dist<8?(feverMode?'#ff8c00':'#ffd700'):'#3a5060';
+      gpNumCtx.fillText(display,40,yy);
+    }
+    gpNumCtx.globalAlpha=1;
+    slotY+=slotSpeed;slotSpeed*=.96;
+    if(slotSpeed<.3){slotRunning=false;currentNum=targetNum;}
+  }else{
+    const display=currentNum<10?'0'+currentNum:''+currentNum;
+    gpNumCtx.font="900 38px 'DotGothic16',monospace";
+    gpNumCtx.textAlign='center';gpNumCtx.textBaseline='middle';
+    gpNumCtx.fillStyle='rgba(0,0,0,0.3)';gpNumCtx.fillText(display,41,27);
+    const ng=gpNumCtx.createLinearGradient(0,8,0,45);
+    ng.addColorStop(0,feverMode?'#ffcc00':'#d090ff');ng.addColorStop(1,feverMode?'#ff4500':'#40d0e0');
+    gpNumCtx.fillStyle=ng;gpNumCtx.fillText(display,40,25);
+  }
+  requestAnimationFrame(drawGpNum);
+}
+drawGpNum();
+
+function triggerSlot(){
+  targetNum=Math.floor(Math.random()*90)+10;
+  slotSpeed=15+Math.random()*8;slotRunning=true;
 }
 
-// ===== 게임플레이 초기화 =====
-function initGameplay(){
-  const bar=document.getElementById('gpCharBar');
-  const fcs=[[255,160,60,255],[60,210,255,255],[255,100,150,255]];
-  for(let i=0;i<3;i++){const c=document.createElement('canvas');c.className='face';c.width=24;c.height=24;drawFace(c,fcs[i],[255,180,180,60],i,i);bar.appendChild(c)}
-  const dog=document.createElement('canvas');dog.className='dog';dog.width=34;dog.height=38;
-  drawDog(dog,[255,208,100,255],[200,140,60,255],[255,160,160,255],true);bar.appendChild(dog);
-  const td=document.getElementById('gpTimerDog');drawDog(td,[255,208,100,255],[200,140,60,255],[255,160,160,255],false);
+// GP Character face
+const gpFaceCv=document.getElementById('gpFaceChar');
+const gpFaceCtx=gpFaceCv.getContext('2d');
+let faceState='idle';
 
-  // 배경 이펙트
-  const el=document.getElementById('gpTarget');
-  const MIX=[[255,208,64],[255,128,96],[96,232,128],[96,208,224],[255,128,192]];
-  function rc(a){const c=MIX[Math.floor(Math.random()*MIX.length)];return a!=null?`rgba(${c[0]},${c[1]},${c[2]},${a})`:`rgb(${c[0]},${c[1]},${c[2]})`}
-  for(let i=0;i<18;i++){const d=document.createElement('div');d.setAttribute('data-fx','1');d.style.cssText=`position:absolute;width:${3+Math.random()*5}px;height:${3+Math.random()*5}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:${rc()};clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);animation:starTw ${2+Math.random()*4}s ease infinite;animation-delay:${Math.random()*4}s`;el.appendChild(d)}
-  for(let i=0;i<6;i++){const d=document.createElement('div');d.setAttribute('data-fx','1');d.style.cssText=`position:absolute;width:${12+Math.random()*18}px;height:${12+Math.random()*18}px;left:${Math.random()*100}%;bottom:-20px;border:1px solid ${rc(.15)};clip-path:polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%);animation:hexF ${10+Math.random()*8}s linear infinite;animation-delay:${Math.random()*10}s`;el.appendChild(d)}
-  for(let i=0;i<4;i++){const d=document.createElement('div');d.setAttribute('data-fx','1');d.style.cssText=`position:absolute;width:${30+Math.random()*30}px;height:2px;top:${Math.random()*80}%;left:-50px;background:linear-gradient(90deg,${rc(.2)},transparent);animation:cometT ${5+Math.random()*6}s linear infinite;animation-delay:${Math.random()*8}s`;el.appendChild(d)}
-  for(let i=0;i<20;i++){const d=document.createElement('div');d.setAttribute('data-fx','1');const sz=2+Math.random()*3;d.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:-5px;background:${rc(.15)};animation:pxRain ${4+Math.random()*6}s linear infinite;animation-delay:${Math.random()*6}s`;el.appendChild(d)}
-  for(let i=0;i<15;i++){const d=document.createElement('div');d.setAttribute('data-fx','1');d.style.cssText=`position:absolute;width:${4+Math.random()*4}px;height:${4+Math.random()*4}px;left:${Math.random()*100}%;top:${Math.random()*100}%;border-radius:50%;background:${rc(.3)};animation:sparkleA ${2+Math.random()*3}s ease infinite;animation-delay:${Math.random()*3}s`;el.appendChild(d)}
-  for(let i=0;i<15;i++){const d=document.createElement('div');d.setAttribute('data-fx','1');const dx=(Math.random()-.5)*120,dy=(Math.random()-.5)*120;d.style.cssText=`position:absolute;width:${2+Math.random()*2}px;height:${2+Math.random()*2}px;left:${Math.random()*100}%;top:${Math.random()*100}%;border-radius:50%;background:rgba(255,200,60,.1);--dx:${dx}px;--dy:${dy}px;animation:dustF ${6+Math.random()*6}s linear infinite;animation-delay:${Math.random()*6}s`;el.appendChild(d)}
+function drawGpFace(state){
+  gpFaceCtx.clearRect(0,0,16,16);
+  const colors={idle:'#e09020',correct:'#30b030',wrong:'#e04040',fever:'#e09020'};
+  const cheeks={idle:'#ffcc66',correct:'#80e080',wrong:'#ff8080',fever:'#ffcc66'};
+  gpFaceCtx.fillStyle=colors[state];
+  for(let y=2;y<14;y++)for(let x=2;x<14;x++)gpFaceCtx.fillRect(x,y,1,1);
+  gpFaceCtx.fillStyle='#fff';gpFaceCtx.fillRect(5,5,2,2);gpFaceCtx.fillRect(9,5,2,2);
+  if(state==='correct'){
+    gpFaceCtx.fillStyle='#000';gpFaceCtx.fillRect(5,5,2,1);gpFaceCtx.fillRect(9,5,2,1);
+    gpFaceCtx.fillStyle='#ffd700';gpFaceCtx.fillRect(6,5,1,1);gpFaceCtx.fillRect(10,5,1,1);
+    gpFaceCtx.fillStyle='#000';gpFaceCtx.fillRect(6,10,4,1);gpFaceCtx.fillRect(7,11,2,1);
+  }else if(state==='wrong'){
+    gpFaceCtx.fillStyle='#000';gpFaceCtx.fillRect(6,5,1,1);gpFaceCtx.fillRect(10,5,1,1);
+    gpFaceCtx.fillStyle='#40a0ff';gpFaceCtx.fillRect(5,7,2,2);gpFaceCtx.fillRect(9,7,2,2);
+    gpFaceCtx.fillStyle='#000';gpFaceCtx.fillRect(7,11,2,1);
+  }else if(state==='fever'){
+    gpFaceCtx.fillStyle='#ff4000';gpFaceCtx.fillRect(5,5,2,2);gpFaceCtx.fillRect(9,5,2,2);
+    gpFaceCtx.fillStyle='#ffd700';gpFaceCtx.fillRect(5,5,2,1);gpFaceCtx.fillRect(9,5,2,1);
+    gpFaceCtx.fillStyle='#000';gpFaceCtx.fillRect(5,10,6,2);gpFaceCtx.fillStyle='#ff4000';gpFaceCtx.fillRect(6,10,4,1);
+  }else{
+    gpFaceCtx.fillStyle='#000';gpFaceCtx.fillRect(6,5,1,1);gpFaceCtx.fillRect(10,5,1,1);
+    gpFaceCtx.fillStyle='#000';gpFaceCtx.fillRect(6,10,4,1);
+  }
+  gpFaceCtx.fillStyle=cheeks[state];gpFaceCtx.fillRect(3,9,2,2);gpFaceCtx.fillRect(11,9,2,2);
+}
+drawGpFace('idle');
+
+const charWrap=document.querySelector('.char-wrap');
+function bounceChar(){
+  const b=Math.sin(Date.now()/400)*2;
+  charWrap.style.transform=`translateY(${b}px)`;
+  requestAnimationFrame(bounceChar);
+}
+bounceChar();
+
+// GP top characters
+const gpTopChars=document.getElementById('gpTopChars');
+['#9050c0','#e04080','#e09020'].forEach(c=>{
+  const cv=document.createElement('canvas');cv.width=16;cv.height=16;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle=c;for(let y=2;y<14;y++)for(let x=2;x<14;x++)ctx.fillRect(x,y,1,1);
+  ctx.fillStyle='#fff';ctx.fillRect(5,5,2,2);ctx.fillRect(9,5,2,2);
+  ctx.fillStyle='#000';ctx.fillRect(6,5,1,1);ctx.fillRect(10,5,1,1);ctx.fillRect(6,10,4,1);
+  cv.style.imageRendering='pixelated';gpTopChars.appendChild(cv);
+});
+
+// Fever & Combo
+const gpFeverBanner=document.getElementById('gpFeverBanner');
+const gpGeniusText=document.getElementById('gpGeniusText');
+const comboStages=[
+  {min:0,max:4,name:'없음',color:'#4a6080'},
+  {min:5,max:9,name:'파랑 콤보',color:'#4090e0'},
+  {min:10,max:14,name:'골드 콤보',color:'#ffd700'},
+  {min:15,max:19,name:'레드 콤보',color:'#ff4060'},
+  {min:20,max:999,name:'무지개 콤보',color:'rainbow'}
+];
+
+function getComboStage(c){
+  for(let i=comboStages.length-1;i>=0;i--) if(c>=comboStages[i].min) return i;
+  return 0;
 }
 
-// ===== 게임오버 =====
-function initGameOver(){
-  const ct=document.getElementById('goContent');
-  const cols=['#ffd700','#ff6b6b','#44ffaa','#44ddff','#ff80c0','#ffa830'];
-  for(let b=0;b<3;b++){setTimeout(()=>{for(let i=0;i<20;i++){const p=document.createElement('div');p.className='go-fw';const a=Math.random()*Math.PI*2,d=60+Math.random()*100;p.style.cssText=`left:${30+Math.random()*40}%;top:${20+Math.random()*30}%;background:${cols[Math.floor(Math.random()*cols.length)]};--fx:${Math.cos(a)*d}px;--fy:${Math.sin(a)*d}px;animation-delay:${Math.random()*.3}s;animation-duration:${1+Math.random()}s`;ct.appendChild(p)}},b*800)}
-  const se=document.getElementById('goScore');let tgt=8750;const dur=1500,st=Date.now();
-  function cu(){const t=Math.min((Date.now()-st)/dur,1);se.textContent=Math.round(tgt*(1-Math.pow(1-t,3))).toLocaleString();if(t<1)requestAnimationFrame(cu)}
-  setTimeout(cu,500);
+function updateComboUI(){
+  const si=getComboStage(comboCount);
+  const s=comboStages[si];
+  const fill=document.getElementById('gpComboFill');
+  const nextStage=si<comboStages.length-1?comboStages[si+1]:null;
+  if(nextStage){
+    const progress=(comboCount-s.min)/(nextStage.min-s.min)*100;
+    fill.style.width=Math.min(progress,100)+'%';
+    fill.style.background=s.color==='rainbow'?'linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f)':s.color;
+    document.getElementById('gpComboLabel').textContent=comboCount+'/'+nextStage.min;
+    document.getElementById('gpComboNext').textContent='다음: '+nextStage.name+'까지 '+(nextStage.min-comboCount)+'콤보!';
+    document.getElementById('gpComboNext').style.display='block';
+  }else{
+    fill.style.width='100%';
+    fill.style.background='linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f)';
+    document.getElementById('gpComboLabel').textContent='MAX!';
+    document.getElementById('gpComboNext').textContent='🌈 최고 단계 달성!';
+  }
 }
 
-// ===== GO =====
-window.addEventListener('load',()=>{
-  const row=document.getElementById('charRow');
-  [{b:[240,90,90,255],c:[255,160,160,80],e:0,m:0},{b:[250,180,50,255],c:[255,200,120,80],e:1,m:1},{b:[80,200,100,255],c:[140,255,160,80],e:2,m:2},{b:[80,160,240,255],c:[140,200,255,80],e:3,m:4},{b:[200,130,220,255],c:[230,180,240,80],e:4,m:3}].forEach(ch=>{
-    const cv=document.createElement('canvas');cv.width=52;cv.height=52;
-    drawFace(cv,ch.b,ch.c,ch.e,ch.m);row.appendChild(cv);
+function activateFever(){
+  feverMode=true;
+  gpFeverBanner.style.opacity='1';
+  gpFeverBanner.style.background='linear-gradient(90deg,rgba(255,69,0,.2),rgba(255,140,0,.1),rgba(255,69,0,.2))';
+  gpFeverBanner.innerHTML='🔥 피버 타임! 지금부터 점수 두배! 🔥';
+  drawGpFace('fever');
+  spawnReactFx('fever');
+  document.getElementById('gpHud').style.borderColor='rgba(255,100,0,.4)';
+  document.getElementById('gpComboVal').style.color='#ff8c00';
+  document.getElementById('gpContent').classList.add('shake');
+  setTimeout(()=>document.getElementById('gpContent').classList.remove('shake'),300);
+}
+
+function deactivateFever(){
+  feverMode=false;
+  gpFeverBanner.style.opacity='0';gpFeverBanner.style.background='transparent';
+  drawGpFace('idle');
+  document.getElementById('gpHud').style.borderColor='rgba(255,200,60,.15)';
+  document.getElementById('gpComboVal').style.color='#40e0d0';
+}
+
+// GP Keypad
+let gpScore=3280;
+document.querySelectorAll('#gpKeypad .gp-key').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const n=btn.dataset.n;
+    if(n==='ok'){
+      gpScore+=Math.floor(Math.random()*200)+100;
+      if(feverMode) gpScore+=Math.floor(Math.random()*200)+100;
+      document.getElementById('gpScoreVal').textContent=gpScore.toLocaleString();
+      comboCount++;
+      document.getElementById('gpComboVal').textContent='x'+comboCount;
+      updateComboUI();
+      spawnCorrectFx();
+      drawGpFace('correct');
+      spawnReactFx('correct');
+      charWrap.style.transition='transform .15s';
+      charWrap.style.transform='translateY(-15px)';
+      setTimeout(()=>{charWrap.style.transform='translateY(0)';setTimeout(()=>{charWrap.style.transition='';drawGpFace(feverMode?'fever':'idle');},150);},150);
+      triggerSlot();
+      if(comboCount>=10&&!feverMode) activateFever();
+      if(Math.random()<.3) gpGeniusText.style.opacity='1';
+      else gpGeniusText.style.opacity='.4';
+    }else if(n==='back'){
+      comboCount=0;
+      document.getElementById('gpComboVal').textContent='x0';
+      updateComboUI();
+      spawnWrongFx();
+      drawGpFace('wrong');
+      spawnReactFx('wrong');
+      document.getElementById('gpContent').classList.add('shake');
+      document.getElementById('screen1').classList.add('wrong-flash');
+      setTimeout(()=>{
+        document.getElementById('gpContent').classList.remove('shake');
+        document.getElementById('screen1').classList.remove('wrong-flash');
+        drawGpFace('idle');
+      },300);
+      const h=document.getElementById('gpHearts');
+      const hearts=h.textContent.trim().split(' ').filter(x=>x==='♥');
+      if(hearts.length>0){hearts.pop();h.innerHTML=hearts.map(x=>'<span style="font-size:13px">♥</span>').join(' ')+'<span style="font-size:13px;opacity:.3">♥</span>';}
+      if(feverMode) deactivateFever();
+    }
   });
-  drawPixelTitle(document.getElementById('titleCanvas'));
-  drawGem(document.getElementById('gemCanvas'));
-  drawConstellations();createStars();createMeteors();
-  initGameplay();initGameOver();
+});
+
+updateComboUI();
+
+// ===== SCREEN 4: COLLECTION =====
+
+// Skins
+const skins=[
+  {name:'빨강이',body:'#e04040',cheek:'#ff8080',unlocked:true,sel:true},
+  {name:'주황이',body:'#e09020',cheek:'#ffcc66',unlocked:true},
+  {name:'초록이',body:'#30b030',cheek:'#80e080',unlocked:true},
+  {name:'파랑이',body:'#3080e0',cheek:'#80b0ff',unlocked:true},
+  {name:'보라',body:'#9050c0',cheek:'#cc90ff',unlocked:true},
+  {name:'로봇',body:'#8090a0',cheek:'#b0c0d0',unlocked:true,special:true},
+  {name:'유령',body:'#c0c0d0',cheek:'#e0e0f0',unlocked:false,req:'고급 스테이지 달성'},
+  {name:'왕관',body:'#ffd700',cheek:'#fff0a0',unlocked:false,req:'S랭크 3회 달성'},
+  {name:'무지개',body:'rainbow',cheek:'#fff',unlocked:false,req:'GENIUS 50회 달성'},
+  {name:'???',body:'#1a1a2a',cheek:'#2a2a3a',unlocked:false,req:'히든 업적 달성'}
+];
+const grid=document.getElementById('skinGrid');
+skins.forEach((s,i)=>{
+  const card=document.createElement('div');
+  card.className='skin-card'+(s.unlocked?'':' locked')+(s.sel?' selected':'');
+  const cv=document.createElement('canvas');cv.width=16;cv.height=16;
+  const ctx=cv.getContext('2d');
+  if(s.body==='rainbow'){
+    const cols=['#ff0000','#ff8000','#ffff00','#00ff00','#0080ff','#8000ff'];
+    for(let y=2;y<14;y++){ctx.fillStyle=cols[Math.floor((y-2)/2)%6];for(let x=2;x<14;x++)ctx.fillRect(x,y,1,1);}
+  }else{
+    ctx.fillStyle=s.body;for(let y=2;y<14;y++)for(let x=2;x<14;x++)ctx.fillRect(x,y,1,1);
+  }
+  if(s.unlocked){
+    ctx.fillStyle='#fff';ctx.fillRect(5,5,2,2);ctx.fillRect(9,5,2,2);
+    ctx.fillStyle='#000';ctx.fillRect(6,5,1,1);ctx.fillRect(10,5,1,1);ctx.fillRect(6,10,4,1);
+    ctx.fillStyle=s.cheek;ctx.fillRect(3,9,2,2);ctx.fillRect(11,9,2,2);
+    if(s.special){ctx.fillStyle='#c0d0e0';ctx.fillRect(4,2,8,2);ctx.fillRect(3,3,10,1);}
+  }
+  card.appendChild(cv);
+  const name=document.createElement('div');name.className='skin-name';name.textContent=s.name;
+  card.appendChild(name);
+  if(!s.unlocked){const req=document.createElement('div');req.className='skin-req';req.textContent=s.req;card.appendChild(req);}
+  if(s.unlocked)card.onclick=()=>{document.querySelectorAll('.skin-card').forEach(x=>x.classList.remove('selected'));card.classList.add('selected');};
+  grid.appendChild(card);
+});
+
+// Achievements
+const achieves=[
+  {icon:'🔥',title:'피버 마스터',desc:'피버 모드 10회 진입',cur:7,max:10,reward:'로봇 캐릭터',done:false},
+  {icon:'🎯',title:'연속 정답왕',desc:'한 판에 20콤보 달성',cur:20,max:20,reward:'골드 테두리 효과',done:true},
+  {icon:'⭐',title:'천재 수집가',desc:'GENIUS 판정 50회 달성',cur:34,max:50,reward:'무지개 캐릭터',done:false},
+  {icon:'💎',title:'다이아몬드',desc:'누적 점수 100,000점 달성',cur:67800,max:100000,reward:'"다이아몬드" 칭호',done:false},
+  {icon:'👑',title:'S랭크 마스터',desc:'S랭크 3회 달성',cur:1,max:3,reward:'왕관 캐릭터',done:false},
+  {icon:'🏆',title:'첫 승리',desc:'게임 첫 클리어',cur:1,max:1,reward:'"뉴비" 칭호',done:true},
+  {icon:'🌙',title:'올빼미',desc:'밤 12시 이후 플레이',cur:1,max:1,reward:'"올빼미" 칭호',done:true},
+];
+const aList=document.getElementById('achieveList');
+achieves.forEach(a=>{
+  const card=document.createElement('div');
+  card.className='achieve-card'+(a.done?' done':'');
+  card.innerHTML=`
+    <div class="achieve-icon">${a.icon}</div>
+    <div class="achieve-info">
+      <div class="achieve-title">${a.title} ${a.done?'<span class="achieve-badge">✓ 달성!</span>':''}</div>
+      <div class="achieve-desc">${a.desc}</div>
+      <div class="achieve-progress"><div class="achieve-bar"><div class="achieve-fill" style="width:${(a.cur/a.max*100)}%"></div></div></div>
+      <div class="achieve-reward">🎁 보상: ${a.reward}${!a.done?' — '+Math.min(a.cur,a.max)+'/'+a.max:''}</div>
+    </div>`;
+  aList.appendChild(card);
+});
+
+// Titles
+const titleData=[
+  {name:'🔰 뉴비',color:'#80c0ff',cond:'첫 클리어',unlocked:true,equipped:false},
+  {name:'🌙 올빼미',color:'#c0a0ff',cond:'밤 12시 이후 플레이',unlocked:true,equipped:true},
+  {name:'🔥 피버왕',color:'#ff8c00',cond:'피버 모드 30회',unlocked:true,equipped:false},
+  {name:'⭐ 천재',color:'#ffd700',cond:'GENIUS 100회',unlocked:false,equipped:false},
+  {name:'💎 다이아',color:'#40e0d0',cond:'누적 10만점',unlocked:false,equipped:false},
+  {name:'👑 전설',color:'#ff69b4',cond:'S랭크 10회',unlocked:false,equipped:false},
+  {name:'🌈 올클리어',color:'rainbow',cond:'모든 업적 달성',unlocked:false,equipped:false},
+];
+const tList=document.getElementById('titleList');
+titleData.forEach(t=>{
+  const card=document.createElement('div');
+  card.className='title-card'+(t.equipped?' equipped':'')+(t.unlocked?'':' locked');
+  const nameStyle=t.color==='rainbow'?'background:linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f);-webkit-background-clip:text;-webkit-text-fill-color:transparent':'color:'+t.color;
+  card.innerHTML=`
+    <div><div class="title-name" style="${nameStyle}">${t.name}</div><div class="title-cond">${t.unlocked?'달성 완료':'조건: '+t.cond}</div></div>
+    ${t.unlocked?'<button class="equip-btn">'+(t.equipped?'장착중':'장착')+'</button>':'<span style="font-size:10px">🔒</span>'}`;
+  tList.appendChild(card);
+});
+
+// Collection tab switching
+document.querySelectorAll('.coll-tab').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('.coll-tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.coll-page').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.page).classList.add('active');
+  };
+});
+
+// ===== SCREEN 5: RANKING =====
+
+const players=[
+  {pos:1,name:'MathKing',title:'👑 전설',titleColor:'#ff69b4',score:'28,740',combo:'x32',color:'#e04040',change:0},
+  {pos:2,name:'SpeedCalc',title:'🔥 피버왕',titleColor:'#ff8c00',score:'25,100',combo:'x28',color:'#30b030',change:'+2'},
+  {pos:3,name:'NumGenius',title:'⭐ 천재',titleColor:'#ffd700',score:'22,680',combo:'x24',color:'#3080e0',change:'-1'},
+  {pos:4,name:'퍼즐러',title:'💎 다이아',titleColor:'#40e0d0',score:'21,200',combo:'x22',color:'#9050c0',change:'+1'},
+  {pos:5,name:'빼기달인',title:'',titleColor:'',score:'19,800',combo:'x20',color:'#e09020',change:'-2'},
+  {pos:6,name:'숫자요정',title:'🔰 뉴비',titleColor:'#80c0ff',score:'18,340',combo:'x19',color:'#e04080',change:'+3'},
+  {pos:7,name:'Calc_Pro',title:'',titleColor:'',score:'17,900',combo:'x18',color:'#8090a0',change:0},
+  {pos:8,name:'두뇌풀가동',title:'🌙 올빼미',titleColor:'#c0a0ff',score:'16,500',combo:'x17',color:'#30b030',change:'+1'},
+  {pos:9,name:'연산왕',title:'',titleColor:'',score:'15,200',combo:'x15',color:'#e04040',change:'-1'},
+  {pos:10,name:'NumberOne',title:'🔥 피버왕',titleColor:'#ff8c00',score:'14,800',combo:'x15',color:'#3080e0',change:'+4'},
+];
+
+const list=document.getElementById('rankList');
+players.forEach(p=>{
+  const row=document.createElement('div');row.className='rank-row';
+  const cv=document.createElement('canvas');cv.width=16;cv.height=16;cv.className='rank-avatar';
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle=p.color;for(let y=2;y<14;y++)for(let x=2;x<14;x++)ctx.fillRect(x,y,1,1);
+  ctx.fillStyle='#fff';ctx.fillRect(5,5,2,2);ctx.fillRect(9,5,2,2);
+  ctx.fillStyle='#000';ctx.fillRect(6,5,1,1);ctx.fillRect(10,5,1,1);ctx.fillRect(6,10,4,1);
+
+  const posClass=p.pos===1?'gold':p.pos===2?'silver':p.pos===3?'bronze':'';
+  const posIcon=p.pos===1?'🥇':p.pos===2?'🥈':p.pos===3?'🥉':p.pos;
+  const titleTag=p.title?`<span class="rank-title-tag" style="color:${p.titleColor};border-color:${p.titleColor}">${p.title}</span>`:'';
+  const changeText=p.change===0?'<span style="color:#4a6080">—</span>':
+    (typeof p.change==='string'&&p.change.startsWith('+'))?`<span style="color:#40e060">▲${p.change.slice(1)}</span>`:
+    `<span style="color:#e04060">▼${String(p.change).replace('-','')}</span>`;
+
+  row.innerHTML=`
+    <div class="rank-pos ${posClass}">${posIcon}</div>
+    <div class="rank-info">
+      <div class="rank-name">${p.name} ${titleTag}</div>
+      <div class="rank-score">⭐ ${p.score} · 콤보 ${p.combo}</div>
+    </div>
+    <div class="rank-change-small">${changeText}</div>`;
+  row.insertBefore(cv,row.children[1]);
+  list.appendChild(row);
+});
+
+let remaining=2*24*3600+14*3600;
+setInterval(()=>{
+  remaining--;
+  const d=Math.floor(remaining/86400);
+  const h=Math.floor((remaining%86400)/3600);
+  const m=Math.floor((remaining%3600)/60);
+  document.getElementById('timer').textContent=d+'일 '+h+'시간 '+m+'분';
+},1000);
+
+document.querySelectorAll('.rank-tab').forEach(t=>{
+  t.onclick=()=>{document.querySelectorAll('.rank-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');};
 });
 </script>
 </body>
