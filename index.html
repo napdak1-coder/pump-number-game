@@ -1,2012 +1,1257 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#060812">
-<title>빼봐영 - Subtraction Game</title>
-<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
-  height: 100dvh;
-  font-family: 'DotGothic16', monospace;
-  background: #060812;
-  color: #e0e0e0;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  overscroll-behavior: none;
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  display: flex;
-  overflow: hidden;
-  padding: max(0px, env(safe-area-inset-top)) max(0px, env(safe-area-inset-right)) max(0px, env(safe-area-inset-bottom)) max(0px, env(safe-area-inset-left));
-}
-
-button {
-  font-family: 'DotGothic16', monospace;
-  border-radius: 0;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-#gameContainer {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.screen {
-  display: none;
-  width: 100%;
-  height: 100%;
-  flex-direction: column;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.screen.active {
-  display: flex;
-}
-
-#screenStart {
-  background: radial-gradient(ellipse at 50% 30%, #0c1028 0%, #060812 40%, #020206 100%);
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-#constellationCanvas {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  image-rendering: pixelated;
-  pointer-events: none;
-}
-
-.startContent {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 20px;
-}
-
-.startHeader {
-  position: absolute;
-  top: max(20px, env(safe-area-inset-top) + 10px);
-  left: 20px;
-  right: 20px;
-  display: flex;
-  justify-content: space-between;
-  z-index: 20;
-}
-
-.startHeaderBtn {
-  padding: 8px 12px;
-  border: 2px solid #2a3a50;
-  background: #0a0e1a;
-  color: #4888a8;
-  font-size: 12px;
-  cursor: pointer;
-  min-height: 44px;
-  min-width: 44px;
-  box-shadow: 2px 2px 0 #000;
-}
-
-.startHeaderBtn:active {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0 #000;
-}
-
-.charRow {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.charRow canvas {
-  width: 52px;
-  height: 52px;
-  image-rendering: pixelated;
-  animation: charBob 1.5s ease infinite;
-}
-
-.charRow canvas:nth-child(1) { animation-delay: 0s; }
-.charRow canvas:nth-child(2) { animation-delay: 0.15s; }
-.charRow canvas:nth-child(3) { animation-delay: 0.3s; }
-.charRow canvas:nth-child(4) { animation-delay: 0.45s; }
-.charRow canvas:nth-child(5) { animation-delay: 0.6s; }
-
-@keyframes charBob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-
-#titleCanvas {
-  width: 270px;
-  height: 90px;
-  image-rendering: pixelated;
-  margin: 4px 0 16px;
-}
-
-#gemCanvas {
-  width: 72px;
-  height: 72px;
-  image-rendering: pixelated;
-  margin: 8px 0 20px;
-  animation: gemFloat 2.5s ease infinite;
-}
-
-@keyframes gemFloat {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-6px) scale(1.05); }
-}
-
-.startBtn {
-  padding: 16px 48px;
-  font-size: 20px;
-  font-weight: 900;
-  color: #1a0800;
-  background: #f0a030;
-  border: none;
-  cursor: pointer;
-  letter-spacing: 4px;
-  box-shadow: 4px 4px 0 #7a4000, inset -2px -2px 0 #c07818, inset 2px 2px 0 #ffe080;
-  animation: btnPulse 2.5s ease infinite;
-  min-height: 44px;
-  min-width: 120px;
-  touch-action: manipulation;
-}
-
-.startBtn:active {
-  box-shadow: 2px 2px 0 #7a4000;
-  transform: translate(2px, 2px);
-}
-
-@keyframes btnPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
-
-.bestScore {
-  font-size: 12px;
-  color: rgba(255, 200, 60, 0.4);
-  letter-spacing: 2px;
-  margin-top: 12px;
-}
-
-.bestScore span {
-  color: #ffd700;
-  font-size: 14px;
-}
-
-#screenGameplay {
-  background: linear-gradient(160deg, #0a0a14, #0f0f20, #14142a, #0f0f20);
-  flex-direction: column;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  overflow: hidden;
-}
-
-#gpBgCanvas {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  image-rendering: pixelated;
-  pointer-events: none;
-}
-
-.gpContent {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-}
-
-.gpHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 16px 0;
-  font-size: 10px;
-  color: #8a9ab0;
-  flex-shrink: 0;
-}
-
-.gpHud {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 14px;
-  margin: 6px 10px 0;
-  flex-shrink: 0;
-  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 3px), rgba(14, 34, 40, 0.5);
-  border: 2px solid rgba(255, 200, 60, 0.15);
-}
-
-.gpHudItem {
-  text-align: center;
-  min-width: 60px;
-}
-
-.gpHudLabel {
-  font-size: 8px;
-  color: #4888a8;
-  letter-spacing: 2px;
-}
-
-.gpHudVal {
-  font-size: 16px;
-  color: #ffd700;
-  font-weight: bold;
-}
-
-.gpHearts {
-  color: #e04060;
-  font-size: 14px;
-  letter-spacing: 2px;
-}
-
-.gpCombo {
-  color: #40e0d0;
-  font-size: 16px;
-}
-
-.gpTarget {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  position: relative;
-  overflow: hidden;
-}
-
-.gpDifficulty {
-  font-size: 10px;
-  color: #8a9ab0;
-  border: 1px solid #2a3a50;
-  padding: 4px 12px;
-  letter-spacing: 3px;
-}
-
-#gpNumCanvas {
-  image-rendering: pixelated;
-  width: 240px;
-  height: 150px;
-}
-
-.charWrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-#gpFaceChar {
-  width: 44px;
-  height: 44px;
-  image-rendering: pixelated;
-  border: 2px solid #ffd700;
-  border-radius: 50%;
-}
-
-.gpSpeed {
-  font-size: 9px;
-  color: #6a8898;
-  letter-spacing: 2px;
-}
-
-.feverbanner {
-  font-size: 13px;
-  text-align: center;
-  letter-spacing: 2px;
-  padding: 6px;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: all 0.3s;
-  flex-shrink: 0;
-  opacity: 0;
-}
-
-.geniusText {
-  font-size: 12px;
-  color: #40e0d0;
-  text-align: center;
-  letter-spacing: 3px;
-  padding: 3px;
-  flex-shrink: 0;
-  opacity: 0.2;
-  transition: opacity 0.2s;
-}
-
-.comboMeter {
-  height: 20px;
-  background: #1a1a2a;
-  border: 1px solid #2a3a50;
-  margin: 0 10px 2px;
-  overflow: hidden;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.comboFill {
-  height: 100%;
-  transition: width 0.4s, background 0.4s;
-}
-
-.comboLabel {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 8px;
-  color: #fff;
-  z-index: 1;
-}
-
-.comboNext {
-  font-size: 9px;
-  color: #6a8898;
-  text-align: right;
-  padding: 0 10px;
-  flex-shrink: 0;
-  min-height: 16px;
-}
-
-.themeBar {
-  display: flex;
-  justify-content: center;
-  gap: 4px;
-  padding: 4px 0;
-  flex-shrink: 0;
-}
-
-.themeBtn {
-  padding: 4px 10px;
-  font-size: 10px;
-  border: 1px solid #2a3a50;
-  background: transparent;
-  color: #6a8898;
-  cursor: pointer;
-  touch-action: manipulation;
-  min-height: 32px;
-}
-
-.themeBtn.active {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffd700;
-  border-color: #ffd700;
-}
-
-.gpKeypad {
-  padding: 8px 10px;
-  flex-shrink: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
-  width: 100%;
-}
-
-.gpKey {
-  height: 52px;
-  font-size: 24px;
-  font-weight: 900;
-  background: linear-gradient(180deg, rgba(255, 200, 60, 0.1) 0%, rgba(255, 200, 60, 0.04) 100%);
-  border: 3px solid rgba(255, 200, 60, 0.2);
-  color: #ffd700;
-  box-shadow: 4px 4px 0 rgba(80, 60, 0, 0.3), inset -2px -2px 0 rgba(255, 200, 60, 0.05), inset 2px 2px 0 rgba(255, 255, 200, 0.05);
-  cursor: pointer;
-  transition: transform 0.08s, box-shadow 0.08s;
-  touch-action: manipulation;
-  min-height: 44px;
-}
-
-.gpKey:active, .gpKey.pressed {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 rgba(80, 60, 0, 0.3);
-  background: rgba(255, 200, 60, 0.25);
-}
-
-.gpKey.back {
-  border-color: rgba(255, 60, 60, 0.3);
-  color: #ff6060;
-}
-
-.gpKey.ok {
-  border-color: rgba(60, 255, 60, 0.3);
-  color: #60ff60;
-}
-
-#gpFxCanvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 5;
-  pointer-events: none;
-  image-rendering: pixelated;
-}
-
-.shake {
-  animation: shake 0.3s ease;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translate(0); }
-  10% { transform: translate(-6px, 4px); }
-  20% { transform: translate(5px, -3px); }
-  30% { transform: translate(-4px, 6px); }
-  40% { transform: translate(4px, -5px); }
-  50% { transform: translate(-3px, 2px); }
-}
-
-.wrongFlash {
-  animation: wflash 0.3s;
-}
-
-@keyframes wflash {
-  0% { background: rgba(255, 0, 0, 0.2); }
-  100% { background: transparent; }
-}
-
-#screenGameOver {
-  background: linear-gradient(160deg, #0a0e18, #101020, #0a0e18);
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.goContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  text-align: center;
-}
-
-.goTitle {
-  font-size: 32px;
-  font-weight: 900;
-  color: #ffd700;
-  text-shadow: 3px 3px 0 #705808, -1px -1px 0 #ffa020;
-  letter-spacing: 6px;
-}
-
-.goSlbl {
-  font-size: 10px;
-  color: rgba(255, 200, 60, 0.3);
-  letter-spacing: 4px;
-}
-
-.goSval {
-  font-size: 48px;
-  font-weight: 900;
-  color: #ffd700;
-  text-shadow: 3px 3px 0 #705808, 0 0 20px rgba(255, 215, 0, 0.3);
-}
-
-.goNewBest {
-  font-size: 14px;
-  color: #ff8c00;
-  letter-spacing: 3px;
-  animation: pulse 1s ease infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.goMsgArea {
-  margin: 12px 0;
-  text-align: center;
-  max-width: 280px;
-}
-
-.goMsg {
-  font-size: 12px;
-  color: #40e0d0;
-  letter-spacing: 1px;
-  margin: 4px 0;
-}
-
-.goProgressBar {
-  width: 200px;
-  height: 12px;
-  background: #1a1a2a;
-  border: 1px solid #2a3a50;
-  margin: 6px auto;
-  position: relative;
-  overflow: hidden;
-}
-
-.goProgressFill {
-  height: 100%;
-  background: linear-gradient(90deg, #ffd700, #ff8c00);
-  width: 25%;
-}
-
-.goStats {
-  font-size: 11px;
-  color: #8a9ab0;
-  margin: 8px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.goRankBadge {
-  font-size: 13px;
-  color: #ffd700;
-  margin: 4px 0;
-  font-weight: bold;
-}
-
-.goButtons {
-  display: flex;
-  gap: 12px;
-  margin-top: 16px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.goBtn {
-  padding: 12px 28px;
-  border: 2px solid #ffd700;
-  background: #1a2a1a;
-  color: #ffd700;
-  font-size: 12px;
-  cursor: pointer;
-  min-height: 44px;
-  min-width: 100px;
-  touch-action: manipulation;
-}
-
-.goBtn:active {
-  background: #2a3a2a;
-  transform: translate(1px, 1px);
-}
-
-#screenCollection {
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.collHeader {
-  padding: env(safe-area-inset-top) 20px 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.collTitle {
-  font-size: 16px;
-  color: #ffd700;
-  letter-spacing: 2px;
-}
-
-.collBackBtn {
-  padding: 8px 16px;
-  border: 2px solid #2a3a50;
-  background: #0a0e1a;
-  color: #4888a8;
-  font-size: 12px;
-  cursor: pointer;
-  min-height: 44px;
-  min-width: 44px;
-  touch-action: manipulation;
-}
-
-.collBackBtn:active {
-  transform: translate(1px, 1px);
-}
-
-.collTabs {
-  display: flex;
-  border-bottom: 2px solid #1a2840;
-  flex-shrink: 0;
-  padding: 0 10px;
-}
-
-.collTab {
-  flex: 1;
-  padding: 10px 8px;
-  text-align: center;
-  font-size: 12px;
-  color: #4a6080;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  letter-spacing: 1px;
-  background: transparent;
-  border: none;
-  min-height: 44px;
-  touch-action: manipulation;
-}
-
-.collTab.active {
-  color: #ffd700;
-  border-bottom-color: #ffd700;
-  background: rgba(255, 215, 0, 0.05);
-}
-
-.collPages {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.skinGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  width: 100%;
-}
-
-.skinCard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 4px;
-  border: 2px solid #1a2840;
-  background: #0a0e1a;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  touch-action: manipulation;
-}
-
-.skinCard:active {
-  transform: scale(0.95);
-}
-
-.skinCard.selected {
-  border-color: #40e0d0;
-  background: rgba(64, 224, 208, 0.08);
-}
-
-.skinCard.locked {
-  opacity: 0.5;
-}
-
-.skinCard.locked::after {
-  content: '🔒';
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  font-size: 12px;
-}
-
-.skinCanvas {
-  width: 40px;
-  height: 40px;
-  image-rendering: pixelated;
-}
-
-.skinName {
-  font-size: 10px;
-  color: #6a8898;
-  text-align: center;
-}
-
-.skinReq {
-  font-size: 8px;
-  color: #4a3060;
-  text-align: center;
-  margin-top: 2px;
-}
-
-.achieveCard {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px;
-  border: 2px solid #1a2840;
-  background: #0a0e1a;
-}
-
-.achieveCard.done {
-  border-color: #ffd700;
-  background: rgba(255, 215, 0, 0.03);
-}
-
-.achieveIcon {
-  font-size: 28px;
-  width: 40px;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.achieveInfo {
-  flex: 1;
-}
-
-.achieveTitle {
-  font-size: 12px;
-  color: #e0e0e0;
-  letter-spacing: 1px;
-  margin-bottom: 2px;
-}
-
-.achieveBadge {
-  color: #ffd700;
-  font-size: 10px;
-}
-
-.achieveDesc {
-  font-size: 10px;
-  color: #6a8898;
-  margin-bottom: 4px;
-}
-
-.achieveBar {
-  width: 100%;
-  height: 8px;
-  background: #1a1a2a;
-  overflow: hidden;
-  margin-bottom: 3px;
-}
-
-.achieveFill {
-  height: 100%;
-  background: #40e0d0;
-  transition: width 0.3s;
-}
-
-.achieveReward {
-  font-size: 9px;
-  color: #ffd700;
-}
-
-.titleCard {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px;
-  border: 1px solid #1a2840;
-  background: #0a0e1a;
-  touch-action: manipulation;
-}
-
-.titleCard.equipped {
-  border-color: #ff69b4;
-  background: rgba(255, 105, 180, 0.05);
-}
-
-.titleCard.locked {
-  opacity: 0.4;
-}
-
-.titleInfo {
-  flex: 1;
-}
-
-.titleName {
-  font-size: 13px;
-  letter-spacing: 2px;
-  margin-bottom: 2px;
-}
-
-.titleCond {
-  font-size: 9px;
-  color: #6a8898;
-}
-
-.equipBtn {
-  font-size: 10px;
-  padding: 6px 12px;
-  border: 1px solid #40e0d0;
-  color: #40e0d0;
-  background: transparent;
-  cursor: pointer;
-  min-height: 32px;
-  touch-action: manipulation;
-}
-
-.equipBtn:active {
-  background: rgba(64, 224, 208, 0.2);
-}
-
-#screenRanking {
-  flex-direction: column;
-  overflow: hidden;
-  padding-top: env(safe-area-inset-top);
-}
-
-.rankHeader {
-  padding: 12px 20px 0;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.rankHeaderTitle {
-  font-size: 16px;
-  color: #ffd700;
-  letter-spacing: 3px;
-}
-
-.rankHeaderSub {
-  font-size: 10px;
-  color: #6a8898;
-  margin-top: 4px;
-  letter-spacing: 1px;
-}
-
-.rankTabs {
-  display: flex;
-  border-bottom: 2px solid #1a2840;
-  padding: 0 20px;
-  margin-top: 8px;
-  flex-shrink: 0;
-  gap: 0;
-}
-
-.rankTab {
-  flex: 1;
-  padding: 8px 12px;
-  text-align: center;
-  font-size: 11px;
-  color: #4a6080;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  letter-spacing: 1px;
-  background: transparent;
-  border: none;
-  min-height: 44px;
-  touch-action: manipulation;
-}
-
-.rankTab.active {
-  color: #40e0d0;
-  border-bottom-color: #40e0d0;
-}
-
-.myRank {
-  margin: 10px 20px;
-  padding: 12px;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.08), rgba(64, 224, 208, 0.05));
-  border: 2px solid #ffd700;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.myRankBadge {
-  position: absolute;
-  top: -10px;
-  left: 12px;
-  background: #ffd700;
-  color: #402000;
-  font-size: 9px;
-  padding: 3px 8px;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-
-.myRankRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.myRankNum {
-  font-size: 32px;
-  color: #ffd700;
-  width: 50px;
-  text-align: center;
-}
-
-.myRankInfo {
-  flex: 1;
-}
-
-.myRankName {
-  font-size: 14px;
-  color: #e0e0e0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 2px;
-}
-
-.myRankTitle {
-  font-size: 9px;
-  color: #ff69b4;
-  border: 1px solid #ff69b4;
-  padding: 1px 5px;
-}
-
-.myRankScore {
-  font-size: 12px;
-  color: #ffd700;
-  margin-top: 2px;
-}
-
-.myRankStats {
-  font-size: 9px;
-  color: #6a8898;
-  margin-top: 2px;
-}
-
-.myRankChange {
-  font-size: 11px;
-  text-align: right;
-  color: #40e060;
-}
-
-.rankList {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 0 20px;
-}
-
-.rankRow {
-  display: flex;
-  align-items: center;
-  padding: 10px 0;
-  gap: 8px;
-  border-bottom: 1px solid #0e1420;
-  transition: background 0.2s;
-}
-
-.rankRow:active {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.rankPos {
-  width: 32px;
-  text-align: center;
-  font-size: 16px;
-}
-
-.rankPos.gold {
-  color: #ffd700;
-  font-size: 20px;
-}
-
-.rankPos.silver {
-  color: #c0c0c0;
-  font-size: 18px;
-}
-
-.rankPos.bronze {
-  color: #cd7f32;
-  font-size: 18px;
-}
-
-.rankAvatar {
-  width: 32px;
-  height: 32px;
-  image-rendering: pixelated;
-  flex-shrink: 0;
-}
-
-.rankInfo {
-  flex: 1;
-}
-
-.rankName {
-  font-size: 12px;
-  color: #c0d0e0;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 2px;
-}
-
-.rankTitleTag {
-  font-size: 8px;
-  padding: 1px 4px;
-  border: 1px solid;
-  border-radius: 0;
-}
-
-.rankScore {
-  font-size: 10px;
-  color: #8a9ab0;
-  margin-top: 2px;
-}
-
-.rankChangeSmall {
-  width: 32px;
-  text-align: right;
-  font-size: 10px;
-  flex-shrink: 0;
-}
-
-.rankFooter {
-  padding: 10px 20px max(10px, env(safe-area-inset-bottom));
-  border-top: 2px solid #1a2840;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.resetTimer {
-  font-size: 10px;
-  color: #4a6080;
-}
-
-.resetTimer span {
-  color: #40e0d0;
-}
-
-.shareBtn {
-  font-size: 10px;
-  padding: 6px 12px;
-  border: 1px solid #ffd700;
-  color: #ffd700;
-  background: transparent;
-  cursor: pointer;
-  min-height: 36px;
-  touch-action: manipulation;
-}
-
-.shareBtn:active {
-  background: rgba(255, 215, 0, 0.1);
-}
-
-.gpInputDisplay {
-  font-size: 32px;
-  color: #ffd700;
-  letter-spacing: 4px;
-  min-height: 40px;
-  text-align: center;
-  font-weight: bold;
-}
-
-@media (max-height: 500px) {
-  .startContent {
-    padding: 10px;
-  }
-
-  .charRow canvas {
-    width: 40px;
-    height: 40px;
-  }
-
-  #titleCanvas {
-    width: 200px;
-    height: 70px;
-  }
-
-  #gemCanvas {
-    width: 50px;
-    height: 50px;
-  }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000">
+    <title>빼봐영</title>
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100dvh;
+            overflow: hidden;
+            font-family: 'DotGothic16', sans-serif;
+            background: #000;
+            user-select: none;
+            -webkit-user-select: none;
+            overscroll-behavior: none;
+        }
+
+        body {
+            padding: max(0px, env(safe-area-inset-top)) max(0px, env(safe-area-inset-right)) max(0px, env(safe-area-inset-bottom)) max(0px, env(safe-area-inset-left));
+            position: relative;
+        }
+
+        /* Theme backgrounds */
+        body.theme-space {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a0f3f 100%);
+        }
+        body.theme-ocean {
+            background: linear-gradient(135deg, #0a1f3f 0%, #1a3f4f 100%);
+        }
+        body.theme-forest {
+            background: linear-gradient(135deg, #0f2010 0%, #1f3f1f 100%);
+        }
+        body.theme-neon {
+            background: linear-gradient(135deg, #2a0f4f 0%, #4f0f3f 100%);
+        }
+
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        #canvas-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        #canvas-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        /* Screens */
+        .screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Start Screen */
+        #startScreen {
+            background: rgba(0, 0, 0, 0.95);
+            color: #fff;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #00ffff;
+            text-shadow: 0 0 20px #00ffff;
+            letter-spacing: 3px;
+        }
+
+        .character-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .char-canvas {
+            width: 48px;
+            height: 48px;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            border: 2px solid #00ffff;
+            border-radius: 4px;
+            background: #000;
+        }
+
+        .start-info {
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .best-score {
+            font-size: 1.2rem;
+            color: #ffff00;
+            margin-bottom: 0.5rem;
+        }
+
+        #startBtn {
+            padding: 1rem 2rem;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'DotGothic16', sans-serif;
+            margin-bottom: 2rem;
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+
+        #startBtn:active {
+            transform: scale(0.95);
+        }
+
+        .start-buttons {
+            display: flex;
+            gap: 1rem;
+            position: absolute;
+            bottom: 2rem;
+            left: 0;
+            right: 0;
+            justify-content: center;
+        }
+
+        .corner-btn {
+            padding: 0.7rem 1.5rem;
+            font-size: 0.9rem;
+            background: rgba(100, 100, 200, 0.3);
+            color: #88ff;
+            border: 1px solid #88ff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'DotGothic16', sans-serif;
+            touch-action: manipulation;
+        }
+
+        .corner-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Game Screen */
+        #gameScreen {
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            padding: 0 1rem;
+            font-size: 0.9rem;
+        }
+
+        .lives-display {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .stage-display {
+            text-align: center;
+            color: #ffff00;
+        }
+
+        .combo-display {
+            text-align: right;
+            color: #00ff00;
+            min-width: 100px;
+        }
+
+        .timer-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin: 0 1rem;
+        }
+
+        .timer-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .timer-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff00;
+            transition: background 0.1s;
+        }
+
+        .timer-dot.burned {
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .timer-dot.danger {
+            background: #ff0000;
+        }
+
+        .timer-dot.danger.burned {
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        .timer-text {
+            font-size: 1.5rem;
+            color: #00ff00;
+            min-width: 40px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .timer-text.danger {
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        .target-display {
+            font-size: 3rem;
+            font-weight: bold;
+            letter-spacing: 0.5rem;
+            color: #00ffff;
+            text-shadow: 0 0 20px #00ffff;
+            margin: 1rem 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .target-labels {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 1rem;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            max-width: 300px;
+            width: 90%;
+        }
+
+        .key-btn {
+            aspect-ratio: 1;
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #2a2a4a, #1a1a3a);
+            color: #00ffff;
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'DotGothic16', sans-serif;
+            transition: all 0.1s;
+            touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        .key-btn:active {
+            transform: scale(0.9);
+            background: #00ffff;
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+
+        .combo-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 20px currentColor;
+            pointer-events: none;
+            animation: comboFloat 0.8s ease-out;
+            z-index: 200;
+        }
+
+        @keyframes comboFloat {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -150%) scale(1.5);
+            }
+        }
+
+        .score-popup {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            animation: scoreFloat 1s ease-out;
+            z-index: 200;
+        }
+
+        @keyframes scoreFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-80px);
+            }
+        }
+
+        /* Result Screen */
+        #resultScreen {
+            background: rgba(0, 0, 0, 0.95);
+            color: #fff;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            color: #ffff00;
+            margin-bottom: 1rem;
+        }
+
+        .result-score {
+            font-size: 3rem;
+            color: #00ffff;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-rank {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .rank-S { color: #ff0000; }
+        .rank-A { color: #ffaa00; }
+        .rank-B { color: #00ff00; }
+        .rank-C { color: #00ffff; }
+        .rank-D { color: #ff00ff; }
+
+        .result-stats {
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        .result-message {
+            color: #ffaa00;
+            font-size: 1rem;
+            margin: 1rem 0;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .result-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .result-btn {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, #00aa00, #00ff00);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'DotGothic16', sans-serif;
+            touch-action: manipulation;
+            transition: all 0.2s;
+        }
+
+        .result-btn.secondary {
+            background: linear-gradient(135deg, #aa00aa, #ff00ff);
+            color: #fff;
+        }
+
+        .result-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Game Over Screen */
+        #gameOverScreen {
+            background: rgba(0, 0, 0, 0.95);
+            color: #fff;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .gameover-title {
+            font-size: 2.5rem;
+            color: #ff0000;
+            text-shadow: 0 0 20px #ff0000;
+            margin-bottom: 1rem;
+        }
+
+        .gameover-score {
+            font-size: 2rem;
+            color: #ffff00;
+            margin-bottom: 1rem;
+        }
+
+        .gameover-stats {
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        .gameover-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .gameover-btn {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'DotGothic16', sans-serif;
+            touch-action: manipulation;
+            transition: all 0.2s;
+        }
+
+        .gameover-btn.secondary {
+            background: linear-gradient(135deg, #aa00aa, #ff00ff);
+        }
+
+        .gameover-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Shake animation */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.3s;
+        }
+
+        .screen-shake {
+            animation: shake 0.4s;
+        }
+
+        /* Tier up animation */
+        @keyframes tierUp {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) translateY(20px);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.5) translateY(-100px);
+            }
+        }
+
+        .tier-up-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffaa00;
+            text-shadow: 0 0 30px #ffaa00;
+            pointer-events: none;
+            animation: tierUp 1.2s ease-out;
+            z-index: 200;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .title {
+                font-size: 3rem;
+            }
+
+            .target-display {
+                font-size: 2.5rem;
+                letter-spacing: 0.3rem;
+            }
+
+            .key-btn {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
-<body>
+<body class="theme-space">
+    <!-- Background canvases -->
+    <canvas id="canvas-bg"></canvas>
+    <canvas id="canvas-particles"></canvas>
+    <canvas id="canvas-effects"></canvas>
 
-<div id="gameContainer">
-
-  <div id="screenStart" class="screen active">
-    <canvas id="constellationCanvas"></canvas>
-    <div class="startHeader">
-      <button class="startHeaderBtn" id="collectionBtn">컬렉션</button>
-      <button class="startHeaderBtn" id="rankingBtn">랭킹</button>
-    </div>
-    <div class="startContent">
-      <div class="charRow" id="startChars"></div>
-      <canvas id="titleCanvas" width="270" height="90"></canvas>
-      <canvas id="gemCanvas" width="72" height="72"></canvas>
-      <button class="startBtn" id="startBtn">시작하기</button>
-      <div class="bestScore">최고기록 <span id="bestScoreVal">0점</span></div>
-    </div>
-  </div>
-
-  <div id="screenGameplay" class="screen">
-    <canvas id="gpBgCanvas"></canvas>
-    <div class="gpContent">
-      <div class="gpHeader">
-        <span id="timeDisplay">00:00</span>
-        <span id="statusDisplay">■■■ WiFi</span>
-      </div>
-      <div id="gpTopChars" style="display: flex; justify-content: center; gap: 4px; padding: 4px 0; flex-shrink: 0;"></div>
-      <div class="gpHud">
-        <div class="gpHudItem">
-          <div class="gpHudLabel">SCORE</div>
-          <div class="gpHudVal" id="gpScoreVal">0</div>
+    <!-- Start Screen -->
+    <div id="startScreen" class="screen active">
+        <div class="title">빼봐영</div>
+        <div class="character-row" id="startCharacters"></div>
+        <div class="start-info">
+            <div class="best-score" id="bestScoreDisplay">최고점수: 0</div>
+            <div>숫자를 빼서 정확히 0을 만드세요</div>
         </div>
-        <div class="gpHudItem">
-          <div class="gpHudLabel">STAGE</div>
-          <div style="font-size: 10px; color: #aaa;">초급</div>
-          <div class="gpHearts" id="gpHearts">♥ ♥ ♥</div>
+        <button id="startBtn">시작하기</button>
+        <div class="start-buttons">
+            <button class="corner-btn">컬렉션</button>
+            <button class="corner-btn">랭킹</button>
         </div>
-        <div class="gpHudItem">
-          <div class="gpHudLabel">COMBO</div>
-          <div class="gpCombo" id="gpComboVal">x0</div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="screen">
+        <div class="game-header">
+            <div class="lives-display" id="livesDisplay">♥ ♥ ♥</div>
+            <div class="stage-display" id="stageDisplay">Stage 1</div>
+            <div class="combo-display" id="comboDisplay">Combo: 0</div>
         </div>
-      </div>
-      <div class="comboNext" id="gpComboNext"></div>
-      <div class="gpTarget">
-        <div class="gpDifficulty" id="gpDifficulty">초급</div>
-        <div class="gpInputDisplay" id="gpInputDisplay">- - -</div>
-        <canvas id="gpNumCanvas" width="80" height="50"></canvas>
-        <div class="charWrap">
-          <canvas id="gpFaceChar" width="16" height="16"></canvas>
-          <div class="gpSpeed" id="gpSpeed">x1.0</div>
+
+        <div class="timer-container">
+            <div class="timer-dots" id="timerDots"></div>
+            <div class="timer-text" id="timerText">5.0s</div>
         </div>
-      </div>
-      <div class="feverbanner" id="gpFeverBanner"></div>
-      <div class="geniusText" id="gpGeniusText">★ 천 재 ! ★</div>
-      <div class="comboMeter">
-        <div class="comboFill" id="gpComboFill"></div>
-        <div class="comboLabel" id="gpComboLabel"></div>
-      </div>
-      <div class="themeBar" id="gpThemeBar"></div>
-      <div class="gpKeypad" id="gpKeypad"></div>
-    </div>
-    <canvas id="gpFxCanvas"></canvas>
-  </div>
 
-  <div id="screenGameOver" class="screen">
-    <div class="goContent">
-      <div class="goTitle">GAME OVER</div>
-      <div class="goSlbl">SCORE</div>
-      <div class="goSval" id="goScore">0</div>
-      <div id="goNewBestMsg" class="goNewBest" style="display: none;">★ NEW BEST! ★</div>
-      <div class="goRankBadge" id="goRankBadge"></div>
-      <div class="goMsgArea">
-        <div class="goMsg" id="goMsg1"></div>
-        <div class="goProgressBar"><div class="goProgressFill" id="goProgressFill1" style="width: 0%;"></div></div>
-        <div class="goMsg" id="goMsg2"></div>
-        <div class="goProgressBar"><div class="goProgressFill" id="goProgressFill2" style="width: 0%;"></div></div>
-      </div>
-      <div class="goStats" id="goStats"></div>
-      <div class="goButtons">
-        <button class="goBtn" id="retryBtn">재도전</button>
-        <button class="goBtn" id="homeBtn">홈으로</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="screenCollection" class="screen">
-    <div class="collHeader">
-      <div class="collTitle">내 컬렉션</div>
-      <button class="collBackBtn" id="collBackBtn">← 돌아가기</button>
-    </div>
-    <div class="collTabs">
-      <button class="collTab active" data-tab="skins">캐릭터</button>
-      <button class="collTab" data-tab="achieve">업적</button>
-      <button class="collTab" data-tab="titles">칭호</button>
-    </div>
-    <div class="collPages">
-      <div id="skins-page">
-        <div style="text-align: center; margin-bottom: 8px;">
-          <div style="font-size: 12px; color: #ffd700; margin-bottom: 4px;">캐릭터 컬렉션</div>
-          <div class="goProgressBar"><div class="goProgressFill" id="skinProgress" style="width: 60%;"></div></div>
-          <div style="font-size: 9px; color: #8a9ab0; margin-top: 3px;" id="skinProgressText">6 / 10 수집 완료</div>
+        <div class="target-display" id="targetDisplay">00·00</div>
+        <div class="target-labels">
+            <div>십</div>
+            <div>일</div>
         </div>
-        <div class="skinGrid" id="skinGrid"></div>
-      </div>
-      <div id="achieve-page" style="display: none;">
-        <div id="achieveList"></div>
-      </div>
-      <div id="titles-page" style="display: none;">
-        <div id="titleList"></div>
-      </div>
-    </div>
-  </div>
 
-  <div id="screenRanking" class="screen">
-    <div class="rankHeader">
-      <div class="rankHeaderTitle">🏆 주간 랭킹</div>
-      <div class="rankHeaderSub" id="rankWeekDisplay">2026.03.23 ~ 03.29</div>
+        <div class="keypad" id="keypad"></div>
     </div>
-    <div class="rankTabs">
-      <button class="rankTab active">전체</button>
-      <button class="rankTab">친구</button>
-      <button class="rankTab">내 지역</button>
-    </div>
-    <div class="myRank">
-      <div class="myRankBadge">내 순위</div>
-      <div class="myRankRow">
-        <div class="myRankNum" id="myRankNum">#-</div>
-        <div class="myRankInfo">
-          <div class="myRankName">Player <span class="myRankTitle" id="myRankTitle"></span></div>
-          <div class="myRankScore" id="myRankScore">⭐ 0점</div>
-          <div class="myRankStats" id="myRankStats"></div>
+
+    <!-- Result Screen -->
+    <div id="resultScreen" class="screen">
+        <div class="result-title">맞았다!</div>
+        <div class="result-score" id="resultScore">500</div>
+        <div class="result-rank" id="resultRank"></div>
+        <div class="result-stats" id="resultStats"></div>
+        <div class="result-message" id="resultMessage"></div>
+        <div class="result-buttons">
+            <button class="result-btn" id="nextBtn">다음</button>
+            <button class="result-btn secondary" id="retryBtn">다시하기</button>
         </div>
-        <div class="myRankChange" id="myRankChange">—</div>
-      </div>
     </div>
-    <div class="rankList" id="rankList"></div>
-    <div class="rankFooter">
-      <div class="resetTimer">초기화까지 <span id="resetTimer">7일</span></div>
-      <button class="shareBtn">📤 공유하기</button>
-      <button class="collBackBtn" id="rankBackBtn">← 돌아가기</button>
+
+    <!-- Game Over Screen -->
+    <div id="gameOverScreen" class="screen">
+        <div class="gameover-title">게임오버</div>
+        <div class="gameover-score" id="gameoverScore">최종 점수: 0</div>
+        <div class="gameover-stats" id="gameoverStats"></div>
+        <div class="gameover-buttons">
+            <button class="gameover-btn" id="restartBtn">재도전</button>
+            <button class="gameover-btn secondary" id="homeBtn">홈으로</button>
+        </div>
     </div>
-  </div>
 
-</div>
+    <script>
+        // ============================================
+        // GAME STATE & CONFIG
+        // ============================================
+        const CONFIG = {
+            difficulties: [
+                { stage: 0, tier: '초급', min: 5, max: 15, timerSpeed: 52 },
+                { stage: 1, tier: '초급', min: 5, max: 15, timerSpeed: 52 },
+                { stage: 2, tier: '초급', min: 10, max: 40, timerSpeed: 48 },
+                { stage: 3, tier: '초급', min: 10, max: 40, timerSpeed: 48 },
+                { stage: 4, tier: '초급', min: 10, max: 40, timerSpeed: 48 },
+                { stage: 5, tier: '초급', min: 25, max: 70, timerSpeed: 44 },
+                { stage: 6, tier: '초급', min: 25, max: 70, timerSpeed: 44 },
+                { stage: 7, tier: '초급', min: 25, max: 70, timerSpeed: 44 },
+                { stage: 8, tier: '중급', min: 40, max: 99, timerSpeed: 40 },
+                { stage: 9, tier: '중급', min: 40, max: 99, timerSpeed: 40 },
+                { stage: 10, tier: '중급', min: 40, max: 99, timerSpeed: 40 },
+                { stage: 11, tier: '중급', min: 60, max: 130, timerSpeed: 35 },
+                { stage: 12, tier: '중급', min: 60, max: 130, timerSpeed: 35 },
+                { stage: 13, tier: '중급', min: 60, max: 130, timerSpeed: 35 },
+                { stage: 14, tier: '중급', min: 80, max: 180, timerSpeed: 30 },
+                { stage: 15, tier: '중급', min: 80, max: 180, timerSpeed: 30 },
+                { stage: 16, tier: '중급', min: 80, max: 180, timerSpeed: 30 },
+                { stage: 17, tier: '중급', min: 80, max: 180, timerSpeed: 30 },
+                { stage: 18, tier: '고급', min: 150, max: 300, timerSpeed: 26 },
+                { stage: 19, tier: '고급', min: 150, max: 300, timerSpeed: 26 },
+                { stage: 20, tier: '고급', min: 150, max: 300, timerSpeed: 26 },
+                { stage: 21, tier: '고급', min: 150, max: 300, timerSpeed: 26 },
+                { stage: 22, tier: '고급', min: 250, max: 450, timerSpeed: 22 },
+                { stage: 23, tier: '고급', min: 250, max: 450, timerSpeed: 22 },
+                { stage: 24, tier: '고급', min: 250, max: 450, timerSpeed: 22 },
+                { stage: 25, tier: '고급', min: 250, max: 450, timerSpeed: 22 },
+                { stage: 26, tier: '고급', min: 350, max: 600, timerSpeed: 20 },
+                { stage: 27, tier: '고급', min: 350, max: 600, timerSpeed: 20 },
+                { stage: 28, tier: '고급', min: 350, max: 600, timerSpeed: 20 },
+                { stage: 29, tier: '고급', min: 350, max: 600, timerSpeed: 20 },
+            ],
+            comboMilestones: [
+                { combo: 3, text: '좋은데?!', color: '#00ffff' },
+                { combo: 5, text: '불타오르다!', color: '#00ff00' },
+                { combo: 7, text: '미쳤다!', color: '#ffaa00' },
+                { combo: 10, text: '멈플수없다!', color: '#aa00ff' },
+                { combo: 15, text: '압도적!', color: '#ff00ff' },
+                { combo: 20, text: '신의경지!', color: '#ffff00' },
+                { combo: 25, text: '인간승리!', color: '#ff6600' },
+                { combo: 30, text: '전설!', color: '#ff0000' },
+            ]
+        };
 
-<script>
-const gameState = {
-  score: 0,
-  bestScore: parseInt(localStorage.getItem('bestScore')) || 0,
-  lives: 3,
-  combo: 0,
-  maxCombo: 0,
-  geniusCount: 0,
-  totalTaps: 0,
-  answers: [],
-  isGameActive: false,
-  currentAnswer: '',
-  numA: 0,
-  numB: 0,
-  correctAnswer: 0,
-  answerTime: 0,
-  feverMode: false,
-  selectedTheme: 0,
-  startTime: 0
-};
+        const THEMES = ['space', 'ocean', 'forest', 'neon'];
+        const THEME_COLORS = {
+            space: { primary: '#00ffff', secondary: '#ff006e', accent: '#8338ec' },
+            ocean: { primary: '#00ffff', secondary: '#00ff88', accent: '#0088ff' },
+            forest: { primary: '#00ff00', secondary: '#00ffaa', accent: '#ffaa00' },
+            neon: { primary: '#ff00ff', secondary: '#ffaa00', accent: '#00ffff' }
+        };
 
-const themes = [
-  { name: '우주🌌', bg1: '#060812', bg2: '#0a1028', particle: 'star', accent: '#ffd700' },
-  { name: '바다🌊', bg1: '#041828', bg2: '#082038', particle: 'bubble', accent: '#40d0e0' },
-  { name: '숲🌲', bg1: '#041808', bg2: '#082810', particle: 'leaf', accent: '#60e060' },
-  { name: '네온🌃', bg1: '#0a0418', bg2: '#180828', particle: 'neon', accent: '#ff40ff' }
-];
+        let gameState = {
+            currentScreen: 'start',
+            stageCount: 0,
+            lives: 3,
+            combo: 0,
+            maxCombo: 0,
+            geniusCount: 0,
+            target: 0,
+            timeLeft: 100,
+            timerRunning: false,
+            tapCount: 0,
+            bestScore: parseInt(localStorage.getItem('bestScore') || '0'),
+            currentTheme: 'space',
+            sessionStats: {
+                correctCount: 0,
+                totalRounds: 0
+            }
+        };
 
-const comboStages = [
-  { min: 0, max: 4, name: '없음', color: '#4a6080' },
-  { min: 5, max: 9, name: '파랑 콤보', color: '#4090e0' },
-  { min: 10, max: 14, name: '골드 콤보', color: '#ffd700' },
-  { min: 15, max: 19, name: '레드 콤보', color: '#ff4060' },
-  { min: 20, max: 999, name: '무지개 콤보', color: 'rainbow' }
-];
+        // ============================================
+        // CANVASES & DRAWING
+        // ============================================
+        const canvasBg = document.getElementById('canvas-bg');
+        const canvasParticles = document.getElementById('canvas-particles');
+        const canvasEffects = document.getElementById('canvas-effects');
+        const ctxBg = canvasBg.getContext('2d', { willReadFrequently: true });
+        const ctxParticles = canvasParticles.getContext('2d');
+        const ctxEffects = canvasEffects.getContext('2d');
 
-const skins = [
-  { name: '빨강이', body: '#e04040', cheek: '#ff8080', unlocked: true, sel: true },
-  { name: '주황이', body: '#e09020', cheek: '#ffcc66', unlocked: true },
-  { name: '초록이', body: '#30b030', cheek: '#80e080', unlocked: true },
-  { name: '파랑이', body: '#3080e0', cheek: '#80b0ff', unlocked: true },
-  { name: '보라', body: '#9050c0', cheek: '#cc90ff', unlocked: true },
-  { name: '로봇', body: '#8090a0', cheek: '#b0c0d0', unlocked: true, special: true },
-  { name: '유령', body: '#c0c0d0', cheek: '#e0e0f0', unlocked: false, req: '고급 달성' },
-  { name: '왕관', body: '#ffd700', cheek: '#fff0a0', unlocked: false, req: 'S랭크 3회' },
-  { name: '무지개', body: 'rainbow', cheek: '#fff', unlocked: false, req: 'GENIUS 50회' },
-  { name: '???', body: '#1a1a2a', cheek: '#2a2a3a', unlocked: false, req: '히든 업적' }
-];
+        function resizeCanvases() {
+            [canvasBg, canvasParticles, canvasEffects].forEach(canvas => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+        resizeCanvases();
+        window.addEventListener('resize', resizeCanvases);
 
-const achievements = [
-  { icon: '🔥', title: '피버 마스터', desc: '피버 모드 10회 진입', cur: 0, max: 10, reward: '로봇 캐릭터', done: false },
-  { icon: '🎯', title: '연속 정답왕', desc: '한 판에 20콤보 달성', cur: 0, max: 20, reward: '골드 효과', done: false },
-  { icon: '⭐', title: '천재 수집가', desc: 'GENIUS 판정 50회 달성', cur: 0, max: 50, reward: '무지개 캐릭터', done: false },
-  { icon: '💎', title: '다이아몬드', desc: '누적 점수 100,000점 달성', cur: 0, max: 100000, reward: '칭호', done: false },
-  { icon: '👑', title: 'S랭크 마스터', desc: 'S랭크 3회 달성', cur: 0, max: 3, reward: '왕관', done: false },
-  { icon: '🏆', title: '첫 승리', desc: '게임 첫 클리어', cur: 0, max: 1, reward: '칭호', done: false },
-  { icon: '🌙', title: '올빼미', desc: '밤 12시 이후 플레이', cur: 0, max: 1, reward: '칭호', done: false }
-];
+        let particles = [];
+        let bgParticles = [];
 
-const titles = [
-  { name: '🔰 뉴비', color: '#80c0ff', cond: '첫 클리어', unlocked: false, equipped: false },
-  { name: '🌙 올빼미', color: '#c0a0ff', cond: '밤 12시 이후', unlocked: false, equipped: false },
-  { name: '🔥 피버왕', color: '#ff8c00', cond: '피버 모드 30회', unlocked: false, equipped: false },
-  { name: '⭐ 천재', color: '#ffd700', cond: 'GENIUS 100회', unlocked: false, equipped: false },
-  { name: '💎 다이아', color: '#40e0d0', cond: '누적 10만점', unlocked: false, equipped: false },
-  { name: '👑 전설', color: '#ff69b4', cond: 'S랭크 10회', unlocked: false, equipped: false },
-  { name: '🌈 올클리어', color: 'rainbow', cond: '모든 업적 달성', unlocked: false, equipped: false }
-];
+        class Particle {
+            constructor(x, y, vx, vy, color, life = 1, size = 3) {
+                this.x = x;
+                this.y = y;
+                this.vx = vx;
+                this.vy = vy;
+                this.color = color;
+                this.maxLife = life;
+                this.life = life;
+                this.size = size;
+            }
 
-const ranks = [
-  { pos: 1, name: 'MathKing', title: '👑 전설', titleColor: '#ff69b4', score: '28,740', combo: 'x32', color: '#e04040' },
-  { pos: 2, name: 'SpeedCalc', title: '🔥 피버왕', titleColor: '#ff8c00', score: '25,100', combo: 'x28', color: '#30b030' },
-  { pos: 3, name: 'NumGenius', title: '⭐ 천재', titleColor: '#ffd700', score: '22,680', combo: 'x24', color: '#3080e0' },
-  { pos: 4, name: '퍼즐러', title: '💎 다이아', titleColor: '#40e0d0', score: '21,200', combo: 'x22', color: '#9050c0' },
-  { pos: 5, name: '빼기달인', title: '', titleColor: '', score: '19,800', combo: 'x20', color: '#e09020' },
-  { pos: 6, name: '숫자요정', title: '🔰 뉴비', titleColor: '#80c0ff', score: '18,340', combo: 'x19', color: '#e04080' },
-  { pos: 7, name: 'Calc_Pro', title: '', titleColor: '', score: '17,900', combo: 'x18', color: '#8090a0' },
-  { pos: 8, name: '두뇌풀가동', title: '🌙 올빼미', titleColor: '#c0a0ff', score: '16,500', combo: 'x17', color: '#30b030' },
-  { pos: 9, name: '연산왕', title: '', titleColor: '', score: '15,200', combo: 'x15', color: '#e04040' },
-  { pos: 10, name: 'NumberOne', title: '🔥 피버왕', titleColor: '#ff8c00', score: '14,800', combo: 'x15', color: '#3080e0' }
-];
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= 0.02;
+                this.vy += 0.1;
+            }
 
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const screenMap = { start: 'screenStart', gameplay: 'screenGameplay', gameover: 'screenGameOver', collection: 'screenCollection', ranking: 'screenRanking' };
-  document.getElementById(screenMap[name]).classList.add('active');
-}
+            draw(ctx) {
+                const alpha = Math.max(0, this.life / this.maxLife);
+                const rgb = this.color.includes('rgb') ? this.color : hexToRgb(this.color);
+                ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+                ctx.fillRect(Math.floor(this.x), Math.floor(this.y), this.size, this.size);
+            }
 
-function playSound(type) {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const now = ctx.currentTime;
-    if (type === 'correct') {
-      [392, 494, 587].forEach((f, i) => {
-        const o = ctx.createOscillator(), g = ctx.createGain();
-        o.connect(g); g.connect(ctx.destination);
-        o.frequency.value = f;
-        g.gain.setValueAtTime(0.1, now + i * 0.05);
-        g.gain.exponentialRampToValueAtTime(0.01, now + i * 0.05 + 0.1);
-        o.start(now + i * 0.05);
-        o.stop(now + i * 0.05 + 0.1);
-      });
-    }
-  } catch (e) {}
-}
+            isDead() { return this.life <= 0; }
+        }
 
-function drawPixelChar(ctx, body, cheek) {
-  ctx.clearRect(0, 0, 16, 16);
-  ctx.fillStyle = body;
-  for (let y = 2; y < 14; y++) for (let x = 2; x < 14; x++) ctx.fillRect(x, y, 1, 1);
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(5, 5, 2, 2);
-  ctx.fillRect(9, 5, 2, 2);
-  ctx.fillStyle = '#000';
-  ctx.fillRect(6, 5, 1, 1);
-  ctx.fillRect(10, 5, 1, 1);
-  ctx.fillRect(6, 10, 4, 1);
-  ctx.fillStyle = cheek;
-  ctx.fillRect(3, 9, 2, 2);
-  ctx.fillRect(11, 9, 2, 2);
-}
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 0, g: 255, b: 255 };
+        }
 
-function drawCharFace(canvasOrCtx, state) {
-  const ctx = canvasOrCtx.getContext ? canvasOrCtx.getContext('2d') : canvasOrCtx;
-  const colors = { idle: '#e09020', correct: '#30b030', wrong: '#e04040', fever: '#e09020' };
-  const cheeks = { idle: '#ffcc66', correct: '#80e080', wrong: '#ff8080', fever: '#ffcc66' };
-  ctx.clearRect(0, 0, 16, 16);
-  ctx.fillStyle = colors[state];
-  for (let y = 2; y < 14; y++) for (let x = 2; x < 14; x++) ctx.fillRect(x, y, 1, 1);
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(5, 5, 2, 2);
-  ctx.fillRect(9, 5, 2, 2);
-  if (state === 'correct') {
-    ctx.fillStyle = '#000';
-    ctx.fillRect(5, 5, 2, 1);
-    ctx.fillRect(9, 5, 2, 1);
-    ctx.fillRect(6, 10, 4, 1);
-    ctx.fillRect(7, 11, 2, 1);
-  } else if (state === 'wrong') {
-    ctx.fillStyle = '#000';
-    ctx.fillRect(6, 5, 1, 1);
-    ctx.fillRect(10, 5, 1, 1);
-    ctx.fillStyle = '#40a0ff';
-    ctx.fillRect(5, 7, 2, 2);
-    ctx.fillRect(9, 7, 2, 2);
-    ctx.fillStyle = '#000';
-    ctx.fillRect(7, 11, 2, 1);
-  }
-  ctx.fillStyle = cheeks[state];
-  ctx.fillRect(3, 9, 2, 2);
-  ctx.fillRect(11, 9, 2, 2);
-}
+        // ============================================
+        // PIXEL CHARACTER DRAWING
+        // ============================================
+        const CHAR_COLORS = ['#ff0088', '#00ff88', '#ffaa00', '#0088ff', '#ff00ff'];
 
-function getComboStage(c) {
-  for (let i = comboStages.length - 1; i >= 0; i--) if (c >= comboStages[i].min) return i;
-  return 0;
-}
+        function drawPixelCharacter(canvas, colorIndex, expression = 'idle') {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, 16, 16);
 
-function updateComboUI() {
-  const si = getComboStage(gameState.combo);
-  const s = comboStages[si];
-  const ns = si < comboStages.length - 1 ? comboStages[si + 1] : null;
-  const fill = document.getElementById('gpComboFill');
-  if (ns) {
-    const p = (gameState.combo - s.min) / (ns.min - s.min) * 100;
-    fill.style.width = Math.min(p, 100) + '%';
-    fill.style.background = s.color === 'rainbow' ? 'linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f)' : s.color;
-    document.getElementById('gpComboLabel').textContent = gameState.combo + '/' + ns.min;
-    document.getElementById('gpComboNext').textContent = '다음: ' + ns.name + '까지 ' + (ns.min - gameState.combo) + '콤보!';
-    document.getElementById('gpComboNext').style.display = 'block';
-  } else {
-    fill.style.width = '100%';
-    fill.style.background = 'linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f)';
-    document.getElementById('gpComboLabel').textContent = 'MAX!';
-    document.getElementById('gpComboNext').textContent = '🌈 최고 단계 달성!';
-  }
-}
+            const color = CHAR_COLORS[colorIndex];
+            ctx.fillStyle = color;
 
-function getStageInfo(c) {
-  const stages = [
-    { name: '초급', range: [10, 30] },
-    { name: '중급', range: [20, 50] },
-    { name: '고급', range: [30, 80] },
-    { name: '극급', range: [50, 99] }
-  ];
-  const idx = Math.min(Math.floor(c / 10), stages.length - 1);
-  return stages[idx];
-}
+            ctx.fillRect(4, 2, 8, 6);
+            ctx.fillRect(5, 8, 6, 5);
+            ctx.fillRect(2, 9, 2, 2);
+            ctx.fillRect(12, 9, 2, 2);
 
-function generateQuestion() {
-  const st = getStageInfo(gameState.answers.length);
-  const [min, max] = st.range;
-  gameState.numA = Math.floor(Math.random() * (max - min + 1)) + min;
-  gameState.numB = Math.floor(Math.random() * (gameState.numA - 9 + 1)) + 10;
-  if (gameState.numB >= gameState.numA) gameState.numB = gameState.numA - 1;
-  gameState.correctAnswer = gameState.numA - gameState.numB;
-  gameState.currentAnswer = '';
-  gameState.answerTime = Date.now();
-  updateGameUI();
-}
+            ctx.fillStyle = '#000';
+            if (expression === 'idle') {
+                ctx.fillRect(5, 4, 1, 1);
+                ctx.fillRect(9, 4, 1, 1);
+            } else if (expression === 'correct') {
+                ctx.fillStyle = '#ffff00';
+                ctx.fillRect(5, 3, 2, 2);
+                ctx.fillRect(9, 3, 2, 2);
+            } else if (expression === 'wrong') {
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(5, 3, 2, 3);
+                ctx.fillRect(9, 3, 2, 3);
+            } else if (expression === 'fever') {
+                ctx.fillStyle = '#ff00ff';
+                ctx.fillRect(4, 3, 3, 3);
+                ctx.fillRect(9, 3, 3, 3);
+            }
+        }
 
-function updateGameUI() {
-  document.getElementById('gpScoreVal').textContent = gameState.score.toLocaleString();
-  document.getElementById('gpComboVal').textContent = 'x' + gameState.combo;
-  document.getElementById('gpDifficulty').textContent = getStageInfo(gameState.answers.length).name;
-  let h = '';
-  for (let i = 0; i < 3; i++) h += i < gameState.lives ? '♥' : ' ';
-  document.getElementById('gpHearts').textContent = h;
-  const d = gameState.currentAnswer || '- - -';
-  document.getElementById('gpInputDisplay').textContent = d.split('').join(' ');
-  updateComboUI();
-}
+        // ============================================
+        // SCREEN MANAGEMENT
+        // ============================================
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const screen = document.getElementById(screenName + 'Screen');
+            if (screen) screen.classList.add('active');
+            gameState.currentScreen = screenName;
+        }
 
-function startGame() {
-  gameState.score = 0;
-  gameState.lives = 3;
-  gameState.combo = 0;
-  gameState.maxCombo = 0;
-  gameState.geniusCount = 0;
-  gameState.totalTaps = 0;
-  gameState.answers = [];
-  gameState.isGameActive = true;
-  gameState.feverMode = false;
-  gameState.startTime = Date.now();
-  showScreen('gameplay');
-  generateQuestion();
-  updateGameUI();
-  animateGameplay();
-}
+        function bindBtn(el, fn) {
+            let touched = false;
+            el.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                touched = true;
+                fn();
+            }, { passive: false });
+            el.addEventListener('click', () => {
+                if (touched) { touched = false; return; }
+                fn();
+            });
+        }
 
-function endGame() {
-  gameState.isGameActive = false;
-  gameState.maxCombo = Math.max(gameState.maxCombo, gameState.combo);
-  const isNew = gameState.score > gameState.bestScore;
-  if (isNew) {
-    gameState.bestScore = gameState.score;
-    localStorage.setItem('bestScore', gameState.bestScore);
-  }
-  document.getElementById('bestScoreVal').textContent = gameState.bestScore.toLocaleString() + '점';
-  document.getElementById('goScore').textContent = gameState.score.toLocaleString();
-  document.getElementById('goNewBestMsg').style.display = isNew ? 'block' : 'none';
-  const rank = gameState.score >= 8000 ? 'S' : gameState.score >= 5000 ? 'A' : gameState.score >= 3000 ? 'B' : gameState.score >= 1000 ? 'C' : 'D';
-  document.getElementById('goRankBadge').textContent = rank + ' 랭크';
-  const rem = 30 - (gameState.answers.length % 10);
-  document.getElementById('goMsg1').textContent = '🔥 다음 스테이지까지 ' + rem + '문제';
-  document.getElementById('goProgressFill1').style.width = ((gameState.answers.length % 10) / 10 * 100) + '%';
-  const diff = Math.max(0, gameState.bestScore + 1000 - gameState.score);
-  document.getElementById('goMsg2').textContent = '최고기록까지 ' + diff.toLocaleString() + '점';
-  document.getElementById('goProgressFill2').style.width = (Math.max(0, gameState.score - (gameState.bestScore - 1000)) / 1000 * 100) + '%';
-  const s = [
-    '스테이지: ' + (Math.floor(gameState.answers.length / 10) + 1),
-    '최고 콤보: x' + gameState.maxCombo,
-    '총 탭: ' + gameState.totalTaps,
-    'GENIUS: ' + gameState.geniusCount + '회'
-  ];
-  document.getElementById('goStats').innerHTML = s.map(x => '<div>' + x + '</div>').join('');
-  showScreen('gameover');
-}
+        // ============================================
+        // START SCREEN
+        // ============================================
+        function initStartScreen() {
+            document.getElementById('bestScoreDisplay').textContent = `최고점수: ${gameState.bestScore.toLocaleString()}`;
+            const charRow = document.getElementById('startCharacters');
+            charRow.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 16;
+                canvas.height = 16;
+                canvas.className = 'char-canvas';
+                drawPixelCharacter(canvas, i, 'idle');
+                charRow.appendChild(canvas);
+            }
+        }
 
-let bgParticles = [], fxParticles = [];
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.querySelectorAll('.corner-btn').forEach((btn, idx) => {
+            bindBtn(btn, () => {
+                console.log(idx === 0 ? 'Collection' : 'Ranking');
+            });
+        });
 
-function drawConstellation() {
-  const cv = document.getElementById('constellationCanvas');
-  cv.width = window.innerWidth;
-  cv.height = window.innerHeight;
-  const ctx = cv.getContext('2d');
-  ctx.clearRect(0, 0, cv.width, cv.height);
-  for (let i = 0; i < 200; i++) {
-    const x = Math.random() * cv.width, y = Math.random() * cv.height, s = Math.random() * 1.5 + 0.5;
-    ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.3})`;
-    ctx.beginPath();
-    ctx.arc(x, y, s, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
+        // ============================================
+        // GAME FLOW
+        // ============================================
+        function startGame() {
+            gameState.stageCount = 0;
+            gameState.lives = 3;
+            gameState.combo = 0;
+            gameState.maxCombo = 0;
+            gameState.geniusCount = 0;
+            gameState.sessionStats = { correctCount: 0, totalRounds: 0 };
+            gameState.currentTheme = THEMES[Math.floor(Math.random() * THEMES.length)];
+            document.body.className = `theme-${gameState.currentTheme}`;
+            showScreen('game');
+            initGameScreen();
+            startRound();
+        }
 
-function drawTitle() {
-  const cv = document.getElementById('titleCanvas');
-  const ctx = cv.getContext('2d');
-  ctx.clearRect(0, 0, cv.width, cv.height);
-  ctx.imageSmoothingEnabled = false;
-  ctx.fillStyle = '#ffd700';
-  ctx.font = 'bold 66px "DotGothic16", monospace';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('빼봐영', cv.width / 2, cv.height / 2);
-}
+        function initGameScreen() {
+            const keypad = document.getElementById('keypad');
+            keypad.innerHTML = '';
+            for (let i = 1; i <= 9; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'key-btn';
+                btn.textContent = i;
+                bindBtn(btn, () => tapKey(i));
+                keypad.appendChild(btn);
+            }
 
-function drawGem() {
-  const cv = document.getElementById('gemCanvas');
-  const ctx = cv.getContext('2d');
-  ctx.clearRect(0, 0, 72, 72);
-  ctx.fillStyle = '#ff4488';
-  ctx.beginPath();
-  ctx.moveTo(36, 8);
-  ctx.lineTo(56, 32);
-  ctx.lineTo(56, 56);
-  ctx.lineTo(36, 64);
-  ctx.lineTo(16, 56);
-  ctx.lineTo(16, 32);
-  ctx.closePath();
-  ctx.fill();
-  ctx.fillStyle = '#ff66aa';
-  ctx.beginPath();
-  ctx.moveTo(36, 20);
-  ctx.lineTo(48, 32);
-  ctx.lineTo(36, 48);
-  ctx.closePath();
-  ctx.fill();
-}
+            const dotsContainer = document.getElementById('timerDots');
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < 12; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'timer-dot';
+                dotsContainer.appendChild(dot);
+            }
+        }
 
-function initStartScreen() {
-  drawConstellation();
-  drawTitle();
-  drawGem();
-  const chars = document.getElementById('startChars');
-  chars.innerHTML = '';
-  ['#9050c0', '#e04080', '#e09020', '#30b030', '#3080e0'].forEach(c => {
-    const cv = document.createElement('canvas');
-    cv.width = 16;
-    cv.height = 16;
-    const ctx = cv.getContext('2d');
-    drawPixelChar(ctx, c, '#ffcc66');
-    cv.style.imageRendering = 'pixelated';
-    chars.appendChild(cv);
-  });
-  document.getElementById('bestScoreVal').textContent = gameState.bestScore.toLocaleString() + '점';
-  requestAnimationFrame(initStartScreen);
-}
+        function getDifficultyConfig(stage) {
+            if (stage < CONFIG.difficulties.length) {
+                return CONFIG.difficulties[stage];
+            }
+            const last = CONFIG.difficulties[CONFIG.difficulties.length - 1];
+            const scale = Math.floor(stage / CONFIG.difficulties.length);
+            return {
+                tier: '고급+',
+                min: Math.min(last.min + scale * 50, 500),
+                max: Math.min(999, last.max + scale * 100),
+                timerSpeed: Math.max(14, last.timerSpeed - scale * 2)
+            };
+        }
 
-let gpNumCtx, currentNum = 47, targetNum = 47, slotY = 0, slotSpeed = 0, slotRunning = false;
+        function startRound() {
+            gameState.tapCount = 0;
+            gameState.timeLeft = 100;
+            gameState.timerRunning = true;
 
-function initGameplayScreen() {
-  gpNumCtx = document.getElementById('gpNumCanvas').getContext('2d');
-  const themeBar = document.getElementById('gpThemeBar');
-  themeBar.innerHTML = '';
-  themes.forEach((t, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'themeBtn' + (i === 0 ? ' active' : '');
-    btn.textContent = t.name;
-    function selectTheme() {
-      gameState.selectedTheme = i;
-      document.querySelectorAll('#gpThemeBar .themeBtn').forEach((x, j) => x.className = 'themeBtn' + (j === i ? ' active' : ''));
-      bgParticles = [];
-    }
-    let touched = false;
-    btn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      touched = true;
-      selectTheme();
-    }, { passive: false });
-    btn.addEventListener('click', () => {
-      if (touched) { touched = false; return; }
-      selectTheme();
-    });
-    themeBar.appendChild(btn);
-  });
-  const keypad = document.getElementById('gpKeypad');
-  keypad.innerHTML = '';
-  function bindKey(btn, key) {
-    let touched = false;
-    btn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      touched = true;
-      btn.classList.add('pressed');
-      onKeyPress(key);
-    }, { passive: false });
-    btn.addEventListener('touchend', () => {
-      btn.classList.remove('pressed');
-    });
-    btn.addEventListener('click', (e) => {
-      if (touched) { touched = false; return; }
-      onKeyPress(key);
-    });
-  }
-  for (let i = 1; i <= 9; i++) {
-    const btn = document.createElement('button');
-    btn.className = 'gpKey';
-    btn.textContent = i;
-    bindKey(btn, i);
-    keypad.appendChild(btn);
-  }
-  const b = document.createElement('button');
-  b.className = 'gpKey back';
-  b.textContent = '←';
-  bindKey(b, 'back');
-  keypad.appendChild(b);
-  const z = document.createElement('button');
-  z.className = 'gpKey';
-  z.textContent = '0';
-  bindKey(z, 0);
-  keypad.appendChild(z);
-  const ok = document.createElement('button');
-  ok.className = 'gpKey ok';
-  ok.textContent = 'OK';
-  bindKey(ok, 'ok');
-  keypad.appendChild(ok);
-  const gpTop = document.getElementById('gpTopChars');
-  gpTop.innerHTML = '';
-  ['#9050c0', '#e04080', '#e09020'].forEach(c => {
-    const cv = document.createElement('canvas');
-    cv.width = 16;
-    cv.height = 16;
-    cv.style.imageRendering = 'pixelated';
-    const ctx = cv.getContext('2d');
-    drawPixelChar(ctx, c, '#ffcc66');
-    gpTop.appendChild(cv);
-  });
-  drawCharFace(document.getElementById('gpFaceChar'), 'idle');
-}
+            const config = getDifficultyConfig(gameState.stageCount);
+            gameState.target = Math.floor(Math.random() * (config.max - config.min + 1)) + config.min;
 
-function animateGameplay() {
-  if (!gameState.isGameActive) return;
-  const cv = document.getElementById('gpBgCanvas');
-  cv.width = window.innerWidth;
-  cv.height = window.innerHeight;
-  const ctx = cv.getContext('2d');
-  const t = themes[gameState.selectedTheme];
-  const g = ctx.createLinearGradient(0, 0, 0, cv.height);
-  g.addColorStop(0, t.bg1);
-  g.addColorStop(1, t.bg2);
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, cv.width, cv.height);
-  if (Math.random() < 0.1) {
-    const p = t.particle;
-    if (p === 'star') bgParticles.push({ x: Math.random() * cv.width, y: 0, vy: 0.5 + Math.random(), s: Math.random() * 1.5 + 0.5, c: 'rgba(200, 220, 255, 0.5)' });
-  }
-  bgParticles.forEach(p => {
-    p.y += (p.vy || 0);
-    p.x += (p.vx || 0);
-    if (p.life !== undefined) {
-      p.life -= (p.decay || 0.01);
-      ctx.globalAlpha = Math.max(0, p.life);
-    }
-    ctx.fillStyle = p.c;
-    if (p.type === 'circle') {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
-      ctx.fill();
-    } else {
-      ctx.fillRect(p.x, p.y, p.s, p.s);
-    }
-  });
-  ctx.globalAlpha = 1;
-  bgParticles = bgParticles.filter(p => p.y > -10 && p.y < cv.height + 10 && (p.life === undefined || p.life > 0));
-  drawGameplayNum();
-  animateFx();
-  requestAnimationFrame(animateGameplay);
-}
+            updateDisplay();
+            updateTimer(config.timerSpeed);
+        }
 
-function drawGameplayNum() {
-  gpNumCtx.clearRect(0, 0, 80, 50);
-  gpNumCtx.imageSmoothingEnabled = false;
-  const a = gameState.numA < 10 ? '0' + gameState.numA : '' + gameState.numA;
-  const b = gameState.numB < 10 ? '0' + gameState.numB : '' + gameState.numB;
-  gpNumCtx.font = 'bold 28px "DotGothic16", monospace';
-  gpNumCtx.textAlign = 'center';
-  gpNumCtx.textBaseline = 'middle';
-  gpNumCtx.fillStyle = '#ffd700';
-  gpNumCtx.fillText(a, 40, 15);
-  gpNumCtx.font = 'bold 16px "DotGothic16", monospace';
-  gpNumCtx.fillText('-', 40, 25);
-  gpNumCtx.font = 'bold 28px "DotGothic16", monospace';
-  gpNumCtx.fillText(b, 40, 35);
-}
+        function updateDisplay() {
+            const tens = Math.floor(gameState.target / 10);
+            const ones = gameState.target % 10;
+            const display = `${tens}·${ones}`.padStart(3, '0');
+            document.getElementById('targetDisplay').textContent = display;
 
-function animateFx() {
-  const cv = document.getElementById('gpFxCanvas');
-  if (!cv) return;
-  cv.width = window.innerWidth;
-  cv.height = window.innerHeight;
-  const ctx = cv.getContext('2d');
-  fxParticles.forEach(p => {
-    p.x += p.vx;
-    p.y += (p.vy || 0);
-    p.vy = (p.vy || 0) + 0.1;
-    p.life -= p.decay;
-    if (p.life > 0) {
-      ctx.globalAlpha = p.life;
-      if (p.text) {
-        ctx.fillStyle = p.c;
-        ctx.font = `${p.size}px "DotGothic16"`;
-        ctx.textAlign = 'center';
-        ctx.fillText(p.text, p.x, p.y);
-      } else {
-        ctx.fillStyle = p.c;
-        ctx.fillRect(Math.floor(p.x), Math.floor(p.y), Math.floor(p.s), Math.floor(p.s));
-      }
-    }
-  });
-  ctx.globalAlpha = 1;
-  fxParticles = fxParticles.filter(p => p.life > 0);
-}
+            const stageNum = gameState.stageCount + 1;
+            const config = getDifficultyConfig(gameState.stageCount);
+            document.getElementById('stageDisplay').textContent = `${config.tier} ${stageNum}`;
 
-function spawnCorrectFx() {
-  const cy = window.innerHeight * 0.4;
-  for (let i = 0; i < 40; i++) {
-    const a = Math.random() * Math.PI * 2;
-    const sp = Math.random() * 6 + 2;
-    const colors = ['#ffd700', '#ff8c00', '#ff4500', '#ffeb3b'];
-    fxParticles.push({
-      x: window.innerWidth / 2,
-      y: cy,
-      vx: Math.cos(a) * sp,
-      vy: Math.sin(a) * sp - 2,
-      s: Math.random() * 5 + 2,
-      c: colors[Math.floor(Math.random() * colors.length)],
-      life: 1,
-      decay: Math.random() * 0.02 + 0.01
-    });
-  }
-}
+            const livesText = '♥ '.repeat(gameState.lives) + (gameState.lives < 3 ? '♡ '.repeat(3 - gameState.lives) : '');
+            document.getElementById('livesDisplay').textContent = livesText;
 
-function onKeyPress(key) {
-  gameState.totalTaps++;
-  playSound('keypress');
-  if (key === 'ok') {
-    const ans = parseInt(gameState.currentAnswer) || 0;
-    const correct = ans === gameState.correctAnswer;
-    if (correct) {
-      const time = Date.now() - gameState.answerTime;
-      const genius = time < 1500;
-      let pts = 100 + gameState.answers.length * 5;
-      if (genius) {
-        pts += 200;
-        gameState.geniusCount++;
-        document.getElementById('gpGeniusText').style.opacity = '1';
-      } else {
-        document.getElementById('gpGeniusText').style.opacity = '0.2';
-      }
-      if (gameState.feverMode) pts *= 2;
-      gameState.score += pts;
-      gameState.combo++;
-      gameState.answers.push(gameState.correctAnswer);
-      if (gameState.combo % 10 === 0 && !gameState.feverMode) {
-        gameState.feverMode = true;
-        const banner = document.getElementById('gpFeverBanner');
-        banner.style.opacity = '1';
-        banner.textContent = '🔥 피버 타임! 지금부터 점수 두배! 🔥';
-      }
-      spawnCorrectFx();
-      drawCharFace(document.getElementById('gpFaceChar'), 'correct');
-      playSound('correct');
-      generateQuestion();
-      updateGameUI();
-      setTimeout(() => {
-        drawCharFace(document.getElementById('gpFaceChar'), gameState.feverMode ? 'fever' : 'idle');
-      }, 300);
-    } else {
-      gameState.combo = 0;
-      gameState.lives--;
-      gameState.feverMode = false;
-      document.getElementById('gpFeverBanner').style.opacity = '0';
-      document.getElementById('gpContent').classList.add('shake');
-      document.getElementById('screenGameplay').classList.add('wrongFlash');
-      drawCharFace(document.getElementById('gpFaceChar'), 'wrong');
-      playSound('wrong');
-      setTimeout(() => {
-        document.getElementById('gpContent').classList.remove('shake');
-        document.getElementById('screenGameplay').classList.remove('wrongFlash');
-        drawCharFace(document.getElementById('gpFaceChar'), 'idle');
-      }, 300);
-      updateGameUI();
-      if (gameState.lives <= 0) endGame();
-    }
-  } else if (key === 'back') {
-    gameState.currentAnswer = gameState.currentAnswer.slice(0, -1);
-    updateGameUI();
-  } else {
-    if (gameState.currentAnswer.length < 3) {
-      gameState.currentAnswer += key;
-      updateGameUI();
-    }
-  }
-}
+            const comboText = gameState.combo > 0 ? `Combo: ${gameState.combo}` : 'Combo: 0';
+            document.getElementById('comboDisplay').textContent = comboText;
+        }
 
-function initCollectionScreen() {
-  const grid = document.getElementById('skinGrid');
-  grid.innerHTML = '';
-  skins.forEach((s, i) => {
-    const card = document.createElement('div');
-    card.className = 'skinCard' + (s.unlocked ? '' : ' locked') + (s.sel ? ' selected' : '');
-    const cv = document.createElement('canvas');
-    cv.width = 16;
-    cv.height = 16;
-    cv.className = 'skinCanvas';
-    const ctx = cv.getContext('2d');
-    if (s.body === 'rainbow') {
-      const cols = ['#ff0000', '#ff8000', '#ffff00', '#00ff00', '#0080ff', '#8000ff'];
-      for (let y = 2; y < 14; y++) {
-        ctx.fillStyle = cols[Math.floor((y - 2) / 2) % 6];
-        for (let x = 2; x < 14; x++) ctx.fillRect(x, y, 1, 1);
-      }
-    } else {
-      drawPixelChar(ctx, s.body, s.cheek);
-    }
-    card.appendChild(cv);
-    const name = document.createElement('div');
-    name.className = 'skinName';
-    name.textContent = s.name;
-    card.appendChild(name);
-    if (!s.unlocked) {
-      const req = document.createElement('div');
-      req.className = 'skinReq';
-      req.textContent = s.req;
-      card.appendChild(req);
-    }
-    function selectSkin() {
-      if (s.unlocked) {
-        document.querySelectorAll('.skinCard').forEach(x => x.classList.remove('selected'));
-        card.classList.add('selected');
-      }
-    }
-    let skinTouched = false;
-    card.addEventListener('touchstart', (e) => {
-      skinTouched = true;
-      selectSkin();
-    });
-    card.addEventListener('click', () => {
-      if (skinTouched) { skinTouched = false; return; }
-      selectSkin();
-    });
-    grid.appendChild(card);
-  });
+        function updateTimer(timerSpeed) {
+            const timerInterval = setInterval(() => {
+                if (!gameState.timerRunning) {
+                    clearInterval(timerInterval);
+                    return;
+                }
 
-  const aList = document.getElementById('achieveList');
-  aList.innerHTML = '';
-  achievements.forEach(a => {
-    const card = document.createElement('div');
-    card.className = 'achieveCard' + (a.done ? ' done' : '');
-    card.innerHTML = `
-      <div class="achieveIcon">${a.icon}</div>
-      <div class="achieveInfo">
-        <div class="achieveTitle">${a.title} ${a.done ? '<span class="achieveBadge">✓ 달성!</span>' : ''}</div>
-        <div class="achieveDesc">${a.desc}</div>
-        <div class="achieveBar"><div class="achieveFill" style="width: ${(a.cur / a.max * 100)}%;"></div></div>
-        <div class="achieveReward">🎁 ${a.reward}${!a.done ? ' — ' + Math.min(a.cur, a.max) + '/' + a.max : ''}</div>
-      </div>
-    `;
-    aList.appendChild(card);
-  });
+                gameState.timeLeft--;
 
-  const tList = document.getElementById('titleList');
-  tList.innerHTML = '';
-  titles.forEach(t => {
-    const card = document.createElement('div');
-    card.className = 'titleCard' + (t.equipped ? ' equipped' : '') + (t.unlocked ? '' : ' locked');
-    const ns = t.color === 'rainbow' ? 'background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;' : 'color: ' + t.color;
-    card.innerHTML = `
-      <div class="titleInfo">
-        <div class="titleName" style="${ns}">${t.name}</div>
-        <div class="titleCond">${t.unlocked ? '달성 완료' : '조건: ' + t.cond}</div>
-      </div>
-      ${t.unlocked ? '<button class="equipBtn">' + (t.equipped ? '장착중' : '장착') + '</button>' : '<span style="font-size: 12px;">🔒</span>'}
-    `;
-    tList.appendChild(card);
-  });
-}
+                const timerText = document.getElementById('timerText');
+                const secs = (gameState.timeLeft / 20).toFixed(1);
+                timerText.textContent = secs + 's';
 
-function initRankingScreen() {
-  const list = document.getElementById('rankList');
-  list.innerHTML = '';
-  ranks.forEach(p => {
-    const row = document.createElement('div');
-    row.className = 'rankRow';
-    const cv = document.createElement('canvas');
-    cv.width = 16;
-    cv.height = 16;
-    cv.className = 'rankAvatar';
-    const ctx = cv.getContext('2d');
-    drawPixelChar(ctx, p.color, '#ffcc66');
-    const posClass = p.pos === 1 ? 'gold' : p.pos === 2 ? 'silver' : p.pos === 3 ? 'bronze' : '';
-    const posIcon = p.pos === 1 ? '🥇' : p.pos === 2 ? '🥈' : p.pos === 3 ? '🥉' : p.pos;
-    const titleTag = p.title ? `<span class="rankTitleTag" style="color: ${p.titleColor}; border-color: ${p.titleColor};">${p.title}</span>` : '';
-    row.innerHTML = `
-      <div class="rankPos ${posClass}">${posIcon}</div>
-      <div class="rankInfo">
-        <div class="rankName">${p.name} ${titleTag}</div>
-        <div class="rankScore">⭐ ${p.score} · ${p.combo}</div>
-      </div>
-      <div class="rankChangeSmall">—</div>
-    `;
-    row.insertBefore(cv, row.children[1]);
-    list.appendChild(row);
-  });
-}
+                if (gameState.timeLeft <= 25) {
+                    timerText.classList.add('danger');
+                } else {
+                    timerText.classList.remove('danger');
+                }
 
-function setupCollectionTabs() {
-  document.querySelectorAll('.collTab').forEach(tab => {
-    function activate() {
-      const page = tab.dataset.tab;
-      document.querySelectorAll('.collTab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('[id$="-page"]').forEach(p => p.style.display = 'none');
-      tab.classList.add('active');
-      document.getElementById(page + '-page').style.display = 'block';
-    }
-    let touched = false;
-    tab.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      touched = true;
-      activate();
-    }, { passive: false });
-    tab.addEventListener('click', () => {
-      if (touched) { touched = false; return; }
-      activate();
-    });
-  });
-}
+                const dots = document.querySelectorAll('.timer-dot');
+                dots.forEach((dot, idx) => {
+                    const burned = gameState.timeLeft < (idx + 1) * 8.33;
+                    dot.classList.toggle('burned', burned);
+                    if (gameState.timeLeft <= 25) {
+                        dot.classList.toggle('danger', !burned);
+                    } else {
+                        dot.classList.remove('danger');
+                    }
+                });
 
-window.addEventListener('load', () => {
-  initStartScreen();
-  initGameplayScreen();
-  initCollectionScreen();
-  initRankingScreen();
-  setupCollectionTabs();
-  setInterval(() => {
-    const now = new Date();
-    document.getElementById('timeDisplay').textContent = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-  }, 1000);
-  document.addEventListener('touchmove', (e) => {
-    if (e.target.closest('.rankList, .collPages, .gpKeypad, .goButtons, .goContent')) return;
-    e.preventDefault();
-  }, { passive: false });
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    gameState.timerRunning = false;
+                    roundLost('시간초과!');
+                }
+            }, timerSpeed);
+        }
 
-  // Button event listeners with touch support for mobile
-  function bindBtn(id, fn) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    let touched = false;
-    el.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      touched = true;
-      fn();
-    }, { passive: false });
-    el.addEventListener('click', () => {
-      if (touched) { touched = false; return; }
-      fn();
-    });
-  }
-  bindBtn('startBtn', () => startGame());
-  bindBtn('retryBtn', () => startGame());
-  bindBtn('collectionBtn', () => showScreen('collection'));
-  bindBtn('rankingBtn', () => showScreen('ranking'));
-  bindBtn('homeBtn', () => showScreen('start'));
-  bindBtn('collBackBtn', () => showScreen('start'));
-  bindBtn('rankBackBtn', () => showScreen('start'));
-});
-</script>
+        function tapKey(num) {
+            if (!gameState.timerRunning) return;
 
+            gameState.tapCount++;
+            gameState.target -= num;
+
+            burstParticles(window.innerWidth / 2, window.innerHeight / 2, THEME_COLORS[gameState.currentTheme].primary);
+
+            if (gameState.target < 0) {
+                roundLost('음수!');
+            } else if (gameState.target === 0) {
+                roundWon();
+            } else {
+                updateDisplay();
+            }
+        }
+
+        function burstParticles(x, y, color) {
+            for (let i = 0; i < 12; i++) {
+                const angle = (i / 12) * Math.PI * 2;
+                const speed = 3 + Math.random() * 3;
+                const vx = Math.cos(angle) * speed;
+                const vy = Math.sin(angle) * speed;
+                particles.push(new Particle(x, y, vx, vy, color, 0.5, 4));
+            }
+        }
+
+        function roundWon() {
+            gameState.timerRunning = false;
+            gameState.combo++;
+            gameState.maxCombo = Math.max(gameState.maxCombo, gameState.combo);
+            gameState.sessionStats.correctCount++;
+            gameState.sessionStats.totalRounds++;
+
+            const milestone = CONFIG.comboMilestones.find(m => m.combo === gameState.combo);
+            if (milestone) {
+                showComboMessage(milestone.text, milestone.color);
+            }
+
+            const config = getDifficultyConfig(gameState.stageCount);
+            const minTaps = Math.ceil(gameState.target / 9);
+            let rank = '괜찮아!';
+            let rankMult = 1;
+            if (gameState.tapCount <= minTaps) {
+                rank = '천재!';
+                rankMult = 3;
+                gameState.geniusCount++;
+            } else if (gameState.tapCount <= minTaps * 1.3) {
+                rank = '멋져!';
+                rankMult = 2;
+            } else if (gameState.tapCount <= minTaps * 1.8) {
+                rank = '좋아!';
+                rankMult = 1.2;
+            }
+
+            let speedMult = 1;
+            if (gameState.timeLeft >= 80) speedMult = 3;
+            else if (gameState.timeLeft >= 60) speedMult = 2.5;
+            else if (gameState.timeLeft >= 40) speedMult = 2;
+            else if (gameState.timeLeft >= 20) speedMult = 1.5;
+
+            const baseScore = 50 + gameState.stageCount * 8 + gameState.combo * 15 + Math.ceil(gameState.timeLeft / 5);
+            const score = Math.round(baseScore * rankMult * speedMult);
+
+            showResult(score, rank, rankMult);
+        }
+
+        function roundLost(reason) {
+            gameState.timerRunning = false;
+            gameState.combo = 0;
+            gameState.lives--;
+            gameState.sessionStats.totalRounds++;
+
+            const gameScreen = document.getElementById('gameScreen');
+            gameScreen.classList.add('screen-shake');
+            setTimeout(() => gameScreen.classList.remove('screen-shake'), 400);
+
+            if (gameState.lives <= 0) {
+                showGameOver();
+            } else {
+                updateDisplay();
+                setTimeout(startRound, 1000);
+            }
+        }
+
+        function showComboMessage(text, color) {
+            const msg = document.createElement('div');
+            msg.className = 'combo-message';
+            msg.textContent = text;
+            msg.style.color = color;
+            msg.style.textShadow = `0 0 20px ${color}`;
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 800);
+        }
+
+        function showResult(score, rank, rankMult) {
+            const screen = document.getElementById('resultScreen');
+            document.getElementById('resultScore').textContent = score.toLocaleString();
+            document.getElementById('resultRank').textContent = rank;
+
+            const rankClass = rankMult === 3 ? 'S' : rankMult === 2 ? 'A' : rankMult === 1.2 ? 'B' : 'C';
+            document.getElementById('resultRank').className = `result-rank rank-${rankClass}`;
+            document.getElementById('resultStats').textContent = `탭수: ${gameState.tapCount}회`;
+
+            let msg = '';
+            const nextStage = gameState.stageCount + 2;
+            if (nextStage <= 30) {
+                msg = `다음 스테이지까지 ${31 - nextStage}문제!`;
+            }
+            document.getElementById('resultMessage').textContent = msg;
+
+            showScreen('result');
+
+            setTimeout(() => {
+                const oldTier = getDifficultyConfig(gameState.stageCount).tier;
+                gameState.stageCount++;
+                const newTier = getDifficultyConfig(gameState.stageCount).tier;
+                if (oldTier !== newTier) {
+                    showTierUpMessage(newTier);
+                }
+            }, 100);
+        }
+
+        function showTierUpMessage(tier) {
+            const tierText = {
+                '초급': '초급',
+                '중급': '중급',
+                '고급': '고급'
+            };
+            const msg = document.createElement('div');
+            msg.className = 'tier-up-text';
+            msg.textContent = `${tierText[tier]} 상승!`;
+            msg.style.color = '#ffaa00';
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 1200);
+        }
+
+        function showGameOver() {
+            const finalScore = gameState.stageCount * 100 + gameState.geniusCount * 50;
+            let rank = 'D';
+            if (gameState.stageCount >= 30) rank = 'S';
+            else if (gameState.stageCount >= 20) rank = 'A';
+            else if (gameState.stageCount >= 10) rank = 'B';
+            else if (gameState.stageCount >= 5) rank = 'C';
+
+            document.getElementById('gameoverScore').textContent = `최종 점수: ${finalScore.toLocaleString()}`;
+            document.getElementById('gameoverStats').textContent = `스테이지: ${gameState.stageCount + 1} / 최고 콤보: ${gameState.maxCombo} / 천재 횟수: ${gameState.geniusCount}`;
+
+            if (finalScore > gameState.bestScore) {
+                gameState.bestScore = finalScore;
+                localStorage.setItem('bestScore', finalScore.toString());
+            }
+
+            showScreen('gameOver');
+        }
+
+        // ============================================
+        // RESULT & GAMEOVER BUTTONS
+        // ============================================
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            showScreen('game');
+            startRound();
+        });
+
+        document.getElementById('retryBtn').addEventListener('click', () => {
+            startGame();
+        });
+
+        document.getElementById('restartBtn').addEventListener('click', () => {
+            startGame();
+        });
+
+        document.getElementById('homeBtn').addEventListener('click', () => {
+            initStartScreen();
+            showScreen('start');
+        });
+
+        // ============================================
+        // BACKGROUND ANIMATION
+        // ============================================
+        function initBackgroundParticles() {
+            bgParticles = [];
+            for (let i = 0; i < 50; i++) {
+                bgParticles.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    size: Math.random() * 2 + 1,
+                    opacity: Math.random() * 0.5 + 0.3
+                });
+            }
+        }
+
+        function updateBackgroundParticles() {
+            bgParticles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0 || p.x > window.innerWidth) p.vx *= -1;
+                if (p.y < 0 || p.y > window.innerHeight) p.vy *= -1;
+            });
+        }
+
+        function drawBackgroundParticles() {
+            ctxBg.fillStyle = 'rgba(0, 0, 0, 0.02)';
+            ctxBg.fillRect(0, 0, canvasBg.width, canvasBg.height);
+
+            const color = THEME_COLORS[gameState.currentTheme].primary;
+            const rgb = hexToRgb(color);
+            ctxBg.fillStyle = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+            bgParticles.forEach(p => {
+                ctxBg.globalAlpha = p.opacity;
+                ctxBg.fillRect(p.x, p.y, p.size, p.size);
+            });
+            ctxBg.globalAlpha = 1;
+        }
+
+        // ============================================
+        // PARTICLE SYSTEM
+        // ============================================
+        function updateParticles() {
+            particles = particles.filter(p => {
+                if (!p.isDead()) {
+                    p.update();
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        function drawParticles() {
+            ctxParticles.clearRect(0, 0, canvasParticles.width, canvasParticles.height);
+            particles.forEach(p => p.draw(ctxParticles));
+        }
+
+        // ============================================
+        // MAIN LOOP
+        // ============================================
+        initBackgroundParticles();
+        initStartScreen();
+
+        function gameLoop() {
+            updateBackgroundParticles();
+            drawBackgroundParticles();
+
+            updateParticles();
+            drawParticles();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+
+        // ============================================
+        // MOBILE OPTIMIZATION
+        // ============================================
+        document.addEventListener('touchmove', (e) => {
+            if (gameState.currentScreen === 'game') {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        document.addEventListener('gesturestart', (e) => {
+            e.preventDefault();
+        });
+
+        // Audio context for sound effects
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playTone(frequency, duration) {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.value = frequency;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            osc.start(audioContext.currentTime);
+            osc.stop(audioContext.currentTime + duration);
+        }
+
+        document.addEventListener('touchstart', () => {
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        });
+    </script>
 </body>
 </html>
