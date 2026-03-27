@@ -6,6 +6,7 @@ namespace PumpNumber.Audio
     /// <summary>
     /// 사운드 매니저 — 8비트 효과음 생성 + 재생
     /// JS의 playTone(), sfxTap(), sfxSuccess(), sfxGenius(), sfxFail(), sfxGameOver() 등을 담당
+    /// ComboVisualSystem, FeverMode와 통합된 효과음 시스템
     /// Unity에서는 AudioSource + AudioClip(동적 생성) 또는 프리메이드 WAV 사용
     /// </summary>
     public class SoundManager : MonoBehaviour
@@ -22,6 +23,22 @@ namespace PumpNumber.Audio
         [SerializeField] private AudioClip failClip;
         [SerializeField] private AudioClip gameOverClip;
         [SerializeField] private AudioClip comboClip;
+
+        // === 콤보 스테이지 변화 효과음 ===
+        [SerializeField] private AudioClip comboBlueStageClip;   // 5~9 콤보 (파란색)
+        [SerializeField] private AudioClip comboGoldStageClip;   // 10~14 콤보 (골드)
+        [SerializeField] private AudioClip comboRedStageClip;    // 15~19 콤보 (빨강)
+        [SerializeField] private AudioClip comboRainbowStageClip; // 20+ 콤보 (레인보우)
+
+        // === 피버 모드 효과음 ===
+        [SerializeField] private AudioClip feverActivateClip;
+        [SerializeField] private AudioClip feverDeactivateClip;
+
+        // === 기타 효과음 ===
+        [SerializeField] private AudioClip wrongAnswerClip;      // 오답
+        [SerializeField] private AudioClip screenShakeClip;      // 화면 흔들림
+        [SerializeField] private AudioClip slotMachineRollClip;  // 슬롯머신 회전음
+        [SerializeField] private AudioClip achievementUnlockClip; // 업적 해제
 
         [Header("=== 설정 ===")]
         [SerializeField] private float masterVolume = 0.5f;
@@ -182,6 +199,180 @@ namespace PumpNumber.Audio
             {
                 var clip = GenerateTone(800, 0.15f, "sine", 0.1f);
                 sfxSource.PlayOneShot(clip, masterVolume);
+            }
+        }
+
+        /// <summary>
+        /// 콤보 스테이지 변경 효과음 재생
+        /// ComboVisualSystem에서 호출
+        /// stageIndex: 0=Blue(5~9), 1=Gold(10~14), 2=Red(15~19), 3=Rainbow(20+)
+        /// </summary>
+        public void PlayComboStageChange(int stageIndex)
+        {
+            if (!soundEnabled) return;
+
+            AudioClip clip = stageIndex switch
+            {
+                0 => comboBlueStageClip,
+                1 => comboGoldStageClip,
+                2 => comboRedStageClip,
+                3 => comboRainbowStageClip,
+                _ => null
+            };
+
+            if (clip != null)
+            {
+                sfxSource.PlayOneShot(clip, masterVolume);
+            }
+            else
+            {
+                // 프로시저럴 생성 (단계별 톤)
+                float freq = stageIndex switch
+                {
+                    0 => 600f,  // Blue: 낮음
+                    1 => 800f,  // Gold: 중간
+                    2 => 1000f, // Red: 높음
+                    3 => 1200f, // Rainbow: 매우 높음
+                    _ => 800f
+                };
+                var genClip = GenerateTone(freq, 0.3f, "sine", 0.15f);
+                sfxSource.PlayOneShot(genClip, masterVolume);
+            }
+        }
+
+        /// <summary>
+        /// 피버 활성화 효과음
+        /// 한국식: "피버 타임 활성화"
+        /// </summary>
+        public void PlayFeverActivate() // 피버_활성화음()
+        {
+            if (!soundEnabled) return;
+
+            if (feverActivateClip != null)
+            {
+                sfxSource.PlayOneShot(feverActivateClip, masterVolume);
+            }
+            else
+            {
+                // 프로시저럴 상승 음
+                StartCoroutine(PlayToneSequence(
+                    new float[] { 600, 800, 1000, 1200 },
+                    new float[] { 0, 0.1f, 0.2f, 0.3f },
+                    0.15f, "sine", 0.15f
+                ));
+            }
+        }
+
+        /// <summary>
+        /// 피버 해제 효과음
+        /// 한국식: "피버_종료음()"
+        /// </summary>
+        public void PlayFeverDeactivate() // 피버_종료음()
+        {
+            if (!soundEnabled) return;
+
+            if (feverDeactivateClip != null)
+            {
+                sfxSource.PlayOneShot(feverDeactivateClip, masterVolume);
+            }
+            else
+            {
+                // 프로시저럴 하강 음
+                StartCoroutine(PlayToneSequence(
+                    new float[] { 1200, 1000, 800, 600 },
+                    new float[] { 0, 0.1f, 0.2f, 0.3f },
+                    0.15f, "sine", 0.12f
+                ));
+            }
+        }
+
+        /// <summary>
+        /// 오답 + 화면 흔들림 효과음
+        /// 한국식: "오답음()"
+        /// </summary>
+        public void PlayWrongAnswer() // 오답음()
+        {
+            if (!soundEnabled) return;
+
+            if (wrongAnswerClip != null)
+            {
+                sfxSource.PlayOneShot(wrongAnswerClip, masterVolume);
+            }
+            else
+            {
+                var clip = GenerateTone(150, 0.4f, "sawtooth", 0.15f);
+                sfxSource.PlayOneShot(clip, masterVolume);
+            }
+        }
+
+        /// <summary>
+        /// 정답 + 콤보 피치 상승음
+        /// 콤보 수에 따라 피치 변경
+        /// 한국식: "정답음(콤보수)"
+        /// </summary>
+        public void PlayCorrectWithCombo(int comboCount) // 정답음(콤보수)
+        {
+            if (!soundEnabled) return;
+
+            // 콤보 수에 따라 기본 피치 상향
+            float basePitch = 500 + (comboCount * 50); // 콤보당 50Hz 상승
+            basePitch = Mathf.Clamp(basePitch, 500, 1500);
+
+            if (successClip != null)
+            {
+                sfxSource.pitch = 1 + (comboCount * 0.05f); // 피치 변경
+                sfxSource.PlayOneShot(successClip, masterVolume);
+                sfxSource.pitch = 1f; // 원래대로 복구
+            }
+            else
+            {
+                var clip = GenerateTone(basePitch, 0.2f, "sine", 0.12f);
+                sfxSource.PlayOneShot(clip, masterVolume);
+            }
+        }
+
+        /// <summary>
+        /// 슬롯머신 회전음
+        /// Collection 아이템 또는 랭크 표시 시 사용
+        /// 한국식: "슬롯머신음()"
+        /// </summary>
+        public void PlaySlotMachineRoll() // 슬롯머신음()
+        {
+            if (!soundEnabled) return;
+
+            if (slotMachineRollClip != null)
+            {
+                sfxSource.PlayOneShot(slotMachineRollClip, masterVolume);
+            }
+            else
+            {
+                StartCoroutine(PlayToneSequence(
+                    new float[] { 800, 900, 800, 900, 800 },
+                    new float[] { 0, 0.05f, 0.1f, 0.15f, 0.2f },
+                    0.1f, "square", 0.1f
+                ));
+            }
+        }
+
+        /// <summary>
+        /// 업적 해제 효과음
+        /// 한국식: "업적해제음()"
+        /// </summary>
+        public void PlayAchievementUnlock() // 업적해제음()
+        {
+            if (!soundEnabled) return;
+
+            if (achievementUnlockClip != null)
+            {
+                sfxSource.PlayOneShot(achievementUnlockClip, masterVolume);
+            }
+            else
+            {
+                StartCoroutine(PlayToneSequence(
+                    new float[] { 800, 1000, 1200, 1400 },
+                    new float[] { 0, 0.1f, 0.2f, 0.3f },
+                    0.2f, "sine", 0.15f
+                ));
             }
         }
 

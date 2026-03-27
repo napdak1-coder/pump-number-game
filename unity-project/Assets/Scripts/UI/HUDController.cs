@@ -34,6 +34,14 @@ namespace PumpNumber.UI
         [SerializeField] private TMP_Text comboMessageText;
         [SerializeField] private TMP_Text tapInfoText;
 
+        [Header("=== 콤보 시스템 ===")]
+        [SerializeField] private Image comboMeterBar;          // 콤보 진행률 바
+        [SerializeField] private TMP_Text comboNextStageText;  // "다음: 골드콤보까지 3콤보!"
+
+        [Header("=== 피버 타임 & 천재 ===")]
+        [SerializeField] private TMP_Text feverBannerText;     // "🔥 피버 타임! 지금부터 점수 두배! 🔥"
+        [SerializeField] private TMP_Text geniusText;          // "★ 천재! ★"
+
         [Header("=== 색상 ===")]
         [SerializeField] private Color normalColor = new Color(0.38f, 0.85f, 0.88f, 1f);     // #60d8e0
         [SerializeField] private Color reverseColor = new Color(1f, 0.41f, 0.47f, 1f);        // #ff6878
@@ -46,6 +54,14 @@ namespace PumpNumber.UI
         [SerializeField] private Color greatColor = new Color(0.38f, 0.85f, 0.88f, 1f); // #60d8e0
         [SerializeField] private Color goodColor = new Color(0.31f, 0.69f, 1f, 1f);     // #50b0ff
         [SerializeField] private Color okColor = new Color(0.5f, 0.5f, 0.5f, 1f);
+
+        [Header("=== 콤보 단계 색상 ===")]
+        [SerializeField] private Color comboGreyColor = new Color(0.5f, 0.5f, 0.5f, 1f);      // 회색
+        [SerializeField] private Color comboBlueColor = new Color(0.38f, 0.85f, 0.88f, 1f);   // #60d8e0
+        [SerializeField] private Color comboGoldColor = new Color(1f, 0.82f, 0.25f, 1f);     // #ffd140
+        [SerializeField] private Color comboRedColor = new Color(1f, 0.41f, 0.47f, 1f);      // #ff6878
+
+        private int currentComboStage = 0;  // 0=그레이, 1=블루, 2=골드, 3=레드, 4+=무지개
 
         private void OnEnable()
         {
@@ -89,7 +105,14 @@ namespace PumpNumber.UI
 
         private void UpdateCombo(int combo)
         {
-            if (comboText) comboText.text = combo.ToString();
+            if (comboText)
+            {
+                comboText.text = combo.ToString();
+                // 콤보 단계별 색상 변경
+                UpdateComboTextColor(combo);
+            }
+
+            // 콤보 메시지 업데이트
             if (comboMessageText)
             {
                 if (combo >= 3)
@@ -102,6 +125,169 @@ namespace PumpNumber.UI
                     comboMessageText.gameObject.SetActive(false);
                 }
             }
+
+            // 콤보 진행률 바 업데이트
+            UpdateComboMeterBar(combo);
+
+            // 다음 단계 텍스트 업데이트
+            UpdateComboNextStageText(combo);
+        }
+
+        /// <summary>
+        /// 콤보 단계별 색상 변경 (회색→파랑→금색→빨강→무지개)
+        /// </summary>
+        private void UpdateComboTextColor(int combo)
+        {
+            Color targetColor = comboGreyColor;
+            int newStage = 0;
+
+            if (combo >= 50)
+            {
+                // 무지개 애니메이션 (시간에 따라 색상 변함)
+                newStage = 4;
+                float hue = (Time.time * 2f) % 1f;
+                targetColor = Color.HSVToRGB(hue, 1f, 1f);
+            }
+            else if (combo >= 30)
+            {
+                targetColor = comboRedColor;
+                newStage = 3;
+            }
+            else if (combo >= 10)
+            {
+                targetColor = comboGoldColor;
+                newStage = 2;
+            }
+            else if (combo >= 5)
+            {
+                targetColor = comboBlueColor;
+                newStage = 1;
+            }
+            else
+            {
+                targetColor = comboGreyColor;
+                newStage = 0;
+            }
+
+            if (comboText)
+                comboText.color = targetColor;
+
+            // 단계 변경 시 파티클 이펙트 (나중에 추가 가능)
+            if (newStage != currentComboStage && combo > 0)
+            {
+                currentComboStage = newStage;
+                OnComboStageChanged(newStage);
+            }
+        }
+
+        /// <summary>
+        /// 콤보 진행률 바 업데이트
+        /// </summary>
+        private void UpdateComboMeterBar(int combo)
+        {
+            if (comboMeterBar == null) return;
+
+            // 단계별 목표값
+            int nextThreshold = 5;
+            if (combo >= 5) nextThreshold = 10;
+            if (combo >= 10) nextThreshold = 30;
+            if (combo >= 30) nextThreshold = 50;
+
+            int previousThreshold = 0;
+            if (combo >= 5) previousThreshold = 5;
+            if (combo >= 10) previousThreshold = 10;
+            if (combo >= 30) previousThreshold = 30;
+
+            float progress = (float)(combo - previousThreshold) / (nextThreshold - previousThreshold);
+            comboMeterBar.fillAmount = Mathf.Clamp01(progress);
+        }
+
+        /// <summary>
+        /// 다음 단계까지 남은 콤보 수 표시
+        /// </summary>
+        private void UpdateComboNextStageText(int combo)
+        {
+            if (comboNextStageText == null) return;
+
+            if (combo >= 50)
+            {
+                comboNextStageText.text = "★ 맥시멈! ★";
+            }
+            else if (combo >= 30)
+            {
+                int remaining = 50 - combo;
+                comboNextStageText.text = $"다음: 레인보우콤보까지 {remaining}콤보!";
+            }
+            else if (combo >= 10)
+            {
+                int remaining = 30 - combo;
+                comboNextStageText.text = $"다음: 레드콤보까지 {remaining}콤보!";
+            }
+            else if (combo >= 5)
+            {
+                int remaining = 10 - combo;
+                comboNextStageText.text = $"다음: 골드콤보까지 {remaining}콤보!";
+            }
+            else
+            {
+                int remaining = 5 - combo;
+                comboNextStageText.text = $"다음: 블루콤보까지 {remaining}콤보!";
+            }
+        }
+
+        /// <summary>
+        /// 콤보 단계 변경 시 호출
+        /// </summary>
+        private void OnComboStageChanged(int newStage)
+        {
+            // 파티클 이펙트 발생 (ParticleEffects 연동)
+            if (ParticleEffects.Instance != null)
+            {
+                // TODO: ParticleEffects에 OnComboStageChanged 메서드 추가
+            }
+        }
+
+        /// <summary>
+        /// 피버 타임 배너 표시
+        /// </summary>
+        public void ShowFeverBanner()
+        {
+            if (feverBannerText == null) return;
+            feverBannerText.text = "🔥 피버 타임! 지금부터 점수 두배! 🔥";
+            feverBannerText.gameObject.SetActive(true);
+
+            // 애니메이션: 펄스 또는 스케일 업
+            LeanTween.cancel(feverBannerText.gameObject);
+            LeanTween.scale(feverBannerText.gameObject, Vector3.one * 1.2f, 0.3f)
+                .setEase(LeanTweenType.easeInOutQuad);
+        }
+
+        /// <summary>
+        /// 피버 타임 배너 숨기기
+        /// </summary>
+        public void HideFeverBanner()
+        {
+            if (feverBannerText == null) return;
+            feverBannerText.gameObject.SetActive(false);
+            LeanTween.cancel(feverBannerText.gameObject);
+        }
+
+        /// <summary>
+        /// 천재! 텍스트 표시 (플래시 애니메이션)
+        /// </summary>
+        public void ShowGeniusText()
+        {
+            if (geniusText == null) return;
+            geniusText.text = "★ 천재! ★";
+            geniusText.gameObject.SetActive(true);
+
+            // 플래시 애니메이션: 색상이 밝아졌다 어두워짐
+            LeanTween.cancel(geniusText.gameObject);
+            var seq = LeanTween.sequence();
+            seq.append(LeanTween.color(geniusText.gameObject, new Color(1f, 0.8f, 0f, 1f), 0.1f));
+            seq.append(LeanTween.color(geniusText.gameObject, geniusColor, 0.2f));
+            seq.append(LeanTween.delay(0.5f));
+            seq.append(LeanTween.alphaText(geniusText.gameObject, 0f, 0.3f));
         }
 
         private void UpdateTarget(int target)

@@ -16,6 +16,8 @@ namespace PumpNumber.Data
         public int bestScore;
         public int comboCount;
         public int maxCombo;
+        public int currentCombo;          // 현재 콤보 (ComboVisualSystem과 동기화)
+        public int comboStage;            // 현재 콤보 스테이지 (0~4)
 
         // === 진행 ===
         public int stageCount;
@@ -40,23 +42,43 @@ namespace PumpNumber.Data
         // === 통계 ===
         public int geniusCount;
         public int reverseClears;
+        public int totalTaps;             // 게임 세션 내 전체 탭 횟수
+        public int feverCount;            // 피버 발동 횟수
+        public int sRankCount;            // S 랭크 획득 횟수
 
         // === 상태 플래그 ===
         public bool isPlaying;
-        public bool isFever;
+        public bool isFever;              // 피버 모드 활성 여부
         public int fastClears;
 
-        // === 테마 ===
+        // === 테마 및 커스터마이제이션 ===
         public string currentTheme = "peach"; // "dark", "lavender", "peach"
+        public Data.GameConfig.ThemeType selectedTheme = GameConfig.ThemeType.Space;
+        public int selectedSkinId = 0;
+        public int equippedTitleId = 0;
+
+        // === 라이프타임 통계 (Collection Manager용) ===
+        [Serializable]
+        public class LifetimeStats
+        {
+            public int totalScore;        // 누적 점수
+            public int totalGames;        // 플레이한 게임 수
+            public int totalFever;        // 누적 피버 발동 횟수
+            public int totalGenius;       // 누적 천재 등급 획득 수
+        }
+        public LifetimeStats lifetimeStats = new LifetimeStats();
 
         /// <summary>
         /// 새 게임 시작 시 상태 초기화
         /// JS의 startGame() 내 초기화 로직과 동일
+        /// 라이프타임 통계는 유지
         /// </summary>
         public void Reset()
         {
             score = 0;
             comboCount = 0;
+            currentCombo = 0;
+            comboStage = 0;
             maxCombo = 0;
             currentLevel = 1;
             stageCount = 0;
@@ -65,6 +87,9 @@ namespace PumpNumber.Data
             reverseClears = 0;
             tapCount = 0;
             fastClears = 0;
+            totalTaps = 0;
+            feverCount = 0;
+            sRankCount = 0;
             isFever = false;
             isPlaying = true;
             speedMultiplier = 1f;

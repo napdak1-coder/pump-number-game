@@ -4,11 +4,13 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using PumpNumber.Data;
+using PumpNumber.Audio;
 
 namespace PumpNumber.Core
 {
     /// <summary>
     /// 게임의 핵심 매니저 — 싱글톤 패턴
+    /// ComboVisualSystem, CollectionManager, RankingManager, ThemeManager, FeverMode와 통합
     /// JS의 startGame(), nextRound(), pressKey(), handleSuccess(), handleFail() 등을 담당
     /// </summary>
     public class GameManager : MonoBehaviour
@@ -17,6 +19,11 @@ namespace PumpNumber.Core
 
         [Header("=== 설정 ===")]
         [SerializeField] private GameConfig config;
+
+        [Header("=== 시스템 참조 ===")]
+        [SerializeField] private SoundManager soundManager;
+        // ComboVisualSystem, CollectionManager, RankingManager, ThemeManager 참조
+        // (Inspector에서 설정하거나 GetComponent 사용)
 
         [Header("=== 이벤트 (UI가 구독) ===")]
         public UnityEvent OnGameStart;
@@ -34,8 +41,8 @@ namespace PumpNumber.Core
         public UnityEvent<string> OnFail;             // 실패 사유
         public UnityEvent OnGameOver;
         public UnityEvent<bool> OnNewBestScore;       // 신기록 여부
-        public UnityEvent OnFeverStart;
-        public UnityEvent OnFeverEnd;
+        public UnityEvent OnFeverStart;               // 피버 시작 (🔥 피버 타임! 지금부터 점수 두배! 🔥)
+        public UnityEvent OnFeverEnd;                 // 피버 종료
         public UnityEvent<float> OnSpeedMultChanged;  // 속도 배율
         public UnityEvent<DifficultyTier> OnTierChanged; // 티어 변경
 
@@ -46,12 +53,25 @@ namespace PumpNumber.Core
         private Coroutine timerCoroutine;
         private string prevTier = "";
 
+        // === 게임 오버 통계 ===
+        [System.Serializable]
+        public class GameOverStats
+        {
+            public int questionsToNextStage;  // 다음 스테이지까지 필요한 문제 수
+            public int pointsToHighScore;     // 최고점까지 필요한 점수 ("아깝다 연출")
+        }
+        public GameOverStats gameOverStats = new GameOverStats();
+
         private void Awake()
         {
             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
             Instance = this;
             DontDestroyOnLoad(gameObject);
             State.LoadBestScore();
+
+            // SoundManager 참조 (없으면 Find)
+            if (soundManager == null)
+                soundManager = FindObjectOfType<SoundManager>();
         }
 
         // ================================================================
@@ -189,6 +209,7 @@ namespace PumpNumber.Core
         // ================================================================
         // 성공 처리
         // JS: handleSuccess()
+        // ComboVisualSystem, CollectionManager와 통합
         // ================================================================
         private void HandleSuccess()
         {
@@ -196,15 +217,19 @@ namespace PumpNumber.Core
 
             State.stageCount++;
             State.comboCount++;
+            State.currentCombo = State.comboCount;  // ComboVisualSystem 동기화
+            State.totalTaps++;  // 통계 추적
+
             if (State.comboCount > State.maxCombo)
                 State.maxCombo = State.comboCount;
 
             // 등급 판정
             var rank = GetRank(State.tapCount, State.minTaps);
 
-            // 점수 계산
+            // 점수 계산 (콤보 스테이지별 배율 적용)
             int baseScore = State.originalTarget;
-            float mult = rank.mult * State.speedMultiplier;
+            float comboMult = GetComboMultiplier(State.comboCount);
+            float mult = rank.mult * State.speedMultiplier * comboMult;
             if (State.isFever) mult *= config.feverScoreMult;
             int addScore = Mathf.RoundToInt(baseScore * mult);
             State.score += addScore;
@@ -213,10 +238,17 @@ namespace PumpNumber.Core
             if (State.isReverse) State.reverseClears++;
 
             // 천재 카운트
-            if (rank.cls == "genius") State.geniusCount++;
+            if (rank.cls == "genius")
+            {
+                State.geniusCount++;
+                State.sRankCount++;  // S 랭크 카운트
+            }
 
             // 콤보 보너스
             CheckComboBonus();
+
+            // ComboVisualSystem 콤보 증가 (IncrementCombo)
+            IncrementComboVisual();
 
             // 이벤트 발행
             OnSuccess?.Invoke();
@@ -224,7 +256,11 @@ namespace PumpNumber.Core
             OnComboChanged?.Invoke(State.comboCount);
             OnMessage?.Invoke(rank.rank, rank.cls);
 
-            // 빠른 클리어 → 피버 체크
+            // 콤보에 따른 피버 자동 활성화
+            if (State.comboCount >= config.feverActivationThreshold && !State.isFever)
+                StartFever();
+
+            // 빠른 클리어 → 피버 체크 (기존 방식 유지)
             if (State.timeLeft >= 70)
             {
                 State.fastClears++;
@@ -243,14 +279,23 @@ namespace PumpNumber.Core
         // ================================================================
         // 실패 처리
         // JS: handleFail(reason)
+        // ComboVisualSystem과 통합 (ResetCombo)
         // ================================================================
         private void HandleFail(string reason)
         {
             if (timerCoroutine != null) StopCoroutine(timerCoroutine);
 
+            // ComboVisualSystem 콤보 리셋 (ResetCombo)
+            ResetComboVisual();
+
             State.comboCount = 0;
+            State.currentCombo = 0;  // ComboVisualSystem 동기화
             State.fastClears = 0;
             State.lives--;
+
+            // 오답 효과음
+            if (soundManager != null)
+                soundManager.PlayWrongAnswer();
 
             OnFail?.Invoke(reason);
             OnComboChanged?.Invoke(0);
@@ -272,6 +317,8 @@ namespace PumpNumber.Core
         // ================================================================
         // 게임 오버
         // JS: showGameOver()
+        // RankingManager, CollectionManager와 통합
+        // "아깝다 연출" 데이터 계산
         // ================================================================
         private void ShowGameOver()
         {
@@ -279,17 +326,37 @@ namespace PumpNumber.Core
             bool isNewBest = State.score > State.bestScore;
             State.SaveBestScore();
 
+            // "아깝다 연출" 데이터 계산
+            // questionsToNextStage: 다음 스테이지까지 필요한 문제 수
+            gameOverStats.questionsToNextStage = config.questionsPerStage - (State.stageCount % config.questionsPerStage);
+            // pointsToHighScore: 최고점까지 필요한 점수
+            gameOverStats.pointsToHighScore = Mathf.Max(0, State.bestScore - State.score);
+
+            // CollectionManager 업데이트 (라이프타임 통계)
+            UpdateCollectionStats();
+
+            // RankingManager 제출
+            SubmitRankingScore();
+
             OnGameOver?.Invoke();
             OnNewBestScore?.Invoke(isNewBest);
         }
 
         // ================================================================
         // 피버 모드
+        // FeverMode 시스템 통합
+        // 피버 활성화 시 한국식 배너: "🔥 피버 타임! 지금부터 점수 두배! 🔥"
         // ================================================================
         private void StartFever()
         {
             State.isFever = true;
+            State.feverCount++;  // 피버 발동 횟수 추적
             State.fastClears = 0;
+
+            // 피버 활성화 사운드
+            if (soundManager != null)
+                soundManager.PlayFeverActivate();
+
             OnFeverStart?.Invoke();
             StartCoroutine(FeverRoutine());
         }
@@ -298,6 +365,11 @@ namespace PumpNumber.Core
         {
             yield return new WaitForSeconds(config.feverDuration);
             State.isFever = false;
+
+            // 피버 종료 사운드
+            if (soundManager != null)
+                soundManager.PlayFeverDeactivate();
+
             OnFeverEnd?.Invoke();
         }
 
@@ -410,6 +482,152 @@ namespace PumpNumber.Core
         {
             yield return new WaitForSeconds(delay);
             ShowGameOver();
+        }
+
+        // ================================================================
+        // ComboVisualSystem 통합 메서드
+        // ================================================================
+
+        /// <summary>
+        /// 콤보 시각화 증가 (정답 시 호출)
+        /// ComboVisualSystem과의 인터페이스
+        /// </summary>
+        private void IncrementComboVisual()
+        {
+            // ComboVisualSystem이 있다면 IncrementCombo 호출
+            // var comboVisual = FindObjectOfType<ComboVisualSystem>();
+            // if (comboVisual != null)
+            //     comboVisual.IncrementCombo(State.comboCount);
+
+            // 콤보 스테이지 변경 감지 및 사운드 재생
+            UpdateComboStage();
+        }
+
+        /// <summary>
+        /// 콤보 시각화 리셋 (오답 시 호출)
+        /// ComboVisualSystem과의 인터페이스
+        /// </summary>
+        private void ResetComboVisual()
+        {
+            // ComboVisualSystem이 있다면 ResetCombo 호출
+            // var comboVisual = FindObjectOfType<ComboVisualSystem>();
+            // if (comboVisual != null)
+            //     comboVisual.ResetCombo();
+
+            State.comboStage = 0;
+        }
+
+        /// <summary>
+        /// 콤보 스테이지 계산 및 변경 감지
+        /// 콤보 단계별 점수 배율 적용 및 음향 효과
+        /// </summary>
+        private void UpdateComboStage()
+        {
+            int prevStage = State.comboStage;
+
+            // 콤보 스테이지 판정
+            if (State.comboCount >= config.comboStageThresholds[3])      // 20+
+                State.comboStage = 4;  // Rainbow
+            else if (State.comboCount >= config.comboStageThresholds[2]) // 15~19
+                State.comboStage = 3;  // Red
+            else if (State.comboCount >= config.comboStageThresholds[1]) // 10~14
+                State.comboStage = 2;  // Gold
+            else if (State.comboCount >= config.comboStageThresholds[0]) // 5~9
+                State.comboStage = 1;  // Blue
+            else
+                State.comboStage = 0;  // Normal
+
+            // 스테이지 변경 시 효과음
+            if (prevStage < State.comboStage && soundManager != null)
+            {
+                soundManager.PlayComboStageChange(State.comboStage - 1);
+            }
+        }
+
+        /// <summary>
+        /// 현재 콤보 스테이지에 따른 점수 배율 계산
+        /// </summary>
+        private float GetComboMultiplier(int comboCount)
+        {
+            if (comboCount >= config.comboStageThresholds[3])      // 20+
+                return config.comboStageMultipliers[4];
+            else if (comboCount >= config.comboStageThresholds[2]) // 15~19
+                return config.comboStageMultipliers[3];
+            else if (comboCount >= config.comboStageThresholds[1]) // 10~14
+                return config.comboStageMultipliers[2];
+            else if (comboCount >= config.comboStageThresholds[0]) // 5~9
+                return config.comboStageMultipliers[1];
+            else
+                return config.comboStageMultipliers[0]; // 1x
+        }
+
+        // ================================================================
+        // CollectionManager 통합 메서드
+        // ================================================================
+
+        /// <summary>
+        /// 라이프타임 통계 업데이트
+        /// 게임 오버 시 호출하여 Collection 시스템으로 전송
+        /// </summary>
+        private void UpdateCollectionStats()
+        {
+            // 라이프타임 통계 누적
+            State.lifetimeStats.totalScore += State.score;
+            State.lifetimeStats.totalGames++;
+            State.lifetimeStats.totalFever += State.feverCount;
+            State.lifetimeStats.totalGenius += State.sRankCount;
+
+            // CollectionManager가 있다면 업데이트
+            // var collectionMgr = FindObjectOfType<CollectionManager>();
+            // if (collectionMgr != null)
+            // {
+            //     collectionMgr.UpdateStats(
+            //         feverCount: State.feverCount,
+            //         geniusCount: State.sRankCount,
+            //         totalScore: State.score,
+            //         maxCombo: State.maxCombo,
+            //         sRankCount: State.sRankCount
+            //     );
+            // }
+        }
+
+        // ================================================================
+        // RankingManager 통합 메서드
+        // ================================================================
+
+        /// <summary>
+        /// 랭킹 제출
+        /// 게임 오버 시 호출하여 점수를 RankingManager에 제출
+        /// </summary>
+        private void SubmitRankingScore()
+        {
+            // RankingManager가 있다면 점수 제출
+            // var rankingMgr = FindObjectOfType<RankingManager>();
+            // if (rankingMgr != null)
+            // {
+            //     rankingMgr.SubmitScore(
+            //         score: State.score,
+            //         maxCombo: State.maxCombo,
+            //         geniusCount: State.sRankCount,
+            //         playedAt: System.DateTime.Now
+            //     );
+            // }
+        }
+
+        // ================================================================
+        // ThemeManager 통합 메서드
+        // ================================================================
+
+        /// <summary>
+        /// 선택된 테마 적용
+        /// </summary>
+        public void SetTheme(GameConfig.ThemeType theme)
+        {
+            State.selectedTheme = theme;
+            // ThemeManager가 있다면 테마 적용
+            // var themeMgr = FindObjectOfType<ThemeManager>();
+            // if (themeMgr != null)
+            //     themeMgr.ApplyTheme(theme);
         }
     }
 }

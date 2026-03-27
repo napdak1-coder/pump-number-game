@@ -19,6 +19,18 @@ namespace PumpNumber.Data
     }
 
     /// <summary>
+    /// 테마 열거형 — UI/비주얼 테마 종류
+    /// Theme Manager와 연동
+    /// </summary>
+    public enum ThemeType
+    {
+        Space,   // 우주 테마
+        Ocean,   // 해양 테마
+        Forest,  // 숲 테마
+        Neon     // 네온 테마
+    }
+
+    /// <summary>
     /// 게임 전체 설정 — ScriptableObject로 에디터에서 조절 가능
     /// </summary>
     [CreateAssetMenu(fileName = "GameConfig", menuName = "PumpNumber/GameConfig")]
@@ -50,6 +62,18 @@ namespace PumpNumber.Data
         [Header("=== 콤보 보너스 ===")]
         public int[] comboMilestones = { 5, 10, 15, 20, 30, 50 };
         public int[] comboBonusScores = { 100, 250, 500, 800, 1200, 2000 };
+
+        [Header("=== 콤보 스테이지 (ComboVisualSystem) ===")]
+        public int[] comboStageThresholds = { 5, 10, 15, 20 }; // 콤보 단계 구간값
+        public float[] comboStageMultipliers = { 1f, 1.2f, 1.5f, 2f, 3f }; // 각 단계별 점수 배율 (5단계)
+        public int feverActivationThreshold = 10; // 콤보가 이 이상이면 피버 자동 활성화
+
+        [Header("=== 아깝다 연출 설정 ===")]
+        public int questionsPerStage = 1; // 다음 스테이지까지 필요한 문제 수
+
+        [Header("=== 테마 설정 ===")]
+        public ThemeType defaultTheme = ThemeType.Space;
+        public ThemeType[] availableThemes = { ThemeType.Space, ThemeType.Ocean, ThemeType.Forest, ThemeType.Neon };
 
         /// <summary>
         /// 스테이지 번호에 따른 난이도 반환

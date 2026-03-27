@@ -3,7 +3,7 @@ using UnityEngine;
 namespace PumpNumber.Effects
 {
     /// <summary>
-    /// 픽셀 캐릭터 생성 — 메롱 얼굴 + 5색 캐릭터 + 강아지 + 보석
+    /// 픽셀 캐릭터 생성 — 메롱 얼굴 + 5색 캐릭터 + 강아지 + 보석 + 리액션 페이스
     ///
     /// [사용법]
     /// // 기존 메롱 얼굴 (게임 내 HUD용)
@@ -18,6 +18,9 @@ namespace PumpNumber.Effects
     /// // 보석 캐릭터 (시작화면용)
     /// Texture2D gem = PixelCharacters.CreateGemCharacter();
     ///
+    /// // 리액션 페이스 (Idle/Correct/Wrong/Fever/Sleep)
+    /// Texture2D reaction = PixelCharacters.CreateReactionFace(PixelCharacters.ReactionType.Correct);
+    ///
     /// // Sprite로 변환
     /// Sprite sprite = PixelCharacters.TextureToSprite(face);
     /// </summary>
@@ -25,6 +28,18 @@ namespace PumpNumber.Effects
     {
         private static readonly Color O = new Color(0.16f, 0.16f, 0.16f, 1f); // #282828 외곽선
         private static readonly Color W = Color.white;
+
+        /// <summary>
+        /// 리액션 타입 enum
+        /// </summary>
+        public enum ReactionType
+        {
+            Idle,    // 중립 표정, 느린 밥
+            Correct, // 초록색, 별 눈, 큰 웃음, 점프
+            Wrong,   // 빨강색, 눈물, 찡그림, 흔들림
+            Fever,   // 주황색, 불 눈, 불 입, 펄스
+            Sleep    // 파랑색, 감은 눈, ZZZ, 자고있음
+        }
 
         // ================================================================
         // 5색 캐릭터 얼굴 (시작화면용, 14x14)
@@ -358,6 +373,185 @@ namespace PumpNumber.Effects
                 new Vector2(0.5f, 0.5f),
                 14f
             );
+        }
+
+        /// <summary>
+        /// 리액션 페이스 생성 (Idle/Correct/Wrong/Fever/Sleep)
+        /// 14x14 텍스처
+        /// </summary>
+        public static Texture2D CreateReactionFace(ReactionType reactionType)
+        {
+            Texture2D tex = new Texture2D(14, 14);
+            tex.filterMode = FilterMode.Point;
+            tex.wrapMode = TextureWrapMode.Clamp;
+
+            Color[] clear = new Color[14 * 14];
+            for (int i = 0; i < clear.Length; i++) clear[i] = Color.clear;
+            tex.SetPixels(clear);
+
+            Color bodyColor = Color.white;
+            Color eyeColor = O;
+            Color mouthColor = O;
+
+            // 타입별 색상 설정
+            switch (reactionType)
+            {
+                case ReactionType.Idle:
+                    bodyColor = new Color(0.8f, 0.8f, 0.8f, 1f);
+                    break;
+                case ReactionType.Correct:
+                    bodyColor = new Color(0.31f, 0.91f, 0.56f, 1f); // 초록
+                    break;
+                case ReactionType.Wrong:
+                    bodyColor = new Color(1f, 0.41f, 0.47f, 1f); // 빨강
+                    break;
+                case ReactionType.Fever:
+                    bodyColor = new Color(1f, 0.6f, 0.2f, 1f); // 주황
+                    break;
+                case ReactionType.Sleep:
+                    bodyColor = new Color(0.38f, 0.85f, 0.88f, 1f); // 파랑
+                    break;
+            }
+
+            // 기본 얼굴 윤곽
+            for (int i = 3; i <= 10; i++) Px(tex, i, 13, O);
+            Px(tex, 2, 12, O); for (int i = 3; i <= 10; i++) Px(tex, i, 12, bodyColor); Px(tex, 11, 12, O);
+            for (int y = 3; y <= 11; y++)
+            {
+                Px(tex, 1, y, O);
+                for (int i = 2; i <= 11; i++) Px(tex, i, y, bodyColor);
+                Px(tex, 12, y, O);
+            }
+            Px(tex, 2, 2, O); for (int i = 3; i <= 10; i++) Px(tex, i, 2, bodyColor); Px(tex, 11, 2, O);
+            for (int i = 3; i <= 10; i++) Px(tex, i, 1, O);
+
+            // 하이라이트
+            Px(tex, 3, 11, new Color(1f, 1f, 1f, 0.23f));
+            Px(tex, 4, 11, new Color(1f, 1f, 1f, 0.16f));
+
+            // 볼
+            if (reactionType != ReactionType.Wrong)
+            {
+                Px(tex, 3, 6, new Color(1f, 0.7f, 0.7f, 0.3f));
+                Px(tex, 3, 5, new Color(1f, 0.7f, 0.7f, 0.3f));
+                Px(tex, 10, 6, new Color(1f, 0.7f, 0.7f, 0.3f));
+                Px(tex, 10, 5, new Color(1f, 0.7f, 0.7f, 0.3f));
+            }
+
+            // 눈 및 입 렌더링
+            switch (reactionType)
+            {
+                case ReactionType.Idle:
+                    DrawIdleEyes(tex);
+                    DrawIdleMouth(tex);
+                    break;
+                case ReactionType.Correct:
+                    DrawCorrectEyes(tex);
+                    DrawCorrectMouth(tex);
+                    break;
+                case ReactionType.Wrong:
+                    DrawWrongEyes(tex);
+                    DrawWrongMouth(tex);
+                    break;
+                case ReactionType.Fever:
+                    DrawFeverEyes(tex);
+                    DrawFeverMouth(tex);
+                    break;
+                case ReactionType.Sleep:
+                    DrawSleepEyes(tex);
+                    DrawSleepMouth(tex);
+                    break;
+            }
+
+            tex.Apply();
+            return tex;
+        }
+
+        // ===== 아이들 표정 (중립, 느린 밥) =====
+        private static void DrawIdleEyes(Texture2D tex)
+        {
+            // 기본 둥근 눈
+            Px(tex, 4, 9, O); Px(tex, 5, 9, O);
+            Px(tex, 4, 8, O); Px(tex, 5, 8, W);
+            Px(tex, 8, 9, O); Px(tex, 9, 9, O);
+            Px(tex, 8, 8, O); Px(tex, 9, 8, W);
+        }
+
+        private static void DrawIdleMouth(Texture2D tex)
+        {
+            // 작은 미소
+            Px(tex, 6, 5, O); Px(tex, 7, 5, O);
+            Px(tex, 5, 6, O); Px(tex, 8, 6, O);
+        }
+
+        // ===== 정답 표정 (초록, 별 눈, 큰 웃음, 점프) =====
+        private static void DrawCorrectEyes(Texture2D tex)
+        {
+            // 별 눈 (십자 + 원)
+            Px(tex, 4, 9, O); Px(tex, 5, 9, W); Px(tex, 6, 9, O);
+            Px(tex, 5, 10, O); Px(tex, 5, 8, O);
+            Px(tex, 8, 9, O); Px(tex, 9, 9, W); Px(tex, 10, 9, O);
+            Px(tex, 9, 10, O); Px(tex, 9, 8, O);
+        }
+
+        private static void DrawCorrectMouth(Texture2D tex)
+        {
+            // 큰 웃음
+            Px(tex, 4, 5, O);
+            for (int i = 5; i <= 8; i++) Px(tex, i, 5, O);
+            Px(tex, 9, 5, O);
+            Px(tex, 5, 4, O); Px(tex, 8, 4, O);
+        }
+
+        // ===== 오답 표정 (빨강, 눈물, 찡그림, 흔들림) =====
+        private static void DrawWrongEyes(Texture2D tex)
+        {
+            // 찡그린 눈
+            Px(tex, 4, 9, O); Px(tex, 5, 9, O); Px(tex, 6, 9, O);
+            Px(tex, 8, 9, O); Px(tex, 9, 9, O); Px(tex, 10, 9, O);
+            // 눈물
+            Px(tex, 4, 7, new Color(0.8f, 1f, 1f, 0.7f));
+            Px(tex, 10, 7, new Color(0.8f, 1f, 1f, 0.7f));
+        }
+
+        private static void DrawWrongMouth(Texture2D tex)
+        {
+            // 찡그린 입 (역 U자)
+            Px(tex, 6, 6, O); Px(tex, 7, 6, O);
+            Px(tex, 5, 5, O); Px(tex, 8, 5, O);
+        }
+
+        // ===== 피버 표정 (주황, 불 눈, 불 입, 펄스) =====
+        private static void DrawFeverEyes(Texture2D tex)
+        {
+            // 불 눈 (V자 모양)
+            Px(tex, 4, 9, O); Px(tex, 5, 8, W);
+            Px(tex, 8, 9, O); Px(tex, 9, 8, W);
+            Px(tex, 4, 10, W); Px(tex, 9, 10, W);
+        }
+
+        private static void DrawFeverMouth(Texture2D tex)
+        {
+            // 불 입 (위로 올라간 V)
+            Px(tex, 6, 7, O); Px(tex, 7, 7, O);
+            Px(tex, 5, 6, O); Px(tex, 8, 6, O);
+            Px(tex, 6, 5, O); Px(tex, 7, 5, O);
+        }
+
+        // ===== 수면 표정 (파랑, 감은 눈, ZZZ) =====
+        private static void DrawSleepEyes(Texture2D tex)
+        {
+            // 감은 눈 (가로 선)
+            Px(tex, 4, 9, O); Px(tex, 5, 9, O); Px(tex, 6, 9, O);
+            Px(tex, 8, 9, O); Px(tex, 9, 9, O); Px(tex, 10, 9, O);
+        }
+
+        private static void DrawSleepMouth(Texture2D tex)
+        {
+            // ZZZ 형태
+            Px(tex, 5, 5, O); Px(tex, 6, 5, O); Px(tex, 7, 5, O); // Z 첫 번째
+            Px(tex, 5, 4, O); // Z 중앙
+            Px(tex, 6, 3, O); Px(tex, 7, 3, O); Px(tex, 8, 3, O); // Z 세 번째
         }
 
         private static void Px(Texture2D tex, int x, int y, Color c)

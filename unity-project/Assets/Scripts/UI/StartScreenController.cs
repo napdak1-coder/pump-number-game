@@ -41,6 +41,10 @@ namespace PumpNumber.UI
         [SerializeField] private TMP_Text bestScoreText;        // "BEST SCORE 12,450"
         [SerializeField] private Button startButton;
 
+        [Header("=== 화면 상단 버튼 ===")]
+        [SerializeField] private Button collectionButton;       // "컬렉션" 버튼 (좌상단)
+        [SerializeField] private Button rankingButton;          // "랭킹" 버튼 (우상단)
+
         [Header("=== 5색 캐릭터 (빨/주/초/파/보) ===")]
         [SerializeField] private Image[] characterImages;       // 5개 Image 컴포넌트
 
@@ -99,6 +103,13 @@ namespace PumpNumber.UI
         private void Start()
         {
             startButton.onClick.AddListener(OnStartClick);
+
+            // 화면 상단 버튼 이벤트 연결
+            if (collectionButton)
+                collectionButton.onClick.AddListener(OnCollectionButtonClicked);
+            if (rankingButton)
+                rankingButton.onClick.AddListener(OnRankingButtonClicked);
+
             GenerateCharacterSprites();
             GenerateGemSprite();
             SetupBestScore();
@@ -185,6 +196,24 @@ namespace PumpNumber.UI
         private void OnStartClick()
         {
             GameManager.Instance?.StartGame();
+        }
+
+        /// <summary>
+        /// 컬렉션 화면 열기
+        /// </summary>
+        private void OnCollectionButtonClicked()
+        {
+            // TODO: 컬렉션 화면 열기 (SceneManager.LoadScene 또는 CollectionUIController 활성화)
+            Debug.Log("컬렉션 화면 열기");
+        }
+
+        /// <summary>
+        /// 랭킹 화면 열기
+        /// </summary>
+        private void OnRankingButtonClicked()
+        {
+            // TODO: 랭킹 화면 열기 (SceneManager.LoadScene 또는 RankingUIController 활성화)
+            Debug.Log("랭킹 화면 열기");
         }
 
         public void Show()

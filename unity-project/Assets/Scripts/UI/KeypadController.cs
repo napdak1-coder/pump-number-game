@@ -17,6 +17,13 @@ namespace PumpNumber.UI
         [SerializeField] private List<Button> keyButtons = new List<Button>();
         [SerializeField] private List<TMP_Text> keyLabels = new List<TMP_Text>();
 
+        [Header("=== OK/백스페이스 버튼 ===")]
+        [SerializeField] private Button okButton;              // OK 버튼 (답 제출)
+        [SerializeField] private Button backspaceButton;       // ← 버튼 (백스페이스/클리어)
+
+        [Header("=== 입력 디스플레이 ===")]
+        [SerializeField] private TMP_Text inputDisplayText;   // 입력한 숫자 표시
+
         [Header("=== 스와이프 ===")]
         [SerializeField] private TMP_Text swipePreviewText;
         [SerializeField] private float swipeThreshold = 30f; // 스와이프 감지 거리
@@ -26,6 +33,11 @@ namespace PumpNumber.UI
         [SerializeField] private Color forbiddenColor = new Color(1f, 0.2f, 0.2f, 0.3f);
         [SerializeField] private Color pressedColor = new Color(1f, 0.9f, 0.3f, 1f);
 
+        [Header("=== 사운드 & 피드백 ===")]
+        [SerializeField] private AudioClip keyPressSFX;        // 키 누르기 사운드
+        [SerializeField] private float basePitch = 1f;         // 기본 피치
+        private AudioSource audioSource;
+
         // 스와이프 상태
         private bool swipeActive = false;
         private List<int> swipePath = new List<int>();
@@ -34,6 +46,11 @@ namespace PumpNumber.UI
 
         private void Start()
         {
+            // AudioSource 초기화
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+                audioSource = gameObject.AddComponent<AudioSource>();
+
             // 키 버튼 이벤트 연결
             for (int i = 0; i < keyButtons.Count; i++)
             {
@@ -46,6 +63,14 @@ namespace PumpNumber.UI
                 // 스와이프를 위한 EventTrigger 추가
                 AddSwipeTrigger(keyButtons[i].gameObject, num);
             }
+
+            // OK 버튼 (답 제출)
+            if (okButton)
+                okButton.onClick.AddListener(OnOKButtonPressed);
+
+            // 백스페이스 버튼 (백스페이스/클리어)
+            if (backspaceButton)
+                backspaceButton.onClick.AddListener(OnBackspaceButtonPressed);
 
             // GameManager 이벤트 구독
             if (GameManager.Instance != null)
@@ -64,7 +89,60 @@ namespace PumpNumber.UI
             {
                 GameManager.Instance.PressKey(num);
                 AnimateButtonPress(num - 1);
+
+                // 비주얼 피드백
+                PlayKeyPressSound(num);
+                PlayKeyPressFeedback(num - 1);
             }
+        }
+
+        /// <summary>
+        /// OK 버튼 눌림 (답 제출)
+        /// </summary>
+        private void OnOKButtonPressed()
+        {
+            // TODO: GameManager.SubmitAnswer() 호출
+            Debug.Log("OK 버튼 눌림 - 답 제출");
+
+            // 비주얼 피드백
+            if (okButton)
+            {
+                AnimateButtonPress(okButton.GetComponent<RectTransform>());
+            }
+
+            PlayKeyPressFeedback(okButton?.GetComponent<RectTransform>());
+        }
+
+        /// <summary>
+        /// 백스페이스 버튼 눌림 (백스페이스/클리어)
+        /// </summary>
+        private void OnBackspaceButtonPressed()
+        {
+            // TODO: GameManager.Backspace() 또는 입력 클리어
+            Debug.Log("← 버튼 눌림 - 백스페이스");
+
+            // 비주얼 피드백
+            if (backspaceButton)
+            {
+                AnimateButtonPress(backspaceButton.GetComponent<RectTransform>());
+            }
+
+            PlayKeyPressFeedback(backspaceButton?.GetComponent<RectTransform>());
+        }
+
+        /// <summary>
+        /// 키 누르기 사운드 (콤보에 따라 피치 변함)
+        /// </summary>
+        private void PlayKeyPressSound(int num)
+        {
+            if (keyPressSFX == null || audioSource == null) return;
+
+            int combo = GameManager.Instance?.State.combo ?? 0;
+            float pitch = basePitch + (combo * 0.05f); // 콤보가 높을수록 피치 올라감
+            pitch = Mathf.Clamp(pitch, 0.5f, 2f);
+
+            audioSource.pitch = pitch;
+            audioSource.PlayOneShot(keyPressSFX);
         }
 
         /// <summary>
@@ -165,15 +243,62 @@ namespace PumpNumber.UI
         // ================================================================
         // 버튼 애니메이션
         // ================================================================
+
+        /// <summary>
+        /// 버튼 눌림 애니메이션 (인덱스로)
+        /// </summary>
         private void AnimateButtonPress(int idx)
         {
             if (idx < 0 || idx >= keyButtons.Count) return;
             var rt = keyButtons[idx].GetComponent<RectTransform>();
-            // 간단한 스케일 펀치
+            AnimateButtonPress(rt);
+        }
+
+        /// <summary>
+        /// 버튼 눌림 애니메이션 (RectTransform)
+        /// 비주얼 피드백: 변환 + 섀도우 감소
+        /// </summary>
+        private void AnimateButtonPress(RectTransform rt)
+        {
+            if (rt == null) return;
+
             LeanTween.cancel(rt.gameObject);
             rt.localScale = Vector3.one;
-            LeanTween.scale(rt.gameObject, Vector3.one * 0.9f, 0.05f)
-                .setOnComplete(() => LeanTween.scale(rt.gameObject, Vector3.one, 0.1f));
+
+            // 스케일 다운
+            LeanTween.scale(rt.gameObject, Vector3.one * 0.85f, 0.05f)
+                .setEase(LeanTweenType.easeInQuad)
+                .setOnComplete(() =>
+                {
+                    // 원래 크기로 복구
+                    LeanTween.scale(rt.gameObject, Vector3.one, 0.1f)
+                        .setEase(LeanTweenType.easeOutQuad);
+                });
+
+            // 슬라이트 다운 이동 (눌린 감각)
+            var startPos = rt.anchoredPosition;
+            LeanTween.moveY(rt, startPos.y - 2f, 0.05f)
+                .setEase(LeanTweenType.easeInQuad)
+                .setOnComplete(() =>
+                {
+                    LeanTween.moveY(rt, startPos.y, 0.1f)
+                        .setEase(LeanTweenType.easeOutQuad);
+                });
+        }
+
+        /// <summary>
+        /// 키 누르기 촉각 피드백 (진동)
+        /// </summary>
+        private void PlayKeyPressFeedback(RectTransform rt)
+        {
+            if (rt == null) return;
+
+            // 모바일 진동
+            #if UNITY_ANDROID || UNITY_IOS
+            Handheld.Vibrate();
+            #endif
+
+            // 추가 비주얼 피드백은 AnimateButtonPress에서 처리됨
         }
 
         private void HighlightButton(int idx, bool on)
