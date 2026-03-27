@@ -1377,7 +1377,8 @@ function drawPixelChar(ctx, body, cheek) {
   ctx.fillRect(11, 9, 2, 2);
 }
 
-function drawCharFace(ctx, state) {
+function drawCharFace(canvasOrCtx, state) {
+  const ctx = canvasOrCtx.getContext ? canvasOrCtx.getContext('2d') : canvasOrCtx;
   const colors = { idle: '#e09020', correct: '#30b030', wrong: '#e04040', fever: '#e09020' };
   const cheeks = { idle: '#ffcc66', correct: '#80e080', wrong: '#ff8080', fever: '#ffcc66' };
   ctx.clearRect(0, 0, 16, 16);
