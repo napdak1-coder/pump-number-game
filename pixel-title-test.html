@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>빼봐영 픽셀 타이틀 비교</title>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#060812;color:#fff;font-family:'DotGothic16',monospace;display:flex;flex-direction:column;align-items:center;padding:30px 20px;gap:40px;min-height:100vh}
+h2{font-size:14px;color:#4888a8;letter-spacing:2px;border-bottom:2px solid #1a3040;padding-bottom:6px;width:100%;max-width:500px;text-align:center}
+.box{background:#0a0e1a;border:2px solid #1a2840;padding:30px 40px;display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:500px}
+.label{font-size:10px;color:#4888a8;letter-spacing:2px}
+
+/* 현재 버전 */
+#currentCanvas{image-rendering:auto}
+
+/* 방법 A: 저해상도 + pixelated 확대 */
+#pixelCanvas{image-rendering:pixelated}
+</style>
+</head>
+<body>
+
+<h2>❌ 현재 — 그냥 폰트 렌더링 (픽셀 아님)</h2>
+<div class="box">
+  <canvas id="currentCanvas" width="560" height="180" style="width:280px;height:90px"></canvas>
+  <div class="label">DotGothic16 68px → 매끈한 벡터 렌더링</div>
+</div>
+
+<h2>✅ 방법 A — 저해상도 렌더 + pixelated 확대</h2>
+<div class="box">
+  <canvas id="pixelCanvas" width="140" height="44" style="width:280px;height:88px"></canvas>
+  <div class="label">35px로 작게 그린 후 2배 확대 → 도트 픽셀 느낌</div>
+</div>
+
+<h2>✅ 방법 A (더 도트감) — 극저해상도</h2>
+<div class="box">
+  <canvas id="pixelCanvas2" width="90" height="30" style="width:270px;height:90px;image-rendering:pixelated"></canvas>
+  <div class="label">22px로 작게 그린 후 3배 확대 → 강한 도트 픽셀</div>
+</div>
+
+<h2>✅ 방법 A (그림자 + 그라디언트 포함)</h2>
+<div class="box" style="background:#0a0e1a">
+  <canvas id="pixelCanvas3" width="120" height="38" style="width:300px;height:95px;image-rendering:pixelated"></canvas>
+  <div class="label">28px + 하드 그림자 + 골드 그라디언트 → 스크린샷과 유사</div>
+</div>
+
+<script>
+window.addEventListener('load', () => {
+  // ===== 현재 버전 (매끈한 폰트) =====
+  const c1 = document.getElementById('currentCanvas');
+  const ctx1 = c1.getContext('2d');
+  ctx1.font = '900 68px DotGothic16, monospace';
+  ctx1.textAlign = 'center';
+  ctx1.textBaseline = 'middle';
+  // 그림자
+  ctx1.fillStyle = '#604010';
+  ctx1.fillText('빼봐영', c1.width/2+3, c1.height/2+3);
+  // 메인
+  const g1 = ctx1.createLinearGradient(0, 50, 0, 130);
+  g1.addColorStop(0, '#ffe080');
+  g1.addColorStop(0.5, '#f0a030');
+  g1.addColorStop(1, '#b05010');
+  ctx1.fillStyle = g1;
+  ctx1.fillText('빼봐영', c1.width/2, c1.height/2);
+
+  // ===== 방법 A: 저해상도 + pixelated =====
+  const c2 = document.getElementById('pixelCanvas');
+  const ctx2 = c2.getContext('2d');
+  ctx2.imageSmoothingEnabled = false;
+  ctx2.font = '900 35px DotGothic16, monospace';
+  ctx2.textAlign = 'center';
+  ctx2.textBaseline = 'middle';
+  ctx2.fillStyle = '#604010';
+  ctx2.fillText('빼봐영', c2.width/2+2, c2.height/2+2);
+  const g2 = ctx2.createLinearGradient(0, 10, 0, 38);
+  g2.addColorStop(0, '#ffe080');
+  g2.addColorStop(0.5, '#f0a030');
+  g2.addColorStop(1, '#b05010');
+  ctx2.fillStyle = g2;
+  ctx2.fillText('빼봐영', c2.width/2, c2.height/2);
+
+  // ===== 극저해상도 =====
+  const c3 = document.getElementById('pixelCanvas2');
+  const ctx3 = c3.getContext('2d');
+  ctx3.imageSmoothingEnabled = false;
+  ctx3.font = '900 22px DotGothic16, monospace';
+  ctx3.textAlign = 'center';
+  ctx3.textBaseline = 'middle';
+  ctx3.fillStyle = '#604010';
+  ctx3.fillText('빼봐영', c3.width/2+1, c3.height/2+1);
+  ctx3.fillStyle = '#f0a030';
+  ctx3.fillText('빼봐영', c3.width/2, c3.height/2);
+
+  // ===== 그림자 + 그라디언트 =====
+  const c4 = document.getElementById('pixelCanvas3');
+  const ctx4 = c4.getContext('2d');
+  ctx4.imageSmoothingEnabled = false;
+  ctx4.font = '900 28px DotGothic16, monospace';
+  ctx4.textAlign = 'center';
+  ctx4.textBaseline = 'middle';
+  // 3단 그림자
+  ctx4.fillStyle = '#2a1000';
+  ctx4.fillText('빼봐영', c4.width/2+3, c4.height/2+3);
+  ctx4.fillStyle = '#604010';
+  ctx4.fillText('빼봐영', c4.width/2+1.5, c4.height/2+1.5);
+  // 메인 그라디언트
+  const g4 = ctx4.createLinearGradient(0, 6, 0, 32);
+  g4.addColorStop(0, '#ffe080');
+  g4.addColorStop(0.3, '#ffa830');
+  g4.addColorStop(0.7, '#e07020');
+  g4.addColorStop(1, '#a04010');
+  ctx4.fillStyle = g4;
+  ctx4.fillText('빼봐영', c4.width/2, c4.height/2);
+  // 하이라이트
+  ctx4.globalAlpha = 0.1;
+  ctx4.fillStyle = '#fff';
+  ctx4.fillText('빼봐영', c4.width/2-0.5, c4.height/2-1);
+});
+</script>
+</body>
+</html>
