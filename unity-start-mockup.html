@@ -3,40 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>빼봐영 — Unity 시작화면 목업</title>
+<title>빼봐영 — Unity 앱 목업 (Full Pixel)</title>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;overflow:hidden}
+body{background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;
+  font-family:'DotGothic16','Press Start 2P',monospace;image-rendering:pixelated}
 
-/* 폰 프레임 */
-.phone{width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:3px solid #1a1a2e;box-shadow:0 0 60px rgba(20,20,60,.4),0 30px 80px rgba(0,0,0,.6);background:#000}
+/* ===== 네비 ===== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:999;background:#040a10;border-bottom:3px solid #1a2830;display:flex;gap:4px;padding:6px 8px;image-rendering:pixelated}
+.nav button{padding:6px 14px;border:3px solid #1a2830;background:#081420;color:#4888a8;font-size:10px;font-weight:700;cursor:pointer;font-family:'DotGothic16',monospace;border-radius:0;box-shadow:2px 2px 0 #000;transition:all .15s}
+.nav button.active{background:#1a3050;border-color:#30a0c0;color:#70e0ff;box-shadow:2px 2px 0 #0a1820}
+.nav button:hover{border-color:#30a0c0}
+
+/* ===== 패널 ===== */
+.panel{display:none;width:100%;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:50px 10px 20px}
+.panel.active{display:flex}
+
+/* ===== 폰 프레임 ===== */
+.phone{width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:3px solid #1a1a2e;box-shadow:0 0 60px rgba(20,20,60,.3);background:#000}
 .phone-inner{width:100%;height:100%;position:relative;overflow:hidden}
 
-/* 우주 배경 */
+/* ===== 우주 배경 ===== */
 .space-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,#0c1028 0%,#060812 40%,#020206 100%)}
-
-/* ========== 별자리 캔버스 ========== */
 #constellationCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}
-
-/* ========== 반짝이는 별 ========== */
-.star{position:absolute;border-radius:50%;z-index:2}
+.star{position:absolute;z-index:2}
 .star.tiny{width:2px;height:2px;background:#fff;animation:twinkle 3s ease infinite}
 .star.small{width:3px;height:3px;background:#ffeedd;animation:twinkle 4s ease infinite;box-shadow:0 0 4px 1px rgba(255,238,200,.4)}
 .star.medium{width:5px;height:5px;background:#fff8e0;animation:twinkleBright 3s ease infinite;box-shadow:0 0 8px 2px rgba(255,248,200,.3)}
 .star.large{width:7px;height:7px;background:#ffe8a0;animation:twinkleBright 4s ease infinite;box-shadow:0 0 15px 4px rgba(255,220,100,.4)}
-.star.glow{width:10px;height:10px;background:radial-gradient(circle,#fff 0%,#ffd060 40%,transparent 70%);animation:twinkleBright 5s ease infinite;box-shadow:0 0 20px 6px rgba(255,200,60,.3)}
-
+.star.glow{width:10px;height:10px;background:radial-gradient(circle,#fff 0%,#ffd060 40%,transparent 70%);animation:twinkleBright 5s ease infinite}
 @keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
 @keyframes twinkleBright{0%,100%{opacity:.5;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
-
-/* ========== 유성 ========== */
-.meteor{position:absolute;z-index:2;width:80px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(100,180,255,.6),#fff);border-radius:1px;animation:meteorFall linear infinite;opacity:0}
+.meteor{position:absolute;z-index:2;width:80px;height:2px;background:linear-gradient(90deg,transparent,rgba(100,180,255,.6),#fff);animation:meteorFall linear infinite;opacity:0}
 @keyframes meteorFall{0%{transform:translateX(0) translateY(0);opacity:0}5%{opacity:.8}80%{opacity:.4}100%{transform:translateX(200px) translateY(200px);opacity:0}}
 
-/* ========== 컨텐츠 레이어 ========== */
+/* ===== 시작화면 컨텐츠 ===== */
 .content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;padding:40px 20px}
-
-/* 캐릭터 5개 줄 */
 .char-row{display:flex;gap:8px;margin-bottom:12px}
 .char-row canvas{width:52px;height:52px;image-rendering:pixelated;animation:charBob 1.5s ease infinite}
 .char-row canvas:nth-child(1){animation-delay:0s}
@@ -46,57 +49,45 @@ body{background:#000;display:flex;align-items:center;justify-content:center;min-
 .char-row canvas:nth-child(5){animation-delay:.6s}
 @keyframes charBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 
-/* 타이틀 */
+/* ★★★ 픽셀 타이틀 ★★★ */
 .title-area{margin:4px 0 16px}
 #titleCanvas{width:280px;height:90px;image-rendering:pixelated}
 
-/* 보석 캐릭터 */
 .gem-area{margin:8px 0 20px}
 #gemCanvas{width:72px;height:72px;image-rendering:pixelated;animation:gemFloat 2.5s ease infinite}
 @keyframes gemFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.05)}}
 
-/* 시작 버튼 */
+/* ★★★ 픽셀 시작 버튼 ★★★ */
 .start-btn{
-  padding:16px 70px;
-  font-size:22px;font-weight:900;
-  color:#fff;
-  background:linear-gradient(180deg,#f0a030 0%,#e08020 50%,#c06818 100%);
-  border:none;border-radius:14px;
+  padding:14px 60px;
+  font-size:18px;font-weight:900;
+  color:#1a0800;
+  background:#f0a030;
+  border:none;border-radius:0;
   cursor:pointer;
-  font-family:sans-serif;
+  font-family:'DotGothic16',monospace;
   letter-spacing:4px;
-  box-shadow:0 4px 15px rgba(224,128,32,.4),inset 0 1px 0 rgba(255,255,255,.2);
+  box-shadow:4px 4px 0 #7a4000,inset -2px -2px 0 #c07818,inset 2px 2px 0 #ffe080;
+  image-rendering:pixelated;
+  animation:btnPulse 2.5s ease infinite;
   position:relative;
-  overflow:hidden;
-  animation:btnGlow 3s ease infinite;
 }
-.start-btn::after{
-  content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
-  background:radial-gradient(ellipse,rgba(255,255,255,.15) 0%,transparent 60%);
-  animation:btnShine 4s ease infinite;
-}
-@keyframes btnGlow{0%,100%{box-shadow:0 4px 15px rgba(224,128,32,.4)}50%{box-shadow:0 4px 25px rgba(224,128,32,.6),0 0 40px rgba(224,128,32,.2)}}
-@keyframes btnShine{0%{transform:translateX(-50%) translateY(-50%)}50%{transform:translateX(20%) translateY(-30%)}100%{transform:translateX(-50%) translateY(-50%)}}
+.start-btn:active{box-shadow:2px 2px 0 #7a4000;transform:translate(2px,2px)}
+@keyframes btnPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
 
-/* 네비 */
-.nav-bar{position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(0,0,0,.85);border-bottom:2px solid #1a2a40;display:flex;gap:4px;padding:6px 8px}
-.nav-bar button{padding:6px 14px;border:2px solid #1a2a40;background:#0a1420;color:#4888a8;font-size:10px;font-weight:700;cursor:pointer;font-family:monospace;transition:all .2s}
-.nav-bar button.active{background:#1a3050;border-color:#2880a0;color:#70d0e8}
+.best-score{font-size:11px;color:rgba(255,200,60,.4);letter-spacing:2px;margin-bottom:12px;font-family:'DotGothic16',monospace}
+.best-score span{color:#ffd700;font-size:13px}
+.ver-text{font-size:8px;color:rgba(255,200,60,.12);margin-top:20px;letter-spacing:1px;font-family:'DotGothic16',monospace}
 
-/* 패널 */
-.panel{display:none;width:100%;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:50px 10px 20px}
-.panel.active{display:flex}
-.info{margin-top:12px;font-size:10px;color:rgba(112,208,232,.3);text-align:center;letter-spacing:1px}
-.info2{margin-top:4px;font-size:11px;color:rgba(112,208,232,.4);text-align:center;max-width:380px;line-height:1.5;margin-bottom:10px}
-.badge{display:inline-block;padding:2px 8px;font-size:9px;border:1px solid #2880a0;color:#70d0e8;border-radius:3px;margin-top:4px;letter-spacing:1px;font-family:monospace}
-
-/* ========== 패널2: 게임플레이 ========== */
-.gp-phone{width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:3px solid #1a1a2e;box-shadow:0 0 60px rgba(20,20,60,.4);background:#000}
-.gp-inner{width:100%;height:100%;position:relative;overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(160deg,#0a0a14,#0f0f20,#14142a,#0f0f20)}
-
+/* ================================================================
+   게임플레이 — 전체 픽셀화
+   ================================================================ */
+.gp-inner{width:100%;height:100%;position:relative;overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(160deg,#0a0a14,#0f0f20,#14142a,#0f0f20);font-family:'DotGothic16',monospace;image-rendering:pixelated}
 .gp-status{display:flex;align-items:center;justify-content:space-between;padding:14px 28px 6px;flex-shrink:0;z-index:50}
-.gp-status span{font-size:13px;color:#fff;font-family:-apple-system,sans-serif}
+.gp-status span{font-size:12px;color:#fff;font-family:'DotGothic16',monospace}
 .gp-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:28px;background:#000;border-radius:0 0 18px 18px;z-index:51}
+
+/* ★★★ 픽셀 캐릭터바 ★★★ */
 .gp-charbar{display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 14px 4px;flex-shrink:0;z-index:2}
 .gp-charbar canvas.face{width:24px;height:24px;image-rendering:pixelated;animation:cbWiggle .8s ease infinite}
 .gp-charbar canvas.face:nth-child(2){animation-delay:.15s}
@@ -104,74 +95,165 @@ body{background:#000;display:flex;align-items:center;justify-content:center;min-
 @keyframes cbWiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
 @keyframes cbBob2{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 
-.gp-hud{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 6px;flex-shrink:0;border-bottom:2px solid rgba(255,200,60,.08);background:rgba(14,34,40,.4);z-index:2;font-family:'Courier New',monospace}
+/* ★★★ 픽셀 HUD (점수판) ★★★ */
+.gp-hud{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px 6px;flex-shrink:0;z-index:2;
+  border-bottom:3px solid rgba(255,200,60,.1);
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.12) 0px,rgba(0,0,0,.12) 1px,transparent 1px,transparent 3px),rgba(14,34,40,.5);
+  image-rendering:pixelated;
+}
 .gp-hud-col{display:flex;flex-direction:column}
 .gp-hud-col.left{align-items:flex-start}
 .gp-hud-col.center{align-items:center}
 .gp-hud-col.right{align-items:flex-end}
-.gp-hud-lbl{font-size:10px;letter-spacing:2px;margin-bottom:2px;color:rgba(255,200,60,.35)}
-.gp-hud-val{font-size:26px;font-weight:900;color:#ffd700;text-shadow:0 0 10px rgba(255,215,0,.3),2px 2px 0 rgba(0,0,0,.4)}
-.gp-hud-val.combo{color:#ffa830}
-.gp-hud-tier{font-size:13px;letter-spacing:2px;color:#daa520}
+.gp-hud-lbl{font-size:8px;letter-spacing:3px;margin-bottom:2px;color:rgba(255,200,60,.3);font-family:'DotGothic16',monospace}
+.gp-hud-val{
+  font-size:24px;font-weight:900;color:#ffd700;
+  font-family:'DotGothic16',monospace;
+  text-shadow:2px 2px 0 #705808,-1px 0 #e74c5b;
+  image-rendering:pixelated;
+}
+.gp-hud-val.combo{color:#ffa830;text-shadow:2px 2px 0 #804000,-1px 0 #34aadc}
+.gp-hud-tier{font-size:11px;letter-spacing:2px;color:#daa520;font-family:'DotGothic16',monospace}
 .gp-hud-lives{font-size:14px;letter-spacing:3px;margin-top:2px;color:rgba(255,80,80,.5)}
 
+/* ★★★ 픽셀 타겟 넘버 ★★★ */
 .gp-target{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;z-index:1}
-.gp-mode{font-size:10px;letter-spacing:3px;padding:3px 10px;margin-bottom:4px;font-weight:900;color:rgba(255,200,60,.4);border:1px solid rgba(255,200,60,.12);background:rgba(255,200,60,.03);font-family:monospace}
-.gp-num{font-size:88px;font-weight:900;letter-spacing:2px;z-index:2;font-family:'Courier New',monospace}
-.gp-num .t-tens{color:#cc88ff}
-.gp-num .t-sep{font-size:.45em;color:rgba(204,136,255,.35);vertical-align:middle;margin:0 2px}
-.gp-num .t-ones{color:#44ddff}
-.gp-timer{width:70px;height:70px;position:relative;margin:6px auto 2px;z-index:2}
+.gp-mode{
+  font-size:9px;letter-spacing:4px;padding:4px 12px;margin-bottom:6px;font-weight:900;
+  color:rgba(255,200,60,.5);
+  border:2px solid rgba(255,200,60,.15);background:rgba(255,200,60,.04);
+  font-family:'DotGothic16',monospace;
+  box-shadow:2px 2px 0 rgba(0,0,0,.3);
+}
+.gp-num{
+  font-size:90px;font-weight:900;letter-spacing:4px;z-index:2;
+  font-family:'DotGothic16',monospace;
+  image-rendering:pixelated;
+}
+.gp-num .t-tens{color:#cc88ff;text-shadow:3px 3px 0 #4a2080}
+.gp-num .t-sep{font-size:.4em;color:rgba(204,136,255,.3);vertical-align:middle;margin:0 4px}
+.gp-num .t-ones{color:#44ddff;text-shadow:3px 3px 0 #105060}
+
+/* ★★★ 픽셀 원형 타이머 ★★★ */
+.gp-timer{width:70px;height:70px;position:relative;margin:8px auto 2px;z-index:2}
 .gp-timer svg{position:absolute;top:0;left:0;width:70px;height:70px;transform:rotate(-90deg)}
 .gp-timer .bg{fill:none;stroke-width:5;stroke:#143838}
-.gp-timer .prog{fill:none;stroke-width:5;stroke-linecap:square;stroke:#ffd700;stroke-dasharray:175.93;stroke-dashoffset:44;transition:stroke-dashoffset .1s}
+.gp-timer .prog{fill:none;stroke-width:5;stroke-linecap:square;stroke:#ffd700;stroke-dasharray:175.93;stroke-dashoffset:44}
 .gp-timer .dog-c{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
 .gp-timer .dog-c canvas{width:28px;height:28px;image-rendering:pixelated}
-.gp-speed{font-size:10px;letter-spacing:2px;color:rgba(255,200,60,.3);z-index:2;font-family:monospace}
+.gp-speed{font-size:9px;letter-spacing:3px;color:rgba(255,200,60,.25);z-index:2;font-family:'DotGothic16',monospace}
+
+/* ★★★ 픽셀 메시지 ★★★ */
 .gp-msg{text-align:center;padding:4px;flex-shrink:0;min-height:24px;z-index:2}
-.gp-msg span{font-size:16px;font-weight:900;color:#44ffaa;text-shadow:0 0 20px #44ffaa;letter-spacing:2px;animation:flashM 1s ease infinite;font-family:monospace}
+.gp-msg span{font-size:14px;font-weight:900;color:#44ffaa;text-shadow:2px 2px 0 #0a4030,0 0 10px #44ffaa;letter-spacing:3px;font-family:'DotGothic16',monospace;animation:flashM 1s ease infinite}
 @keyframes flashM{0%,100%{opacity:1}50%{opacity:.7}}
 
+/* ★★★ 픽셀 키패드 ★★★ */
 .gp-keypad{padding:4px 10px 6px;flex-shrink:0;z-index:2}
 .gp-krow{display:flex;gap:6px;justify-content:center;margin-bottom:6px}
-.gp-key{width:100px;height:54px;font-size:28px;font-weight:900;display:flex;align-items:center;justify-content:center;border-radius:0;background:rgba(255,200,60,.06);border:3px solid rgba(255,200,60,.15);color:#ffd700;font-family:'Courier New',monospace;box-shadow:4px 4px 0 rgba(100,70,0,.2)}
+.gp-key{
+  width:100px;height:54px;
+  font-size:28px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:0;
+  background:linear-gradient(180deg,rgba(255,200,60,.1) 0%,rgba(255,200,60,.04) 100%);
+  border:3px solid rgba(255,200,60,.2);
+  color:#ffd700;
+  font-family:'DotGothic16',monospace;
+  box-shadow:4px 4px 0 rgba(80,60,0,.3),inset -2px -2px 0 rgba(255,200,60,.05),inset 2px 2px 0 rgba(255,255,200,.05);
+  image-rendering:pixelated;
+  text-shadow:1px 1px 0 #806000;
+  cursor:pointer;
+  transition:all .05s;
+}
+.gp-key:active{box-shadow:1px 1px 0 rgba(80,60,0,.3);transform:translate(3px,3px)}
 .gp-home{flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:6px 0 8px;z-index:50}
-.gp-home .bar{width:134px;height:5px;border-radius:3px;background:rgba(255,255,255,.2)}
+.gp-home .bar{width:134px;height:5px;background:rgba(255,255,255,.2)}
 
-/* FX in gameplay */
+/* ===== 배경 이펙트 ===== */
 .gp-target [data-fx]{position:absolute;z-index:0}
 
-/* ========== 패널3: 게임오버 ========== */
-.go-phone{width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:3px solid #1a1a2e;box-shadow:0 0 60px rgba(20,20,60,.4);background:#000}
-.go-inner{width:100%;height:100%;position:relative;overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(160deg,#0a0e18,#101020,#0a0e18)}
-.go-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:8px;font-family:'Courier New',monospace}
-.go-title{font-size:32px;font-weight:900;color:#ffd700;text-shadow:0 0 40px rgba(255,215,0,.5),3px 3px 0 #705808;letter-spacing:4px}
-.go-slbl{font-size:10px;color:rgba(255,200,60,.35);letter-spacing:3px}
-.go-sval{font-size:48px;font-weight:900;color:#ffd700;text-shadow:0 0 30px rgba(255,215,0,.5),3px 3px 0 #705808}
-.go-best{font-size:11px;color:#ffa830;letter-spacing:2px}
-.go-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin:12px 0;text-align:center}
-.go-stlbl{font-size:9px;color:rgba(255,200,60,.3);letter-spacing:2px}
-.go-stval{font-size:18px;font-weight:900;color:#ffe066}
-.go-rank{font-size:24px;font-weight:900;margin:8px 0;padding:6px 20px;border:2px solid rgba(68,255,170,.3);color:#44ffaa;text-shadow:0 0 15px #44ffaa;background:rgba(68,255,170,.04)}
-.go-retry{margin-top:12px;padding:14px 50px;font-size:16px;font-weight:900;color:#0a0e18;background:linear-gradient(180deg,#ffd700,#daa520);border:none;font-family:'Courier New',monospace;box-shadow:4px 4px 0 #705808;letter-spacing:3px;cursor:pointer}
-.go-home-btn{margin-top:8px;padding:8px 30px;font-size:11px;color:rgba(255,200,60,.4);background:none;border:2px solid rgba(255,200,60,.15);font-family:'Courier New',monospace;letter-spacing:2px;cursor:pointer}
-.go-fw{position:absolute;width:6px;height:6px;border-radius:50%;animation:fwB 1.5s ease-out forwards}
+/* ================================================================
+   게임오버 — 전체 픽셀화
+   ================================================================ */
+.go-inner{width:100%;height:100%;position:relative;overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(160deg,#0a0e18,#101020,#0a0e18);font-family:'DotGothic16',monospace;image-rendering:pixelated}
+
+/* ★★★ 픽셀 게임오버 UI ★★★ */
+.go-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:8px}
+.go-title{
+  font-size:30px;font-weight:900;color:#ffd700;
+  text-shadow:3px 3px 0 #705808,-1px -1px 0 #ffa020;
+  letter-spacing:6px;font-family:'DotGothic16',monospace;
+}
+.go-slbl{font-size:8px;color:rgba(255,200,60,.3);letter-spacing:4px;font-family:'DotGothic16',monospace}
+.go-sval{
+  font-size:44px;font-weight:900;color:#ffd700;
+  text-shadow:3px 3px 0 #705808,0 0 20px rgba(255,215,0,.3);
+  font-family:'DotGothic16',monospace;
+}
+.go-best{font-size:10px;color:#ffa830;letter-spacing:3px;font-family:'DotGothic16',monospace}
+.go-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin:12px 0;text-align:center}
+.go-stlbl{font-size:7px;color:rgba(255,200,60,.25);letter-spacing:3px;font-family:'DotGothic16',monospace}
+.go-stval{font-size:16px;font-weight:900;color:#ffe066;font-family:'DotGothic16',monospace;text-shadow:2px 2px 0 #604800}
+.go-rank{
+  font-size:22px;font-weight:900;margin:8px 0;padding:8px 24px;
+  border:3px solid rgba(68,255,170,.3);color:#44ffaa;
+  text-shadow:2px 2px 0 #0a4030,0 0 15px #44ffaa;
+  background:rgba(68,255,170,.04);
+  font-family:'DotGothic16',monospace;
+  box-shadow:3px 3px 0 rgba(0,40,30,.4);
+}
+.go-retry{
+  margin-top:12px;padding:14px 50px;
+  font-size:16px;font-weight:900;
+  color:#1a0800;
+  background:#ffd700;
+  border:none;border-radius:0;
+  font-family:'DotGothic16',monospace;
+  box-shadow:4px 4px 0 #705808,inset -2px -2px 0 #c09818,inset 2px 2px 0 #ffe880;
+  letter-spacing:4px;cursor:pointer;
+}
+.go-retry:active{box-shadow:2px 2px 0 #705808;transform:translate(2px,2px)}
+.go-home-btn{
+  margin-top:8px;padding:8px 30px;
+  font-size:10px;color:rgba(255,200,60,.4);
+  background:none;
+  border:3px solid rgba(255,200,60,.15);border-radius:0;
+  font-family:'DotGothic16',monospace;
+  letter-spacing:3px;cursor:pointer;
+  box-shadow:3px 3px 0 rgba(60,40,0,.2);
+}
+.go-home-btn:active{box-shadow:1px 1px 0 rgba(60,40,0,.2);transform:translate(2px,2px)}
+.go-fw{position:absolute;width:6px;height:6px;animation:fwB 1.5s ease-out forwards}
 @keyframes fwB{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--fx),var(--fy)) scale(0)}}
 
-@media(max-width:420px){
-  .phone,.gp-phone,.go-phone{width:100vw;height:100vh;border-radius:0;border:none}
-}
+/* ===== FX 키프레임 ===== */
+@keyframes starTw{0%,100%{opacity:.15;transform:scale(.5) rotate(0)}50%{opacity:1;transform:scale(1.2) rotate(180deg)}}
+@keyframes hexF{0%{transform:translateY(0) rotate(0);opacity:.06}50%{opacity:.12}100%{transform:translateY(-650px) rotate(360deg);opacity:0}}
+@keyframes cometT{0%{transform:translateX(-100px) translateY(100px);opacity:0}20%{opacity:.2}80%{opacity:.1}100%{transform:translateX(400px) translateY(-100px);opacity:0}}
+@keyframes pxRain{0%{transform:translateY(-10px);opacity:0}50%{opacity:.12}100%{transform:translateY(500px);opacity:0}}
+@keyframes sparkleA{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
+@keyframes dustF{0%{transform:translate(0,0);opacity:0}20%{opacity:.12}80%{opacity:.08}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
+
+/* ===== 설명 라벨 ===== */
+.info{margin-top:10px;font-size:9px;color:rgba(112,208,232,.3);text-align:center;letter-spacing:1px;font-family:'DotGothic16',monospace}
+.info2{margin-top:4px;font-size:10px;color:rgba(112,208,232,.35);text-align:center;max-width:380px;line-height:1.6;margin-bottom:10px;font-family:'DotGothic16',monospace}
+.badge{display:inline-block;padding:3px 10px;font-size:8px;border:2px solid #2880a0;color:#70d0e8;margin-top:4px;letter-spacing:1px;font-family:'DotGothic16',monospace;box-shadow:2px 2px 0 #0a2030}
+
+@media(max-width:420px){.phone{width:100vw;height:100vh;border-radius:0;border:none}}
 </style>
 </head>
 <body>
 
-<div class="nav-bar">
+<div class="nav">
   <button class="active" onclick="showP(0)">① 시작화면</button>
   <button onclick="showP(1)">② 게임플레이</button>
   <button onclick="showP(2)">③ 게임오버</button>
 </div>
 
-<!-- ===== 패널 1: 시작화면 ===== -->
+<!-- ===== 패널1: 시작화면 ===== -->
 <div class="panel active" id="p0">
   <div class="phone">
     <div class="phone-inner">
@@ -181,23 +263,25 @@ body{background:#000;display:flex;align-items:center;justify-content:center;min-
       <div id="meteorContainer"></div>
       <div class="content">
         <div class="char-row" id="charRow"></div>
-        <div class="title-area"><canvas id="titleCanvas" width="280" height="90"></canvas></div>
+        <div class="title-area"><canvas id="titleCanvas" width="560" height="180"></canvas></div>
         <div class="gem-area"><canvas id="gemCanvas" width="72" height="72"></canvas></div>
+        <div class="best-score">BEST SCORE <span>12,450</span></div>
         <button class="start-btn">시작하기</button>
+        <div class="ver-text">v1.0.0 · UNITY BUILD</div>
       </div>
     </div>
   </div>
-  <div class="info">화면 1 / 3 — 시작 화면 (스크린샷 재현)</div>
-  <div class="info2">별자리 배경 + 5색 픽셀 캐릭터 + "빼봐영" 픽셀 타이틀 + 보석 캐릭터.<br>Unity: Canvas UI + Particle System + LineRenderer</div>
-  <div class="badge">StartScreenController.cs + ParticleEffects.cs + PixelCharacters.cs</div>
+  <div class="info">화면 1 / 3 — 시작 화면 (Full Pixel)</div>
+  <div class="info2">전체 UI 픽셀화: DotGothic16 폰트 + 하드 box-shadow + border-radius:0</div>
+  <div class="badge">StartScreenController.cs + PixelCharacters.cs</div>
 </div>
 
-<!-- ===== 패널 2: 게임플레이 ===== -->
+<!-- ===== 패널2: 게임플레이 ===== -->
 <div class="panel" id="p1">
-  <div class="gp-phone">
+  <div class="phone">
     <div class="gp-notch"></div>
     <div class="gp-inner">
-      <div class="gp-status"><span style="font-weight:700">9:42</span><div style="display:flex;gap:5px"><span>▮▮▮</span><span>WiFi</span><span>98%</span></div></div>
+      <div class="gp-status"><span>9:42</span><div style="display:flex;gap:5px"><span>▮▮▮</span><span>WiFi</span><span>98%</span></div></div>
       <div class="gp-charbar" id="gpCharBar"></div>
       <div class="gp-hud">
         <div class="gp-hud-col left"><div class="gp-hud-lbl">SCORE</div><div class="gp-hud-val">3,280</div></div>
@@ -222,17 +306,17 @@ body{background:#000;display:flex;align-items:center;justify-content:center;min-
       <div class="gp-home"><div class="bar"></div></div>
     </div>
   </div>
-  <div class="info">화면 2 / 3 — 게임플레이 (풀 이펙트 피버)</div>
-  <div class="info2">GameManager + HUDController + KeypadController + ParticleEffects</div>
+  <div class="info">화면 2 / 3 — 게임플레이 (Full Pixel)</div>
+  <div class="info2">점수판·타겟넘버·키패드 전부 DotGothic16 + 8bit 하드섀도우</div>
   <div class="badge">GameManager.cs + HUDController.cs + KeypadController.cs</div>
 </div>
 
-<!-- ===== 패널 3: 게임오버 ===== -->
+<!-- ===== 패널3: 게임오버 ===== -->
 <div class="panel" id="p2">
-  <div class="go-phone">
+  <div class="phone">
     <div class="gp-notch"></div>
     <div class="go-inner">
-      <div class="gp-status"><span style="font-weight:700">9:45</span><div style="display:flex;gap:5px"><span>▮▮▮</span><span>WiFi</span><span>95%</span></div></div>
+      <div class="gp-status"><span>9:45</span><div style="display:flex;gap:5px"><span>▮▮▮</span><span>WiFi</span><span>95%</span></div></div>
       <div class="go-content" id="goContent">
         <div class="go-title">GAME OVER</div>
         <div><div class="go-slbl">FINAL SCORE</div><div class="go-sval" id="goScore">0</div></div>
@@ -250,330 +334,176 @@ body{background:#000;display:flex;align-items:center;justify-content:center;min-
       <div class="gp-home"><div class="bar"></div></div>
     </div>
   </div>
-  <div class="info">화면 3 / 3 — 게임오버</div>
-  <div class="info2">GameOverController.cs — 순차 등장 + 점수 카운트업 + 폭죽</div>
+  <div class="info">화면 3 / 3 — 게임오버 (Full Pixel)</div>
+  <div class="info2">점수·스탯·랭크·버튼 전부 픽셀 스타일</div>
   <div class="badge">GameOverController.cs + GameState.cs</div>
 </div>
 
 <script>
-// ================================================================
-// 네비게이션
-// ================================================================
 function showP(i){
   document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
-  document.querySelectorAll('.nav-bar button').forEach((b,j)=>b.classList.toggle('active',j===i));
+  document.querySelectorAll('.nav button').forEach((b,j)=>b.classList.toggle('active',j===i));
 }
 
-// ================================================================
-// 픽셀 유틸
-// ================================================================
+// ===== 픽셀 유틸 =====
 function px(ctx,x,y,c,s){ctx.fillStyle=`rgba(${c[0]},${c[1]},${c[2]},${(c[3]??255)/255})`;ctx.fillRect(x*s,y*s,s,s)}
-const O=[40,40,40,255],W=[255,255,255,255],T=[0,0,0,0];
+const O=[40,40,40,255],W=[255,255,255,255];
 
-// ================================================================
-// 5색 캐릭터 얼굴 — 스크린샷 재현
-// ================================================================
-function drawFace(canvas, bodyColor, cheekColor, eyeStyle, mouthStyle){
+// ===== 5색 캐릭터 =====
+function drawFace(canvas,bodyColor,cheekColor,eyeStyle,mouthStyle){
   const s=Math.floor(canvas.width/14);
-  canvas.width=14*s; canvas.height=14*s;
-  const ctx=canvas.getContext('2d');
-  ctx.imageSmoothingEnabled=false;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  const bc=bodyColor, ck=cheekColor, o=O, w=W;
-
-  // 몸체 (둥근 사각형)
-  for(let i=3;i<=10;i++) px(ctx,i,0,o,s);
-  px(ctx,2,1,o,s); for(let i=3;i<=10;i++) px(ctx,i,1,bc,s); px(ctx,11,1,o,s);
+  canvas.width=14*s;canvas.height=14*s;
+  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,canvas.width,canvas.height);
+  const bc=bodyColor,ck=cheekColor,o=O;
+  for(let i=3;i<=10;i++)px(ctx,i,0,o,s);
+  px(ctx,2,1,o,s);for(let i=3;i<=10;i++)px(ctx,i,1,bc,s);px(ctx,11,1,o,s);
   for(let y=2;y<=10;y++){px(ctx,1,y,o,s);for(let i=2;i<=11;i++)px(ctx,i,y,bc,s);px(ctx,12,y,o,s)}
-  px(ctx,2,11,o,s); for(let i=3;i<=10;i++) px(ctx,i,11,bc,s); px(ctx,11,11,o,s);
-  for(let i=3;i<=10;i++) px(ctx,i,12,o,s);
-
-  // 하이라이트 (좌상단)
-  px(ctx,3,2,[255,255,255,60],s); px(ctx,4,2,[255,255,255,40],s);
-  px(ctx,3,3,[255,255,255,30],s);
-
-  // 볼 터치
-  px(ctx,3,7,ck,s); px(ctx,3,8,ck,s);
-  px(ctx,10,7,ck,s); px(ctx,10,8,ck,s);
-
-  // 눈 스타일
-  if(eyeStyle===0){ // 기본 둥근 눈
-    px(ctx,4,4,o,s);px(ctx,5,4,o,s); px(ctx,4,5,o,s);px(ctx,5,5,w,s);
-    px(ctx,8,4,o,s);px(ctx,9,4,o,s); px(ctx,8,5,o,s);px(ctx,9,5,w,s);
-  } else if(eyeStyle===1){ // 윙크 (왼쪽 감은 눈)
-    px(ctx,4,5,o,s);px(ctx,5,5,o,s);px(ctx,6,5,o,s);
-    px(ctx,8,4,o,s);px(ctx,9,4,o,s); px(ctx,8,5,o,s);px(ctx,9,5,w,s);
-  } else if(eyeStyle===2){ // 양쪽 둥근 큰 눈
-    px(ctx,4,4,o,s);px(ctx,5,4,o,s); px(ctx,4,5,w,s);px(ctx,5,5,o,s);
-    px(ctx,8,4,o,s);px(ctx,9,4,o,s); px(ctx,8,5,w,s);px(ctx,9,5,o,s);
-  } else if(eyeStyle===3){ // 웃는 눈 (반달)
-    px(ctx,4,4,o,s);px(ctx,5,4,o,s);px(ctx,6,4,o,s);px(ctx,5,5,o,s);
-    px(ctx,8,4,o,s);px(ctx,9,4,o,s);px(ctx,10,4,o,s);px(ctx,9,5,o,s);
-  } else { // 반짝 눈
-    px(ctx,4,4,o,s);px(ctx,5,4,w,s);px(ctx,6,4,o,s); px(ctx,5,3,o,s);px(ctx,5,5,o,s);
-    px(ctx,8,4,o,s);px(ctx,9,4,w,s);px(ctx,10,4,o,s); px(ctx,9,3,o,s);px(ctx,9,5,o,s);
-  }
-
-  // 입 스타일
-  if(mouthStyle===0){ // 혀 내밀기
-    px(ctx,5,8,o,s);px(ctx,6,8,o,s);px(ctx,7,8,o,s);px(ctx,8,8,o,s);
-    px(ctx,6,9,[255,100,100,255],s);px(ctx,7,9,[255,100,100,255],s);
-    px(ctx,6,10,o,s);px(ctx,7,10,o,s);
-  } else if(mouthStyle===1){ // 넓은 웃음
-    px(ctx,4,8,o,s);for(let i=5;i<=8;i++)px(ctx,i,8,o,s);px(ctx,9,8,o,s);
-    px(ctx,5,9,o,s);px(ctx,8,9,o,s);
-  } else if(mouthStyle===2){ // 작은 미소
-    px(ctx,6,8,o,s);px(ctx,7,8,o,s);
-    px(ctx,5,7,o,s);px(ctx,8,7,o,s);
-  } else if(mouthStyle===3){ // O 입
-    px(ctx,6,7,o,s);px(ctx,7,7,o,s);
-    px(ctx,5,8,o,s);px(ctx,8,8,o,s);
-    px(ctx,6,9,o,s);px(ctx,7,9,o,s);
-  } else { // 삐죽 입
-    px(ctx,5,8,o,s);px(ctx,6,8,o,s);px(ctx,7,8,o,s);px(ctx,8,8,o,s);px(ctx,9,7,o,s);
-  }
+  px(ctx,2,11,o,s);for(let i=3;i<=10;i++)px(ctx,i,11,bc,s);px(ctx,11,11,o,s);
+  for(let i=3;i<=10;i++)px(ctx,i,12,o,s);
+  px(ctx,3,2,[255,255,255,60],s);px(ctx,4,2,[255,255,255,40],s);px(ctx,3,3,[255,255,255,30],s);
+  px(ctx,3,7,ck,s);px(ctx,3,8,ck,s);px(ctx,10,7,ck,s);px(ctx,10,8,ck,s);
+  const es=eyeStyle%5;
+  if(es===0){px(ctx,4,4,o,s);px(ctx,5,4,o,s);px(ctx,4,5,o,s);px(ctx,5,5,W,s);px(ctx,8,4,o,s);px(ctx,9,4,o,s);px(ctx,8,5,o,s);px(ctx,9,5,W,s)}
+  else if(es===1){px(ctx,4,5,o,s);px(ctx,5,5,o,s);px(ctx,6,5,o,s);px(ctx,8,4,o,s);px(ctx,9,4,o,s);px(ctx,8,5,o,s);px(ctx,9,5,W,s)}
+  else if(es===2){px(ctx,4,4,o,s);px(ctx,5,4,o,s);px(ctx,4,5,W,s);px(ctx,5,5,o,s);px(ctx,8,4,o,s);px(ctx,9,4,o,s);px(ctx,8,5,W,s);px(ctx,9,5,o,s)}
+  else if(es===3){px(ctx,4,4,o,s);px(ctx,5,4,o,s);px(ctx,6,4,o,s);px(ctx,5,5,o,s);px(ctx,8,4,o,s);px(ctx,9,4,o,s);px(ctx,10,4,o,s);px(ctx,9,5,o,s)}
+  else{px(ctx,4,4,o,s);px(ctx,5,4,W,s);px(ctx,6,4,o,s);px(ctx,5,3,o,s);px(ctx,5,5,o,s);px(ctx,8,4,o,s);px(ctx,9,4,W,s);px(ctx,10,4,o,s);px(ctx,9,3,o,s);px(ctx,9,5,o,s)}
+  const ms=mouthStyle%5;const tg=[255,100,100,255];
+  if(ms===0){px(ctx,5,8,o,s);px(ctx,6,8,o,s);px(ctx,7,8,o,s);px(ctx,8,8,o,s);px(ctx,6,9,tg,s);px(ctx,7,9,tg,s);px(ctx,6,10,o,s);px(ctx,7,10,o,s)}
+  else if(ms===1){px(ctx,4,8,o,s);for(let i=5;i<=8;i++)px(ctx,i,8,o,s);px(ctx,9,8,o,s);px(ctx,5,9,o,s);px(ctx,8,9,o,s)}
+  else if(ms===2){px(ctx,6,8,o,s);px(ctx,7,8,o,s);px(ctx,5,7,o,s);px(ctx,8,7,o,s)}
+  else if(ms===3){px(ctx,6,7,o,s);px(ctx,7,7,o,s);px(ctx,5,8,o,s);px(ctx,8,8,o,s);px(ctx,6,9,o,s);px(ctx,7,9,o,s)}
+  else{px(ctx,5,8,o,s);px(ctx,6,8,o,s);px(ctx,7,8,o,s);px(ctx,8,8,o,s);px(ctx,9,7,o,s)}
 }
 
-// ================================================================
-// 강아지
-// ================================================================
+// ===== 강아지 =====
 function drawDog(canvas,bc,ec,cc,armsUp){
-  const s=Math.floor(canvas.width/14);
-  canvas.width=14*s;canvas.height=16*s;
-  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const s=Math.floor(canvas.width/14);canvas.width=14*s;canvas.height=16*s;
+  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,canvas.width,canvas.height);
   const o=O;
-  // 귀
   px(ctx,2,0,o,s);px(ctx,3,0,o,s);px(ctx,10,0,o,s);px(ctx,11,0,o,s);
-  px(ctx,1,1,o,s);px(ctx,2,1,ec,s);px(ctx,3,1,ec,s);px(ctx,4,1,o,s);
-  px(ctx,9,1,o,s);px(ctx,10,1,ec,s);px(ctx,11,1,ec,s);px(ctx,12,1,o,s);
-  px(ctx,1,2,o,s);px(ctx,2,2,ec,s);px(ctx,3,2,ec,s);px(ctx,4,2,o,s);
-  px(ctx,9,2,o,s);px(ctx,10,2,ec,s);px(ctx,11,2,ec,s);px(ctx,12,2,o,s);
+  px(ctx,1,1,o,s);px(ctx,2,1,ec,s);px(ctx,3,1,ec,s);px(ctx,4,1,o,s);px(ctx,9,1,o,s);px(ctx,10,1,ec,s);px(ctx,11,1,ec,s);px(ctx,12,1,o,s);
+  px(ctx,1,2,o,s);px(ctx,2,2,ec,s);px(ctx,3,2,ec,s);px(ctx,4,2,o,s);px(ctx,9,2,o,s);px(ctx,10,2,ec,s);px(ctx,11,2,ec,s);px(ctx,12,2,o,s);
   for(let i=3;i<=10;i++)px(ctx,i,3,o,s);
   px(ctx,2,4,o,s);for(let i=3;i<=10;i++)px(ctx,i,4,bc,s);px(ctx,11,4,o,s);
-  px(ctx,2,5,o,s);for(let i=3;i<=10;i++)px(ctx,i,5,bc,s);px(ctx,11,5,o,s);
-  px(ctx,4,5,W,s);px(ctx,5,5,o,s);px(ctx,8,5,W,s);px(ctx,9,5,o,s);
-  px(ctx,2,6,o,s);for(let i=3;i<=10;i++)px(ctx,i,6,bc,s);px(ctx,11,6,o,s);
-  px(ctx,6,6,o,s);px(ctx,7,6,o,s);px(ctx,3,6,cc,s);px(ctx,10,6,cc,s);
+  px(ctx,2,5,o,s);for(let i=3;i<=10;i++)px(ctx,i,5,bc,s);px(ctx,11,5,o,s);px(ctx,4,5,W,s);px(ctx,5,5,o,s);px(ctx,8,5,W,s);px(ctx,9,5,o,s);
+  px(ctx,2,6,o,s);for(let i=3;i<=10;i++)px(ctx,i,6,bc,s);px(ctx,11,6,o,s);px(ctx,6,6,o,s);px(ctx,7,6,o,s);px(ctx,3,6,cc,s);px(ctx,10,6,cc,s);
   px(ctx,2,7,o,s);for(let i=3;i<=10;i++)px(ctx,i,7,bc,s);px(ctx,11,7,o,s);
-  for(let y=8;y<=11;y++){px(ctx,3,y,o,s);for(let i=4;i<=9;i++)px(ctx,i,y,bc,s);px(ctx,10,y,o,s);}
-  if(armsUp){px(ctx,2,8,o,s);px(ctx,3,8,bc,s);px(ctx,2,7,bc,s);px(ctx,11,8,o,s);px(ctx,10,8,bc,s);px(ctx,11,7,bc,s);}
-  else{px(ctx,3,9,o,s);px(ctx,2,10,o,s);px(ctx,10,9,o,s);px(ctx,11,10,o,s);}
+  for(let y=8;y<=11;y++){px(ctx,3,y,o,s);for(let i=4;i<=9;i++)px(ctx,i,y,bc,s);px(ctx,10,y,o,s)}
+  if(armsUp){px(ctx,2,8,o,s);px(ctx,3,8,bc,s);px(ctx,2,7,bc,s);px(ctx,11,8,o,s);px(ctx,10,8,bc,s);px(ctx,11,7,bc,s)}
+  else{px(ctx,3,9,o,s);px(ctx,2,10,o,s);px(ctx,10,9,o,s);px(ctx,11,10,o,s)}
   px(ctx,4,12,o,s);px(ctx,5,12,o,s);px(ctx,8,12,o,s);px(ctx,9,12,o,s);
   px(ctx,3,13,o,s);px(ctx,4,13,bc,s);px(ctx,5,13,o,s);px(ctx,8,13,o,s);px(ctx,9,13,bc,s);px(ctx,10,13,o,s);
 }
 
-// ================================================================
-// "빼봐영" 픽셀 타이틀
-// ================================================================
-function drawTitle(canvas){
+// ★★★ "빼봐영" 픽셀 타이틀 (Canvas 픽셀아트) ★★★
+function drawPixelTitle(canvas){
   const ctx=canvas.getContext('2d');
   ctx.imageSmoothingEnabled=false;
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  // 픽셀 폰트 대신 진한 그라디언트 텍스트
-  ctx.save();
-  const g=ctx.createLinearGradient(0,10,0,75);
-  g.addColorStop(0,'#ffa830');
-  g.addColorStop(0.4,'#f08020');
-  g.addColorStop(0.7,'#d06018');
-  g.addColorStop(1,'#a04010');
-
-  ctx.font='900 68px sans-serif';
+  // 픽셀 스타일 — DotGothic16 폰트 사용하되 하드 그림자
+  const sz=68;
+  ctx.font=`900 ${sz}px 'DotGothic16',monospace`;
   ctx.textAlign='center';
   ctx.textBaseline='middle';
 
-  // 그림자
-  ctx.fillStyle='#402008';
-  ctx.fillText('빼봐영',canvas.width/2+3,canvas.height/2+4);
+  const cx=canvas.width/2, cy=canvas.height/2;
 
-  // 메인
+  // 하드 그림자 (3단계)
+  ctx.fillStyle='#301800';
+  ctx.fillText('빼봐영',cx+6,cy+6);
+
+  ctx.fillStyle='#604010';
+  ctx.fillText('빼봐영',cx+3,cy+3);
+
+  // 메인 그라디언트
+  const g=ctx.createLinearGradient(cx-120,cy-30,cx-120,cy+30);
+  g.addColorStop(0,'#ffe080');
+  g.addColorStop(0.3,'#ffa830');
+  g.addColorStop(0.6,'#e07020');
+  g.addColorStop(1,'#b05010');
   ctx.fillStyle=g;
-  ctx.fillText('빼봐영',canvas.width/2,canvas.height/2);
+  ctx.fillText('빼봐영',cx,cy);
 
-  // 하이라이트
-  ctx.globalAlpha=.15;
+  // 인라인 하이라이트
+  ctx.globalAlpha=.12;
   ctx.fillStyle='#fff';
-  ctx.fillText('빼봐영',canvas.width/2-1,canvas.height/2-2);
-  ctx.restore();
+  ctx.fillText('빼봐영',cx-1,cy-2);
+  ctx.globalAlpha=1;
 }
 
-// ================================================================
-// 보석 캐릭터
-// ================================================================
+// ===== 보석 =====
 function drawGem(canvas){
-  const s=Math.floor(canvas.width/16);
-  canvas.width=16*s;canvas.height=16*s;
-  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  const o=O;
-  const gm=[160,80,200,255], gd=[120,50,160,255], gl=[200,140,240,255], gh=[230,180,255,255];
-  const eye=O, pupil=W;
-
-  // 보석 상단 (삼각형 부분)
-  for(let i=6;i<=9;i++) px(ctx,i,1,o,s);
+  const s=Math.floor(canvas.width/16);canvas.width=16*s;canvas.height=16*s;
+  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,canvas.width,canvas.height);
+  const o=O,gm=[160,80,200,255],gd=[120,50,160,255],gl=[200,140,240,255];
+  for(let i=6;i<=9;i++)px(ctx,i,1,o,s);
   px(ctx,5,2,o,s);for(let i=6;i<=9;i++)px(ctx,i,2,gl,s);px(ctx,10,2,o,s);
   px(ctx,4,3,o,s);for(let i=5;i<=10;i++)px(ctx,i,3,gl,s);px(ctx,11,3,o,s);
   px(ctx,3,4,o,s);for(let i=4;i<=11;i++)px(ctx,i,4,gm,s);px(ctx,12,4,o,s);
-  // 본체
-  for(let y=5;y<=10;y++){
-    px(ctx,2,y,o,s);
-    for(let i=3;i<=12;i++) px(ctx,i,y,gm,s);
-    px(ctx,13,y,o,s);
-  }
-  // 하이라이트
-  px(ctx,4,5,gl,s);px(ctx,5,5,gl,s);px(ctx,4,6,gl,s);
-  px(ctx,10,5,gd,s);px(ctx,11,5,gd,s);px(ctx,11,6,gd,s);
-  // 하단
+  for(let y=5;y<=10;y++){px(ctx,2,y,o,s);for(let i=3;i<=12;i++)px(ctx,i,y,gm,s);px(ctx,13,y,o,s)}
+  px(ctx,4,5,gl,s);px(ctx,5,5,gl,s);px(ctx,4,6,gl,s);px(ctx,10,5,gd,s);px(ctx,11,5,gd,s);px(ctx,11,6,gd,s);
   px(ctx,3,11,o,s);for(let i=4;i<=11;i++)px(ctx,i,11,gd,s);px(ctx,12,11,o,s);
   px(ctx,4,12,o,s);for(let i=5;i<=10;i++)px(ctx,i,12,gd,s);px(ctx,11,12,o,s);
   px(ctx,5,13,o,s);for(let i=6;i<=9;i++)px(ctx,i,13,gd,s);px(ctx,10,13,o,s);
   for(let i=6;i<=9;i++)px(ctx,i,14,o,s);
-
-  // 눈
-  px(ctx,5,7,eye,s);px(ctx,6,7,eye,s);px(ctx,5,8,eye,s);px(ctx,6,8,pupil,s);
-  px(ctx,9,7,eye,s);px(ctx,10,7,eye,s);px(ctx,9,8,eye,s);px(ctx,10,8,pupil,s);
-  // 볼
+  px(ctx,5,7,o,s);px(ctx,6,7,o,s);px(ctx,5,8,o,s);px(ctx,6,8,W,s);
+  px(ctx,9,7,o,s);px(ctx,10,7,o,s);px(ctx,9,8,o,s);px(ctx,10,8,W,s);
   px(ctx,4,9,[255,150,200,80],s);px(ctx,11,9,[255,150,200,80],s);
-  // 입 (작은 미소)
   px(ctx,7,10,o,s);px(ctx,8,10,o,s);
 }
 
-// ================================================================
-// 별자리 배경
-// ================================================================
+// ===== 별자리 =====
 function drawConstellations(){
   const canvas=document.getElementById('constellationCanvas');
   const phone=canvas.parentElement;
-  canvas.width=phone.offsetWidth;
-  canvas.height=phone.offsetHeight;
+  canvas.width=phone.offsetWidth;canvas.height=phone.offsetHeight;
   const ctx=canvas.getContext('2d');
-  const W=canvas.width, H=canvas.height;
-
-  // 별자리 데이터 (정규화 0~1)
-  const constellations=[
-    {stars:[[.08,.08],[.15,.05],[.22,.1],[.18,.18],[.1,.16]], color:'rgba(100,160,255,.25)'},
-    {stars:[[.75,.06],[.82,.03],[.88,.08],[.92,.15],[.85,.18]], color:'rgba(100,160,255,.2)'},
-    {stars:[[.05,.55],[.12,.5],[.18,.58],[.08,.65]], color:'rgba(150,180,255,.2)'},
-    {stars:[[.85,.5],[.9,.45],[.95,.55],[.88,.6]], color:'rgba(120,170,255,.2)'},
-    {stars:[[.7,.75],[.78,.7],[.85,.78],[.82,.85],[.72,.88]], color:'rgba(100,150,255,.18)'},
-    {stars:[[.15,.8],[.22,.75],[.28,.82],[.2,.9]], color:'rgba(140,170,255,.18)'},
-    {stars:[[.4,.05],[.48,.02],[.55,.08]], color:'rgba(100,160,255,.15)'},
-    {stars:[[.5,.85],[.58,.82],[.62,.9]], color:'rgba(120,160,255,.15)'},
+  const W2=canvas.width,H=canvas.height;
+  const cs=[
+    {s:[[.08,.08],[.15,.05],[.22,.1],[.18,.18],[.1,.16]],c:'rgba(100,160,255,.25)'},
+    {s:[[.75,.06],[.82,.03],[.88,.08],[.92,.15],[.85,.18]],c:'rgba(100,160,255,.2)'},
+    {s:[[.05,.55],[.12,.5],[.18,.58],[.08,.65]],c:'rgba(150,180,255,.2)'},
+    {s:[[.85,.5],[.9,.45],[.95,.55],[.88,.6]],c:'rgba(120,170,255,.2)'},
+    {s:[[.7,.75],[.78,.7],[.85,.78],[.82,.85],[.72,.88]],c:'rgba(100,150,255,.18)'},
+    {s:[[.15,.8],[.22,.75],[.28,.82],[.2,.9]],c:'rgba(140,170,255,.18)'},
+    {s:[[.4,.05],[.48,.02],[.55,.08]],c:'rgba(100,160,255,.15)'},
+    {s:[[.5,.85],[.58,.82],[.62,.9]],c:'rgba(120,160,255,.15)'}
   ];
-
-  constellations.forEach(c=>{
-    const pts=c.stars.map(s=>({x:s[0]*W,y:s[1]*H}));
-    // 선
-    ctx.strokeStyle=c.color;
-    ctx.lineWidth=1;
-    ctx.beginPath();
-    pts.forEach((p,i)=>{if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y)});
+  cs.forEach(c=>{
+    const pts=c.s.map(p=>({x:p[0]*W2,y:p[1]*H}));
+    ctx.strokeStyle=c.c;ctx.lineWidth=1;ctx.beginPath();
+    pts.forEach((p,i)=>{if(!i)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y)});
     ctx.stroke();
-    // 별 점
-    pts.forEach(p=>{
-      ctx.beginPath();
-      ctx.arc(p.x,p.y,1.5,0,Math.PI*2);
-      ctx.fillStyle='rgba(180,210,255,.5)';
-      ctx.fill();
-    });
+    pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,1.5,0,Math.PI*2);ctx.fillStyle='rgba(180,210,255,.5)';ctx.fill()});
   });
 }
 
-// ================================================================
-// 반짝이는 별들
-// ================================================================
 function createStars(){
   const ct=document.getElementById('starsContainer');
-  const types=[
-    {cls:'tiny',n:40},{cls:'small',n:20},{cls:'medium',n:8},{cls:'large',n:4},{cls:'glow',n:3}
-  ];
-  types.forEach(t=>{
-    for(let i=0;i<t.n;i++){
-      const d=document.createElement('div');
-      d.className=`star ${t.cls}`;
-      d.style.left=Math.random()*100+'%';
-      d.style.top=Math.random()*100+'%';
-      d.style.animationDelay=Math.random()*5+'s';
-      d.style.animationDuration=(2+Math.random()*4)+'s';
-      ct.appendChild(d);
-    }
+  [{cls:'tiny',n:40},{cls:'small',n:20},{cls:'medium',n:8},{cls:'large',n:4},{cls:'glow',n:3}].forEach(t=>{
+    for(let i=0;i<t.n;i++){const d=document.createElement('div');d.className=`star ${t.cls}`;d.style.left=Math.random()*100+'%';d.style.top=Math.random()*100+'%';d.style.animationDelay=Math.random()*5+'s';d.style.animationDuration=(2+Math.random()*4)+'s';ct.appendChild(d)}
   });
 }
-
-// ================================================================
-// 유성
-// ================================================================
 function createMeteors(){
   const ct=document.getElementById('meteorContainer');
-  for(let i=0;i<5;i++){
-    const m=document.createElement('div');
-    m.className='meteor';
-    m.style.top=Math.random()*60+'%';
-    m.style.left=Math.random()*40+'%';
-    m.style.transform=`rotate(${30+Math.random()*20}deg)`;
-    m.style.animationDuration=(3+Math.random()*4)+'s';
-    m.style.animationDelay=(Math.random()*8)+'s';
-    m.style.width=(50+Math.random()*60)+'px';
-    ct.appendChild(m);
-  }
+  for(let i=0;i<5;i++){const m=document.createElement('div');m.className='meteor';m.style.top=Math.random()*60+'%';m.style.left=Math.random()*40+'%';m.style.transform=`rotate(${30+Math.random()*20}deg)`;m.style.animationDuration=(3+Math.random()*4)+'s';m.style.animationDelay=(Math.random()*8)+'s';m.style.width=(50+Math.random()*60)+'px';ct.appendChild(m)}
 }
 
-// ================================================================
-// 초기화: 시작화면
-// ================================================================
-function initStartScreen(){
-  const row=document.getElementById('charRow');
-  const chars=[
-    {body:[240,90,90,255],cheek:[255,160,160,80],eye:0,mouth:0},   // 빨강 — 혀
-    {body:[250,180,50,255],cheek:[255,200,120,80],eye:1,mouth:1},   // 주황 — 윙크
-    {body:[80,200,100,255],cheek:[140,255,160,80],eye:2,mouth:2},   // 초록 — 미소
-    {body:[80,160,240,255],cheek:[140,200,255,80],eye:3,mouth:4},   // 파랑 — 웃는눈
-    {body:[200,130,220,255],cheek:[230,180,240,80],eye:4,mouth:3},  // 보라 — 반짝
-  ];
-  chars.forEach(c=>{
-    const cv=document.createElement('canvas');
-    cv.width=52;cv.height=52;
-    drawFace(cv,c.body,c.cheek,c.eye,c.mouth);
-    row.appendChild(cv);
-  });
-  drawTitle(document.getElementById('titleCanvas'));
-  drawGem(document.getElementById('gemCanvas'));
-  drawConstellations();
-  createStars();
-  createMeteors();
-}
-
-// ================================================================
-// 초기화: 게임플레이
-// ================================================================
+// ===== 게임플레이 초기화 =====
 function initGameplay(){
   const bar=document.getElementById('gpCharBar');
-  const faceColors=[[255,160,60,255],[60,210,255,255],[255,100,150,255]];
-  for(let i=0;i<3;i++){
-    const c=document.createElement('canvas');c.className='face';c.width=24;c.height=24;
-    drawFace(c,faceColors[i],[255,180,180,60],i,i);
-    bar.appendChild(c);
-  }
+  const fcs=[[255,160,60,255],[60,210,255,255],[255,100,150,255]];
+  for(let i=0;i<3;i++){const c=document.createElement('canvas');c.className='face';c.width=24;c.height=24;drawFace(c,fcs[i],[255,180,180,60],i,i);bar.appendChild(c)}
   const dog=document.createElement('canvas');dog.className='dog';dog.width=34;dog.height=38;
-  drawDog(dog,[255,208,100,255],[200,140,60,255],[255,160,160,255],true);
-  bar.appendChild(dog);
-
-  const td=document.getElementById('gpTimerDog');
-  drawDog(td,[255,208,100,255],[200,140,60,255],[255,160,160,255],false);
+  drawDog(dog,[255,208,100,255],[200,140,60,255],[255,160,160,255],true);bar.appendChild(dog);
+  const td=document.getElementById('gpTimerDog');drawDog(td,[255,208,100,255],[200,140,60,255],[255,160,160,255],false);
 
   // 배경 이펙트
-  initBgFx();
-}
-
-// ================================================================
-// 풀 이펙트 피버 #9
-// ================================================================
-function initBgFx(){
   const el=document.getElementById('gpTarget');
   const MIX=[[255,208,64],[255,128,96],[96,232,128],[96,208,224],[255,128,192]];
   function rc(a){const c=MIX[Math.floor(Math.random()*MIX.length)];return a!=null?`rgba(${c[0]},${c[1]},${c[2]},${a})`:`rgb(${c[0]},${c[1]},${c[2]})`}
-
   for(let i=0;i<18;i++){const d=document.createElement('div');d.setAttribute('data-fx','1');d.style.cssText=`position:absolute;width:${3+Math.random()*5}px;height:${3+Math.random()*5}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:${rc()};clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);animation:starTw ${2+Math.random()*4}s ease infinite;animation-delay:${Math.random()*4}s`;el.appendChild(d)}
   for(let i=0;i<6;i++){const d=document.createElement('div');d.setAttribute('data-fx','1');d.style.cssText=`position:absolute;width:${12+Math.random()*18}px;height:${12+Math.random()*18}px;left:${Math.random()*100}%;bottom:-20px;border:1px solid ${rc(.15)};clip-path:polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%);animation:hexF ${10+Math.random()*8}s linear infinite;animation-delay:${Math.random()*10}s`;el.appendChild(d)}
   for(let i=0;i<4;i++){const d=document.createElement('div');d.setAttribute('data-fx','1');d.style.cssText=`position:absolute;width:${30+Math.random()*30}px;height:2px;top:${Math.random()*80}%;left:-50px;background:linear-gradient(90deg,${rc(.2)},transparent);animation:cometT ${5+Math.random()*6}s linear infinite;animation-delay:${Math.random()*8}s`;el.appendChild(d)}
@@ -582,51 +512,27 @@ function initBgFx(){
   for(let i=0;i<15;i++){const d=document.createElement('div');d.setAttribute('data-fx','1');const dx=(Math.random()-.5)*120,dy=(Math.random()-.5)*120;d.style.cssText=`position:absolute;width:${2+Math.random()*2}px;height:${2+Math.random()*2}px;left:${Math.random()*100}%;top:${Math.random()*100}%;border-radius:50%;background:rgba(255,200,60,.1);--dx:${dx}px;--dy:${dy}px;animation:dustF ${6+Math.random()*6}s linear infinite;animation-delay:${Math.random()*6}s`;el.appendChild(d)}
 }
 
-// 이펙트 애니메이션 추가
-const fxStyle=document.createElement('style');
-fxStyle.textContent=`
-@keyframes starTw{0%,100%{opacity:.15;transform:scale(.5) rotate(0)}50%{opacity:1;transform:scale(1.2) rotate(180deg)}}
-@keyframes hexF{0%{transform:translateY(0) rotate(0);opacity:.06}50%{opacity:.12}100%{transform:translateY(-650px) rotate(360deg);opacity:0}}
-@keyframes cometT{0%{transform:translateX(-100px) translateY(100px);opacity:0}20%{opacity:.2}80%{opacity:.1}100%{transform:translateX(400px) translateY(-100px);opacity:0}}
-@keyframes pxRain{0%{transform:translateY(-10px);opacity:0}50%{opacity:.12}100%{transform:translateY(500px);opacity:0}}
-@keyframes sparkleA{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
-@keyframes dustF{0%{transform:translate(0,0);opacity:0}20%{opacity:.12}80%{opacity:.08}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
-`;
-document.head.appendChild(fxStyle);
-
-// ================================================================
-// 초기화: 게임오버
-// ================================================================
+// ===== 게임오버 =====
 function initGameOver(){
-  const content=document.getElementById('goContent');
-  const colors=['#ffd700','#ff6b6b','#44ffaa','#44ddff','#ff80c0','#ffa830'];
-  for(let burst=0;burst<3;burst++){
-    setTimeout(()=>{
-      for(let i=0;i<20;i++){
-        const p=document.createElement('div');p.className='go-fw';
-        const angle=Math.random()*Math.PI*2,dist=60+Math.random()*100;
-        p.style.cssText=`left:${30+Math.random()*40}%;top:${20+Math.random()*30}%;background:${colors[Math.floor(Math.random()*colors.length)]};--fx:${Math.cos(angle)*dist}px;--fy:${Math.sin(angle)*dist}px;animation-delay:${Math.random()*.3}s;animation-duration:${1+Math.random()}s`;
-        content.appendChild(p);
-      }
-    },burst*800);
-  }
-  const scoreEl=document.getElementById('goScore');
-  let target=8750;const dur=1500;const start=Date.now();
-  function countUp(){
-    const t=Math.min((Date.now()-start)/dur,1);
-    scoreEl.textContent=Math.round(target*(1-Math.pow(1-t,3))).toLocaleString();
-    if(t<1)requestAnimationFrame(countUp);
-  }
-  setTimeout(countUp,500);
+  const ct=document.getElementById('goContent');
+  const cols=['#ffd700','#ff6b6b','#44ffaa','#44ddff','#ff80c0','#ffa830'];
+  for(let b=0;b<3;b++){setTimeout(()=>{for(let i=0;i<20;i++){const p=document.createElement('div');p.className='go-fw';const a=Math.random()*Math.PI*2,d=60+Math.random()*100;p.style.cssText=`left:${30+Math.random()*40}%;top:${20+Math.random()*30}%;background:${cols[Math.floor(Math.random()*cols.length)]};--fx:${Math.cos(a)*d}px;--fy:${Math.sin(a)*d}px;animation-delay:${Math.random()*.3}s;animation-duration:${1+Math.random()}s`;ct.appendChild(p)}},b*800)}
+  const se=document.getElementById('goScore');let tgt=8750;const dur=1500,st=Date.now();
+  function cu(){const t=Math.min((Date.now()-st)/dur,1);se.textContent=Math.round(tgt*(1-Math.pow(1-t,3))).toLocaleString();if(t<1)requestAnimationFrame(cu)}
+  setTimeout(cu,500);
 }
 
-// ================================================================
-// GO
-// ================================================================
+// ===== GO =====
 window.addEventListener('load',()=>{
-  initStartScreen();
-  initGameplay();
-  initGameOver();
+  const row=document.getElementById('charRow');
+  [{b:[240,90,90,255],c:[255,160,160,80],e:0,m:0},{b:[250,180,50,255],c:[255,200,120,80],e:1,m:1},{b:[80,200,100,255],c:[140,255,160,80],e:2,m:2},{b:[80,160,240,255],c:[140,200,255,80],e:3,m:4},{b:[200,130,220,255],c:[230,180,240,80],e:4,m:3}].forEach(ch=>{
+    const cv=document.createElement('canvas');cv.width=52;cv.height=52;
+    drawFace(cv,ch.b,ch.c,ch.e,ch.m);row.appendChild(cv);
+  });
+  drawPixelTitle(document.getElementById('titleCanvas'));
+  drawGem(document.getElementById('gemCanvas'));
+  drawConstellations();createStars();createMeteors();
+  initGameplay();initGameOver();
 });
 </script>
 </body>
