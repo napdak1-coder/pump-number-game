@@ -1118,14 +1118,14 @@ button {
   <div id="screenStart" class="screen active">
     <canvas id="constellationCanvas"></canvas>
     <div class="startHeader">
-      <button class="startHeaderBtn" onclick="showScreen('collection')">컬렉션</button>
-      <button class="startHeaderBtn" onclick="showScreen('ranking')">랭킹</button>
+      <button class="startHeaderBtn" id="collectionBtn">컬렉션</button>
+      <button class="startHeaderBtn" id="rankingBtn">랭킹</button>
     </div>
     <div class="startContent">
       <div class="charRow" id="startChars"></div>
       <canvas id="titleCanvas" width="270" height="90"></canvas>
       <canvas id="gemCanvas" width="72" height="72"></canvas>
-      <button class="startBtn" onclick="startGame()">시작하기</button>
+      <button class="startBtn" id="startBtn">시작하기</button>
       <div class="bestScore">최고기록 <span id="bestScoreVal">0점</span></div>
     </div>
   </div>
@@ -1190,8 +1190,8 @@ button {
       </div>
       <div class="goStats" id="goStats"></div>
       <div class="goButtons">
-        <button class="goBtn" onclick="startGame()">재도전</button>
-        <button class="goBtn" onclick="showScreen('start')">홈으로</button>
+        <button class="goBtn" id="retryBtn">재도전</button>
+        <button class="goBtn" id="homeBtn">홈으로</button>
       </div>
     </div>
   </div>
@@ -1199,7 +1199,7 @@ button {
   <div id="screenCollection" class="screen">
     <div class="collHeader">
       <div class="collTitle">내 컬렉션</div>
-      <button class="collBackBtn" onclick="showScreen('start')">← 돌아가기</button>
+      <button class="collBackBtn" id="collBackBtn">← 돌아가기</button>
     </div>
     <div class="collTabs">
       <button class="collTab active" data-tab="skins">캐릭터</button>
@@ -1933,6 +1933,14 @@ window.addEventListener('load', () => {
     if (e.target.closest('.rankList, .collPages')) return;
     e.preventDefault();
   }, { passive: false });
+
+  // Button event listeners (replaced inline onclick for cross-browser compatibility)
+  document.getElementById('startBtn').addEventListener('click', () => startGame());
+  document.getElementById('retryBtn').addEventListener('click', () => startGame());
+  document.getElementById('collectionBtn').addEventListener('click', () => showScreen('collection'));
+  document.getElementById('rankingBtn').addEventListener('click', () => showScreen('ranking'));
+  document.getElementById('homeBtn').addEventListener('click', () => showScreen('start'));
+  document.getElementById('collBackBtn').addEventListener('click', () => showScreen('start'));
 });
 </script>
 
