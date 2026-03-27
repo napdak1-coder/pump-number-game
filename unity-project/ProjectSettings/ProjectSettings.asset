@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!129 &1
+PlayerSettings:
+  productName: "\uBE7C\uBD10\uC601"
+  companyName: "PumpNumber"
+  defaultScreenWidth: 1080
+  defaultScreenHeight: 1920
+  defaultScreenOrientation: 1  # Portrait
+  allowedAutorotateToPortrait: 1
+  allowedAutorotateToPortraitUpsideDown: 0
+  allowedAutorotateToLandscapeRight: 0
+  allowedAutorotateToLandscapeLeft: 0
+  targetDevice: 0  # iPhone + iPad / All Android
+
+  # === Android 설정 ===
+  AndroidBundleVersionCode: 1
+  AndroidMinSdkVersion: 24        # Android 7.0+
+  AndroidTargetSdkVersion: 34     # Android 14
+
+  # === iOS 설정 ===
+  iPhoneBundleIdentifier: "com.pumpnumber.bbaebyoyeong"
+  iOSTargetOSVersionString: "14.0"
+
+  # === 공통 ===
+  bundleVersion: "1.0.0"
+  applicationIdentifier:
+    Android: "com.pumpnumber.bbaebyoyeong"
+    iPhone: "com.pumpnumber.bbaebyoyeong"
+
+  # === 그래픽 ===
+  colorSpace: 1  # Linear
+  gpuSkinning: 1
+
+  # === 스플래시 (Personal 라이선스) ===
+  showUnitySplashScreen: 1
+  splashScreenBackgroundColor: {r: 0.039, g: 0.055, b: 0.094, a: 1}  # #0a0e18
