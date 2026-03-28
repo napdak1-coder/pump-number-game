@@ -186,17 +186,35 @@
   .go-share:active{transform:translateY(3px);box-shadow:1px 1px 0 #082848}
   .go-retry:active{transform:scale(.95)}
   .go-footer{margin-top:6px;font-size:8px;color:rgba(255,224,102,.15);letter-spacing:3px;z-index:2;font-family:'DotGothic16',monospace}
-  .start-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(160deg,#0a0a14 0%,#0f0f20 40%,#14142a 70%,#0f0f20 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;transition:opacity .5s}
+  .start-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a000a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;transition:opacity .5s;overflow:hidden}
+.cyber-scanline{position:absolute;left:0;right:0;height:2px;background:rgba(255,0,100,0.1);animation:cyberScanDown 3s linear infinite;z-index:1;pointer-events:none}
+@keyframes cyberScanDown{0%{top:-2px}100%{top:100%}}
+.cyber-glitch-bar{position:absolute;left:0;right:0;height:3px;background:rgba(0,255,200,0.15);animation:cyberGlitchBars 0.5s steps(1) infinite;z-index:1;pointer-events:none}
+@keyframes cyberGlitchBars{0%{top:20%;opacity:0}10%{opacity:1}15%{top:60%;opacity:0}50%{top:80%;opacity:1}55%{opacity:0}100%{opacity:0}}
+.cyber-hex{position:absolute;font-family:'Press Start 2P',monospace;font-size:8px;color:rgba(255,0,100,0.08);animation:cyberHexDrift 12s linear infinite;z-index:1;pointer-events:none}
+@keyframes cyberHexDrift{0%{transform:translateY(0);opacity:0.05}50%{opacity:0.12}100%{transform:translateY(-600px);opacity:0}}
+.cyber-nav{display:flex;justify-content:space-around;position:absolute;bottom:12px;left:0;right:0;padding:8px 16px;z-index:3}
+.cyber-nav-btn{text-align:center;cursor:pointer;padding:6px 8px;border-radius:6px;transition:background 0.2s}
+.cyber-nav-btn:active{background:rgba(255,0,100,0.1)}
+.cyber-nav-label{font-family:'Press Start 2P',monospace;font-size:6px;margin-top:3px}
+.cyber-info-panel{width:280px;background:rgba(255,0,100,0.03);border:1px solid rgba(255,0,100,0.12);border-radius:6px;padding:12px;z-index:2}
+.cyber-info-row{display:flex;justify-content:space-between;margin-bottom:8px;font-family:'Press Start 2P',monospace;font-size:7px}
+.cyber-info-row:last-child{margin-bottom:0}
+.cyber-info-label{color:rgba(255,0,100,0.6)}
+.cyber-info-value{color:#fff}
+.cyber-coin{position:absolute;top:16px;right:16px;display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.6);padding:4px 10px;border-radius:4px;border:1px solid rgba(255,0,100,0.3);z-index:3}
+.cyber-version{position:absolute;top:16px;left:16px;font-family:'Press Start 2P',monospace;font-size:6px;color:rgba(255,0,100,0.4);border:1px solid rgba(255,0,100,0.15);padding:3px 8px;border-radius:3px;z-index:3}
+@keyframes cyberGlitchText{0%,100%{text-shadow:3px 0 #00ffcc,-3px 0 #0088ff}10%{text-shadow:-3px 2px #00ffcc,3px -2px #0088ff}20%{text-shadow:3px 0 #00ffcc,-3px 0 #0088ff}30%{text-shadow:0 0 #00ffcc,0 0 #0088ff}}
   .char-bg{display:none}
   .start-frame{display:block}
-  .px-row{display:flex}
-  .start-monster{display:block}
+  .px-row{display:none}
+  .start-monster{display:flex;align-items:center;justify-content:center;width:80px;height:80px;border:2px solid #ff0066;background:rgba(255,0,100,0.03);z-index:2;margin-bottom:10px;font-size:40px}
   body.peach .char-bg{display:block}
   .start-screen.hidden{opacity:0;pointer-events:none}
-  .game-title{font-size:min(18vw,72px);font-weight:900;color:#fff;text-shadow:0 0 30px #cc88ff,0 0 60px #8844dd;letter-spacing:8px}
-  .game-subtitle{font-size:13px;color:rgba(255,255,255,0.25);letter-spacing:6px;margin-bottom:8px}
-  .best-score-display{font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:2px;margin-bottom:40px}
-  .start-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(204,136,255,0.3);border-radius:50px;padding:16px 55px;font-size:18px;font-weight:900;color:#cc88ff;letter-spacing:4px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .game-title{font-family:'Press Start 2P',monospace;font-size:min(12vw,42px);font-weight:900;color:#ff0066;text-shadow:3px 0 #00ffcc,-3px 0 #0088ff;letter-spacing:4px;animation:cyberGlitchText 3s steps(1) infinite;-webkit-font-smoothing:none;image-rendering:pixelated;z-index:2}
+  .game-subtitle{font-family:'Press Start 2P',monospace;font-size:7px;color:#00ffcc;opacity:0.4;letter-spacing:2px;margin-top:6px;margin-bottom:8px;z-index:2}
+  .best-score-display{font-family:'Press Start 2P',monospace;font-size:7px;color:rgba(255,0,100,0.6);letter-spacing:2px;margin-bottom:20px;z-index:2;display:none}
+  .start-btn{font-family:'Press Start 2P',monospace;background:transparent;border:2px solid #ff0066;border-radius:4px;padding:14px 50px;font-size:14px;font-weight:900;color:#ff0066;letter-spacing:2px;cursor:pointer;box-shadow:0 0 15px rgba(255,0,100,0.3),inset 0 0 15px rgba(255,0,100,0.1);-webkit-tap-highlight-color:transparent;z-index:2;margin-bottom:12px}
   .start-btn:active{background:rgba(204,136,255,0.12);transform:scale(0.95)}
 
   /* === DEMO BANNER === */
@@ -757,7 +775,7 @@ body.ktheme-console .key-btn:active,body.ktheme-console .key-btn.pressed{backgro
 .coin-hud-amt{font-size:11px;color:#ffcc00;text-shadow:0 0 4px #ffcc0033}
 .coin-float{position:fixed;color:#ffcc00;font-family:"Press Start 2P",monospace;font-size:12px;pointer-events:none;z-index:999;animation:coinFloat 1.2s ease-out forwards}
 @keyframes coinFloat{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-50px)}}
-.shop-btn{display:block;margin:10px auto 0;padding:10px 24px;background:linear-gradient(180deg,#ffcc00,#ee9900);border:none;border-bottom:4px solid #aa6600;border-radius:6px;color:#442200;font-family:"Press Start 2P",monospace;font-size:11px;cursor:pointer;letter-spacing:1px;image-rendering:pixelated}
+.shop-btn{display:none}
 .shop-btn:active{border-bottom-width:2px;transform:translateY(2px)}
 .shop-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:550;flex-direction:column;align-items:center;overflow-y:auto;padding:16px}
 .shop-overlay.open{display:flex}
@@ -817,8 +835,30 @@ body.ktheme-console .key-btn:active,body.ktheme-console .key-btn.pressed{backgro
   <button class="demo-play-btn" onclick="stopDemoAndPlay()">직접 플레이</button>
 </div>
 
-<div class="start-screen" id="startScreen"><div class="char-bg" id="charBg"></div><div class="start-frame"><div class="start-monster">👾</div><div class="game-title">빼봐영</div><div class="game-subtitle">숫 자 빼 기 게 임</div><div class="px-row"><div class="px" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.06)">8</div><div class="px" style="border-color:#dc2626;color:#dc2626;background:rgba(220,38,38,.06);animation-delay:.1s">−</div><div class="px" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.06);animation-delay:.2s">5</div><div class="px" style="border-color:#dc2626;color:#dc2626;background:rgba(220,38,38,.06);animation-delay:.3s">−</div><div class="px" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.06);animation-delay:.4s">3</div><div class="px" style="border-color:#16a34a;color:#16a34a;background:rgba(22,163,74,.06);animation-delay:.5s">=</div><div class="px" style="border-color:#16a34a;color:#16a34a;background:rgba(22,163,74,.08);animation-delay:.6s">0</div></div><div class="best-score-display" id="bestScoreStart">🏆 최고기록 0</div><button class="start-btn" onclick="startGame()">시 작 하 기</button>
-<button class="shop-btn" onclick="openShop()">🏪 상 점</button></div></div>
+<div class="start-screen" id="startScreen">
+<div class="cyber-scanline"></div>
+<div class="cyber-glitch-bar" style="animation-delay:0s"></div>
+<div class="cyber-glitch-bar" style="animation-delay:0.2s"></div>
+<div class="cyber-hex" style="left:5%;top:100%;animation-duration:10s;animation-delay:0s">FF 0A C3 7B E2</div>
+<div class="cyber-hex" style="left:25%;top:100%;animation-duration:8s;animation-delay:2s">A1 B4 00 FF CC</div>
+<div class="cyber-hex" style="left:55%;top:100%;animation-duration:12s;animation-delay:1s">7E 3D 9F 02 8A</div>
+<div class="cyber-hex" style="left:80%;top:100%;animation-duration:9s;animation-delay:3s">D4 56 1C E0 B7</div>
+<div class="cyber-version">v2.04</div>
+<div class="cyber-coin"><svg width="14" height="14" viewBox="0 0 7 7" style="image-rendering:pixelated"><rect x="2" y="0" width="3" height="1" fill="#ff0066"/><rect x="1" y="1" width="1" height="1" fill="#ff0066"/><rect x="5" y="1" width="1" height="1" fill="#ff0066"/><rect x="0" y="2" width="1" height="3" fill="#ff0066"/><rect x="6" y="2" width="1" height="3" fill="#ff0066"/><rect x="1" y="5" width="1" height="1" fill="#ff0066"/><rect x="5" y="5" width="1" height="1" fill="#ff0066"/><rect x="2" y="6" width="3" height="1" fill="#ff0066"/><rect x="3" y="2" width="1" height="3" fill="#cc0044"/></svg><span id="cyberCoinDisplay" style="font-family:'Press Start 2P',monospace;font-size:9px;color:#ff0066">0</span></div><div class="char-bg" id="charBg"></div><div class="start-frame"><div class="start-monster">👾</div><div class="game-title">빼봐영</div><div class="game-subtitle">숫 자 빼 기 게 임</div><div class="px-row"><div class="px" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.06)">8</div><div class="px" style="border-color:#dc2626;color:#dc2626;background:rgba(220,38,38,.06);animation-delay:.1s">−</div><div class="px" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.06);animation-delay:.2s">5</div><div class="px" style="border-color:#dc2626;color:#dc2626;background:rgba(220,38,38,.06);animation-delay:.3s">−</div><div class="px" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.06);animation-delay:.4s">3</div><div class="px" style="border-color:#16a34a;color:#16a34a;background:rgba(22,163,74,.06);animation-delay:.5s">=</div><div class="px" style="border-color:#16a34a;color:#16a34a;background:rgba(22,163,74,.08);animation-delay:.6s">0</div></div><div class="best-score-display" id="bestScoreStart">🏆 최고기록 0</div><button class="start-btn" onclick="startGame()">시 작 하 기</button>
+<button class="shop-btn" onclick="openShop()">🏪 상 점</button></div>
+<div class="cyber-info-panel" id="cyberInfoPanel" style="margin-top:16px">
+<div class="cyber-info-row"><span class="cyber-info-label">SYS.STATUS</span><span class="cyber-info-value" style="color:#00ffcc">ONLINE</span></div>
+<div class="cyber-info-row"><span class="cyber-info-label">HI-SCORE</span><span class="cyber-info-value" id="cyberBestScore">0</span></div>
+<div class="cyber-info-row"><span class="cyber-info-label">MISSIONS</span><span class="cyber-info-value" id="cyberGamesPlayed">0</span></div>
+<div class="cyber-info-row"><span class="cyber-info-label">STREAK</span><span class="cyber-info-value" id="cyberStreak" style="color:#ff6600">0</span></div>
+<div class="cyber-info-row"><span class="cyber-info-label">RANK</span><span class="cyber-info-value" id="cyberRank" style="color:#ffcc00">--</span></div>
+</div>
+<div class="cyber-nav">
+<div class="cyber-nav-btn" onclick="openSettings()"><svg width="24" height="24" viewBox="0 0 8 8" style="image-rendering:pixelated"><rect x="3" y="0" width="2" height="2" fill="#553344"/><rect x="1" y="2" width="2" height="2" fill="#553344"/><rect x="5" y="2" width="2" height="2" fill="#553344"/><rect x="0" y="4" width="2" height="1" fill="#553344"/><rect x="6" y="4" width="2" height="1" fill="#553344"/><rect x="3" y="3" width="2" height="2" fill="#553344"/><rect x="2" y="5" width="4" height="1" fill="#553344"/><rect x="1" y="6" width="6" height="1" fill="#553344"/></svg><div class="cyber-nav-label" style="color:#553344">SET</div></div>
+<div class="cyber-nav-btn" onclick="openShop()"><svg width="24" height="24" viewBox="0 0 8 8" style="image-rendering:pixelated"><rect x="1" y="0" width="6" height="1" fill="#ff0066"/><rect x="0" y="1" width="8" height="1" fill="#ff0066"/><rect x="0" y="2" width="1" height="4" fill="#ff0066"/><rect x="7" y="2" width="1" height="4" fill="#ff0066"/><rect x="0" y="6" width="8" height="1" fill="#ff0066"/><rect x="1" y="7" width="6" height="1" fill="#ff0066"/><rect x="3" y="3" width="2" height="2" fill="#ffcc00"/></svg><div class="cyber-nav-label" style="color:#ff0066">SHOP</div></div>
+<div class="cyber-nav-btn" onclick="openShop()"><svg width="24" height="24" viewBox="0 0 8 8" style="image-rendering:pixelated"><rect x="2" y="0" width="4" height="1" fill="#553344"/><rect x="1" y="1" width="6" height="1" fill="#553344"/><rect x="1" y="2" width="2" height="2" fill="#fff"/><rect x="5" y="2" width="2" height="2" fill="#fff"/><rect x="1" y="4" width="6" height="1" fill="#553344"/><rect x="2" y="5" width="4" height="1" fill="#553344"/><rect x="1" y="6" width="2" height="2" fill="#553344"/><rect x="5" y="6" width="2" height="2" fill="#553344"/></svg><div class="cyber-nav-label" style="color:#553344">CHAR</div></div>
+<div class="cyber-nav-btn"><svg width="24" height="24" viewBox="0 0 8 8" style="image-rendering:pixelated"><rect x="3" y="0" width="2" height="1" fill="#ffcc00"/><rect x="2" y="1" width="4" height="1" fill="#ffcc00"/><rect x="1" y="2" width="6" height="1" fill="#ffcc00"/><rect x="3" y="3" width="2" height="5" fill="#553344"/><rect x="1" y="7" width="6" height="1" fill="#553344"/></svg><div class="cyber-nav-label" style="color:#553344">RANK</div></div>
+</div></div>
 <div class="breathe-overlay" id="breatheOverlay"><div class="breathe-stage" id="breatheStage">스테이지 2</div><div class="breathe-text">숨 고르기!</div><div class="breathe-sub" id="breatheSub"></div><div class="breathe-countdown" id="breatheCount">1</div></div>
 <div class="gameover-overlay" id="gameoverOverlay">
   <canvas id="goFireworkCanvas" class="go-fw-canvas"></canvas>
@@ -2189,6 +2229,23 @@ if(_origShowTierUp){showTierUp=function(){_origShowTierUp.apply(this,arguments);
 /* Init */
 loadCoinData();updateCoinDisplays();
 (function initStartScreenCoin(){var bestEl=document.getElementById("bestScoreStart");if(bestEl){var coinEl=document.createElement("div");coinEl.style.cssText="margin-top:6px;font-size:11px;color:#ffcc00;font-family:Press Start 2P,monospace";coinEl.textContent="🪙 "+pumpCoins.toLocaleString()+" 코인";bestEl.parentNode.insertBefore(coinEl,bestEl.nextSibling)}})();
+
+// === CYBER MAIN SCREEN INFO PANEL ===
+function updateCyberInfo(){
+  var coins=parseInt(localStorage.getItem('pumpCoins'))||0;
+  var best=parseInt(localStorage.getItem('pumpBest'))||0;
+  var played=parseInt(localStorage.getItem('pumpPlayed'))||0;
+  var streak=parseInt(localStorage.getItem('pumpStreak'))||0;
+  var el;
+  el=document.getElementById('cyberCoinDisplay');if(el)el.textContent=coins.toLocaleString();
+  el=document.getElementById('cyberBestScore');if(el)el.textContent=best;
+  el=document.getElementById('cyberGamesPlayed');if(el)el.textContent=played;
+  el=document.getElementById('cyberStreak');if(el)el.textContent=streak>0?streak+' \u{1F525}':'0';
+  el=document.getElementById('cyberRank');if(el)el.textContent=best>=500?'#1 DIAMOND':best>=300?'#3 GOLD':best>=100?'#7 SILVER':'--';
+  el=document.getElementById('bestScoreStart');if(el)el.textContent='\u{1F3C6} HI-SCORE '+best;
+}
+setInterval(updateCyberInfo,2000);
+setTimeout(updateCyberInfo,500);
 </script>
 
 <!-- SHOP OVERLAY -->
