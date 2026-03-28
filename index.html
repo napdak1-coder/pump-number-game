@@ -723,6 +723,33 @@
   @keyframes fxHexFloatAnim{0%{transform:translateY(0) rotate(0);opacity:.06}50%{opacity:.12}100%{transform:translateY(-650px) rotate(360deg);opacity:0}}
   @keyframes fxCometTrailAnim{0%{transform:translateX(-100px) translateY(100px);opacity:0}20%{opacity:.2}80%{opacity:.1}100%{transform:translateX(400px) translateY(-100px);opacity:0}}
   @keyframes fxDustFloatAnim{0%{transform:translate(0,0);opacity:0}20%{opacity:.12}80%{opacity:.08}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
+
+/* ===== KEYPAD THEMES ===== */
+.ktheme-neon .key-btn{background:#0c0c20!important;border:3px solid #00ced1!important;border-radius:4px!important;color:#00ffe5!important;text-shadow:0 2px 0 #005555!important;box-shadow:inset 0 -3px 0 #003333,0 0 12px #00ced122!important}
+.ktheme-neon .key-btn:active,.ktheme-neon .key-btn.pressed{background:#0f2a3e!important;border-color:#00ffe5!important}
+.ktheme-ice .key-btn{background:linear-gradient(180deg,#2a5a8a,#1a3a5a)!important;border:2px solid #4a88cc!important;border-bottom:4px solid #0a2040!important;border-radius:4px!important;color:#aaddff!important;text-shadow:1px 1px 0 #0a2040!important;box-shadow:none!important}
+.ktheme-ice .key-btn:active,.ktheme-ice .key-btn.pressed{background:#3a6a9a!important}
+.ktheme-candy .key-btn{border:2px solid #000!important;border-bottom:5px solid #000!important;border-radius:3px!important;text-shadow:1px 1px 0 #00000088!important;box-shadow:none!important}
+.ktheme-candy .key-btn:nth-child(1),.ktheme-candy .key-btn[data-num="1"],.ktheme-candy .key-btn[data-num="5"],.ktheme-candy .key-btn[data-num="9"]{background:#ee5555!important;color:#fff!important}
+.ktheme-candy .key-btn[data-num="2"],.ktheme-candy .key-btn[data-num="6"]{background:#44bb88!important;color:#fff!important}
+.ktheme-candy .key-btn[data-num="3"],.ktheme-candy .key-btn[data-num="7"]{background:#4488dd!important;color:#fff!important}
+.ktheme-candy .key-btn[data-num="4"],.ktheme-candy .key-btn[data-num="8"]{background:#ddaa44!important;color:#fff!important}
+.ktheme-candy .key-btn:active,.ktheme-candy .key-btn.pressed{filter:brightness(1.3)!important;border-bottom-width:2px!important}
+.ktheme-pneon .key-btn{background:#12001a!important;border:2px solid rgba(255,68,170,0.4)!important;border-radius:4px!important;color:#ff66cc!important;text-shadow:0 0 6px rgba(255,68,170,0.5)!important;box-shadow:inset 0 -2px 0 #330022!important}
+.ktheme-pneon .key-btn:nth-child(odd),.ktheme-pneon .key-btn[data-num="1"],.ktheme-pneon .key-btn[data-num="3"],.ktheme-pneon .key-btn[data-num="5"],.ktheme-pneon .key-btn[data-num="7"],.ktheme-pneon .key-btn[data-num="9"]{border-color:rgba(68,255,170,0.4)!important;color:#44ffaa!important;text-shadow:0 0 6px rgba(68,255,170,0.5)!important}
+.ktheme-pneon .key-btn:active,.ktheme-pneon .key-btn.pressed{filter:brightness(1.4)!important}
+.ktheme-console .key-btn{background:#141c28!important;border:1px solid #334455!important;border-left:3px solid #00aacc!important;border-radius:2px!important;color:#66bbdd!important;text-shadow:0 1px 0 #000!important;box-shadow:none!important}
+.ktheme-console .key-btn[data-num="3"],.ktheme-console .key-btn[data-num="6"],.ktheme-console .key-btn[data-num="9"]{border-left-color:#334455!important;border-right:3px solid #00aacc!important}
+.ktheme-console .key-btn:active,.ktheme-console .key-btn.pressed{background:#1a2838!important;border-color:#00ccee!important}
+.ktheme-sel-row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;justify-content:center}
+.ktheme-sel-btn{width:56px;height:40px;border:2px solid #333;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;font-family:monospace;transition:.15s}
+.ktheme-sel-btn.active{border-color:#00ced1;box-shadow:0 0 8px #00ced144}
+.ktheme-sel-btn[data-theme="default"]{background:linear-gradient(rgba(255,255,255,0.06),rgba(255,255,255,0.02));color:rgba(220,240,255,0.85);border-radius:8px}
+.ktheme-sel-btn[data-theme="neon"]{background:#0c0c20;border-color:#00ced180;color:#00ffe5}
+.ktheme-sel-btn[data-theme="ice"]{background:linear-gradient(180deg,#2a5a8a,#1a3a5a);color:#aaddff}
+.ktheme-sel-btn[data-theme="candy"]{background:#ee5555;color:#fff}
+.ktheme-sel-btn[data-theme="pneon"]{background:#12001a;color:#ff66cc;border-color:#ff44aa66}
+.ktheme-sel-btn[data-theme="console"]{background:#141c28;border-left:3px solid #00aacc;color:#66bbdd}
 </style>
 </head>
 <body>
@@ -784,7 +811,7 @@
   <div class="go-footer" data-seq="9">못 하면 인정하든가 ㅋ</div>
 </div>
 <div class="allclear-overlay" id="allclearOverlay"><div class="allclear-title">올 클리어!</div><div class="allclear-sub">30 스테이지 클리어!</div><div class="go-stats"><div class="go-stat-row"><span class="go-stat-label">최종 점수</span><span class="go-stat-val" id="acScore">0</span></div><div class="go-stat-row"><span class="go-stat-label">최고기록</span><span class="go-stat-val best" id="acBest">0</span></div><div class="go-stat-row"><span class="go-stat-label">최대 콤보</span><span class="go-stat-val" id="acCombo">0</span></div><div class="go-stat-row"><span class="go-stat-label">천재 횟수</span><span class="go-stat-val" id="acGenius">0</span></div></div><button class="go-retry" onclick="closeAllClearAndRestart()" style="margin-top:20px">다시 도전</button></div>
-<div class="settings-overlay" id="settingsOverlay"><div class="settings-panel"><div class="settings-title">설 정</div><div class="setting-row"><div><div class="setting-label">파티클 이펙트</div><div class="setting-sub">터치 시 파티클</div></div><button class="toggle on" id="togParticle" onclick="toggleSetting('particle')"></button></div><div class="setting-row"><div><div class="setting-label">화면 플래시</div><div class="setting-sub">터치 시 번쩍</div></div><button class="toggle on" id="togFlash" onclick="toggleSetting('flash')"></button></div><div class="setting-row"><div><div class="setting-label">폭발 숫자</div><div class="setting-sub">누른 숫자 크게 표시</div></div><button class="toggle on" id="togExplode" onclick="toggleSetting('explode')"></button></div><div class="setting-row"><div><div class="setting-label">진동</div><div class="setting-sub">모바일 향틱</div></div><button class="toggle on" id="togVibrate" onclick="toggleSetting('vibrate')"></button></div><div class="setting-row"><div><div class="setting-label">사운드</div><div class="setting-sub">효과음</div></div><button class="toggle on" id="togSound" onclick="toggleSetting('sound')"></button></div><div class="setting-row"><div><div class="setting-label">파티클 양</div></div><div class="seg-control"><button class="seg-btn" data-val="low" onclick="setParticleAmount('low')">적음</button><button class="seg-btn active" data-val="mid" onclick="setParticleAmount('mid')">보통</button><button class="seg-btn" data-val="high" onclick="setParticleAmount('high')">많음</button></div></div><button class="settings-close" onclick="closeSettings()">닫기</button></div></div>
+<div class="settings-overlay" id="settingsOverlay"><div class="settings-panel"><div class="settings-title">설 정</div><div class="setting-row"><div><div class="setting-label">파티클 이펙트</div><div class="setting-sub">터치 시 파티클</div></div><button class="toggle on" id="togParticle" onclick="toggleSetting('particle')"></button></div><div class="setting-row"><div><div class="setting-label">화면 플래시</div><div class="setting-sub">터치 시 번쩍</div></div><button class="toggle on" id="togFlash" onclick="toggleSetting('flash')"></button></div><div class="setting-row"><div><div class="setting-label">폭발 숫자</div><div class="setting-sub">누른 숫자 크게 표시</div></div><button class="toggle on" id="togExplode" onclick="toggleSetting('explode')"></button></div><div class="setting-row"><div><div class="setting-label">진동</div><div class="setting-sub">모바일 향틱</div></div><button class="toggle on" id="togVibrate" onclick="toggleSetting('vibrate')"></button></div><div class="setting-row"><div><div class="setting-label">사운드</div><div class="setting-sub">효과음</div></div><button class="toggle on" id="togSound" onclick="toggleSetting('sound')"></button></div><div class="setting-row"><div><div class="setting-label">파티클 양</div></div><div class="seg-control"><button class="seg-btn" data-val="low" onclick="setParticleAmount('low')">적음</button><button class="seg-btn active" data-val="mid" onclick="setParticleAmount('mid')">보통</button><button class="seg-btn" data-val="high" onclick="setParticleAmount('high')">많음</button></div></div><div class="setting-row" style="flex-direction:column;align-items:flex-start"><div><div class="setting-label">키패드 테마</div><div class="setting-sub">키패드 디자인 변경</div></div><div class="ktheme-sel-row" id="kthemeSelRow"><button class="ktheme-sel-btn active" data-theme="default" onclick="setKeypadTheme('default')">기본</button><button class="ktheme-sel-btn" data-theme="neon" onclick="setKeypadTheme('neon')">네온</button><button class="ktheme-sel-btn" data-theme="ice" onclick="setKeypadTheme('ice')">아이스</button><button class="ktheme-sel-btn" data-theme="candy" onclick="setKeypadTheme('candy')">캔디</button><button class="ktheme-sel-btn" data-theme="pneon" onclick="setKeypadTheme('pneon')">핑크</button><button class="ktheme-sel-btn" data-theme="console" onclick="setKeypadTheme('console')">콘솔</button></div></div><button class="settings-close" onclick="closeSettings()">닫기</button></div></div>
 <!-- Character Bar (peach only) -->
 <div class="char-bar" id="charBar">
   <div class="char-bar-left">
@@ -2015,6 +2042,25 @@ function stopDemoAndPlay(){
 
 /* === PAGE LOAD: 시작화면 표시 (시연모드 제거) === */
 demoBanner.classList.add('hidden');
+
+/* ===== KEYPAD THEME SWITCHER ===== */
+function setKeypadTheme(theme){
+  var body=document.body;
+  var themes=['ktheme-neon','ktheme-ice','ktheme-candy','ktheme-pneon','ktheme-console'];
+  themes.forEach(function(c){body.classList.remove(c)});
+  if(theme&&theme!=='default'){body.classList.add('ktheme-'+theme)}
+  try{localStorage.setItem('keypadTheme',theme)}catch(e){}
+  var btns=document.querySelectorAll('.ktheme-sel-btn');
+  btns.forEach(function(b){b.classList.toggle('active',b.getAttribute('data-theme')===theme)});
+}
+(function loadKeypadTheme(){
+  try{var t=localStorage.getItem('keypadTheme');if(t&&t!=='default'){document.body.classList.add('ktheme-'+t);}}catch(e){}
+  setTimeout(function(){
+    var t2='default';try{t2=localStorage.getItem('keypadTheme')||'default'}catch(e){}
+    var btns=document.querySelectorAll('.ktheme-sel-btn');
+    btns.forEach(function(b){b.classList.toggle('active',b.getAttribute('data-theme')===t2)});
+  },100);
+})();
 </script>
 </body>
 </html>
