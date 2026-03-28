@@ -750,6 +750,59 @@ body.ktheme-console .key-btn:active,body.ktheme-console .key-btn.pressed{backgro
 .ktheme-sel-btn[data-theme="candy"]{background:#ee5555;color:#fff}
 .ktheme-sel-btn[data-theme="pneon"]{background:#12001a;color:#ff66cc;border-color:#ff44aa66}
 .ktheme-sel-btn[data-theme="console"]{background:#141c28;border-left:3px solid #00aacc;color:#66bbdd}
+
+/* ===== COIN & SHOP SYSTEM ===== */
+.coin-hud{position:absolute;top:8px;right:60px;display:flex;align-items:center;gap:4px;z-index:20;font-family:"Press Start 2P",monospace}
+.coin-hud-icon{width:18px;height:18px;background:#ffcc00;border-radius:50%;border:2px solid #aa8800;display:flex;align-items:center;justify-content:center;font-size:8px;color:#664400;font-weight:bold;box-shadow:0 0 6px #ffcc0044}
+.coin-hud-amt{font-size:11px;color:#ffcc00;text-shadow:0 0 4px #ffcc0033}
+.coin-float{position:fixed;color:#ffcc00;font-family:"Press Start 2P",monospace;font-size:12px;pointer-events:none;z-index:999;animation:coinFloat 1.2s ease-out forwards}
+@keyframes coinFloat{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-50px)}}
+.shop-btn{display:block;margin:10px auto 0;padding:10px 24px;background:linear-gradient(180deg,#ffcc00,#ee9900);border:none;border-bottom:4px solid #aa6600;border-radius:6px;color:#442200;font-family:"Press Start 2P",monospace;font-size:11px;cursor:pointer;letter-spacing:1px;image-rendering:pixelated}
+.shop-btn:active{border-bottom-width:2px;transform:translateY(2px)}
+.shop-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:200;flex-direction:column;align-items:center;overflow-y:auto;padding:16px}
+.shop-overlay.open{display:flex}
+.shop-header{width:100%;max-width:420px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.shop-title{font-family:"Press Start 2P",monospace;font-size:14px;color:#00ffe5;letter-spacing:2px;text-shadow:0 0 8px #00ced144}
+.shop-coin{display:flex;align-items:center;gap:6px}
+.shop-coin-icon{width:22px;height:22px;background:#ffcc00;border-radius:50%;border:2px solid #aa8800;display:flex;align-items:center;justify-content:center;font-size:10px;color:#664400;font-weight:bold;box-shadow:0 0 8px #ffcc0044}
+.shop-coin-amt{font-size:16px;color:#ffcc00;font-family:"Press Start 2P",monospace;text-shadow:0 0 6px #ffcc0044}
+.char-preview-box{width:100%;max-width:420px;background:linear-gradient(180deg,#0f1a2e,#0a1020);border:2px solid #223;border-radius:8px;padding:16px;text-align:center;margin-bottom:12px}
+.char-stage-box{width:100px;height:100px;margin:0 auto 8px;position:relative;display:flex;align-items:center;justify-content:center}
+.char-preview-label{font-size:9px;color:#00ffe5}
+.shop-tabs{display:flex;gap:4px;width:100%;max-width:420px;margin-bottom:10px}
+.shop-tab{flex:1;padding:8px 2px;background:#1a1a2e;border:2px solid #334;border-radius:4px 4px 0 0;color:#666;font-size:9px;font-family:"Press Start 2P",monospace;cursor:pointer;text-align:center;transition:.2s}
+.shop-tab.active{background:#16213e;border-color:#00ced1;color:#00ffe5;border-bottom-color:transparent}
+.item-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%;max-width:420px;margin-bottom:16px}
+.item-card{background:linear-gradient(180deg,#1a1a2e,#12122a);border:2px solid #334;border-radius:6px;padding:6px;text-align:center;cursor:pointer;transition:.2s;position:relative}
+.item-card:hover{border-color:#00ced1;transform:translateY(-2px)}
+.item-card.locked{opacity:0.4;pointer-events:none}
+.item-card.equipped{border-color:#00ffe5;box-shadow:0 0 8px #00ced133}
+.item-card.rare{border-color:#a855f7}
+.item-card.epic{border-color:#ff6b6b}
+.item-icon{width:36px;height:36px;margin:0 auto 3px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.item-name{font-size:7px;color:#ccc;font-family:"DotGothic16",monospace;margin-bottom:2px}
+.item-price{font-size:8px;color:#ffcc00;display:flex;align-items:center;justify-content:center;gap:2px}
+.item-price .mc{width:8px;height:8px;background:#ffcc00;border-radius:50%;display:inline-block;border:1px solid #aa8800}
+.item-owned{font-size:7px;color:#44bb88}
+.item-rarity{position:absolute;top:1px;right:1px;font-size:6px;padding:1px 3px;border-radius:2px}
+.item-rarity.rare{background:#a855f733;color:#a855f7}
+.item-rarity.epic{background:#ff6b6b33;color:#ff6b6b}
+.shop-close{padding:10px 30px;background:#334;border:none;border-radius:4px;color:#aaa;font-family:"Press Start 2P",monospace;font-size:10px;cursor:pointer;margin-top:8px}
+.shop-close:hover{background:#445;color:#fff}
+.reward-popup-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:300;align-items:center;justify-content:center}
+.reward-popup-overlay.open{display:flex}
+.reward-popup{background:linear-gradient(180deg,#1a0a2e,#0a0a1a);border:3px solid #a855f7;border-radius:12px;padding:24px;text-align:center;max-width:300px;position:relative;overflow:hidden}
+.reward-popup::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle at 50% 30%,#a855f722,transparent 70%)}
+.reward-title{font-size:13px;font-family:"Press Start 2P",monospace;color:#ffcc00;margin-bottom:14px;text-shadow:0 0 8px #ffcc0044;position:relative}
+.reward-item-big{width:70px;height:70px;margin:0 auto 10px;background:#1a1a2e;border:3px solid #a855f7;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:40px;box-shadow:0 0 20px #a855f733;animation:rewardGlow 2s ease-in-out infinite;position:relative}
+@keyframes rewardGlow{0%,100%{box-shadow:0 0 20px #a855f733}50%{box-shadow:0 0 30px #a855f766}}
+.reward-name{font-size:11px;color:#fff;margin-bottom:3px;position:relative}
+.reward-desc{font-size:8px;color:#a855f7;margin-bottom:14px;position:relative}
+.reward-equip-btn{background:linear-gradient(180deg,#a855f7,#7c3aed);border:none;border-bottom:3px solid #5b21b6;color:#fff;padding:8px 24px;border-radius:4px;font-family:"Press Start 2P",monospace;font-size:9px;cursor:pointer;position:relative}
+.reward-close-btn{background:transparent;border:1px solid #555;color:#888;padding:6px 16px;border-radius:4px;font-family:"Press Start 2P",monospace;font-size:8px;cursor:pointer;margin-left:8px;position:relative}
+.go-coin-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;padding:8px;background:rgba(255,204,0,0.08);border-radius:6px;border:1px solid #ffcc0033}
+.go-coin-label{font-size:9px;color:#aaa}
+.go-coin-val{font-size:14px;color:#ffcc00;font-family:"Press Start 2P",monospace}
 </style>
 </head>
 <body>
@@ -764,7 +817,8 @@ body.ktheme-console .key-btn:active,body.ktheme-console .key-btn.pressed{backgro
   <button class="demo-play-btn" onclick="stopDemoAndPlay()">직접 플레이</button>
 </div>
 
-<div class="start-screen" id="startScreen"><div class="char-bg" id="charBg"></div><div class="start-frame"><div class="start-monster">👾</div><div class="game-title">빼봐영</div><div class="game-subtitle">숫 자 빼 기 게 임</div><div class="px-row"><div class="px" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.06)">8</div><div class="px" style="border-color:#dc2626;color:#dc2626;background:rgba(220,38,38,.06);animation-delay:.1s">−</div><div class="px" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.06);animation-delay:.2s">5</div><div class="px" style="border-color:#dc2626;color:#dc2626;background:rgba(220,38,38,.06);animation-delay:.3s">−</div><div class="px" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.06);animation-delay:.4s">3</div><div class="px" style="border-color:#16a34a;color:#16a34a;background:rgba(22,163,74,.06);animation-delay:.5s">=</div><div class="px" style="border-color:#16a34a;color:#16a34a;background:rgba(22,163,74,.08);animation-delay:.6s">0</div></div><div class="best-score-display" id="bestScoreStart">🏆 최고기록 0</div><button class="start-btn" onclick="startGame()">시 작 하 기</button></div></div>
+<div class="start-screen" id="startScreen"><div class="char-bg" id="charBg"></div><div class="start-frame"><div class="start-monster">👾</div><div class="game-title">빼봐영</div><div class="game-subtitle">숫 자 빼 기 게 임</div><div class="px-row"><div class="px" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.06)">8</div><div class="px" style="border-color:#dc2626;color:#dc2626;background:rgba(220,38,38,.06);animation-delay:.1s">−</div><div class="px" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.06);animation-delay:.2s">5</div><div class="px" style="border-color:#dc2626;color:#dc2626;background:rgba(220,38,38,.06);animation-delay:.3s">−</div><div class="px" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.06);animation-delay:.4s">3</div><div class="px" style="border-color:#16a34a;color:#16a34a;background:rgba(22,163,74,.06);animation-delay:.5s">=</div><div class="px" style="border-color:#16a34a;color:#16a34a;background:rgba(22,163,74,.08);animation-delay:.6s">0</div></div><div class="best-score-display" id="bestScoreStart">🏆 최고기록 0</div><button class="start-btn" onclick="startGame()">시 작 하 기</button>
+<button class="shop-btn" onclick="openShop()">🏪 상 점</button></div></div>
 <div class="breathe-overlay" id="breatheOverlay"><div class="breathe-stage" id="breatheStage">스테이지 2</div><div class="breathe-text">숨 고르기!</div><div class="breathe-sub" id="breatheSub"></div><div class="breathe-countdown" id="breatheCount">1</div></div>
 <div class="gameover-overlay" id="gameoverOverlay">
   <canvas id="goFireworkCanvas" class="go-fw-canvas"></canvas>
@@ -806,6 +860,7 @@ body.ktheme-console .key-btn:active,body.ktheme-console .key-btn.pressed{backgro
       <div class="go-card-val sm reverse" id="goReverse">0</div>
     </div>
   </div>
+  <div class="go-coin-row" id="goCoinRow"><span class="go-coin-label">획득 코인</span><span class="go-coin-val" id="goCoinVal">+0 🪙</span></div>
   <button class="go-retry" data-seq="8" onclick="startGame()">🔥 재도전</button>
   <button class="go-share" data-seq="8" onclick="shareResult()">📤 결과 공유</button>
   <div class="go-footer" data-seq="9">못 하면 인정하든가 ㅋ</div>
@@ -826,6 +881,7 @@ body.ktheme-console .key-btn:active,body.ktheme-console .key-btn.pressed{backgro
 </div>
 <!-- Info Bar (separated) -->
 <div class="info-bar">
+<div class="coin-hud" id="coinHud" style="display:none"><div class="coin-hud-icon">C</div><span class="coin-hud-amt" id="coinHudAmt">0</span></div>
   <div class="info-left">
     <div class="info-label">점 수</div>
     <div class="info-value" id="score">0</div>
@@ -2061,6 +2117,108 @@ function setKeypadTheme(theme){
     btns.forEach(function(b){b.classList.toggle('active',b.getAttribute('data-theme')===t2)});
   },100);
 })();
+
+/* ===== COIN & SHOP SYSTEM ===== */
+var pumpCoins=0,sessionCoins=0,ownedItems=[],equippedItems={hat:null,skin:null,face:null,effect:null};
+var SHOP_ITEMS=[
+{id:"hat_cap",cat:"hat",name:"픽셀캡",icon:"🧢",price:200,rarity:"normal"},
+{id:"hat_silk",cat:"hat",name:"실크햇",icon:"🎩",price:400,rarity:"normal"},
+{id:"hat_helmet",cat:"hat",name:"헬멧",icon:"🪖",price:300,rarity:"normal"},
+{id:"hat_ribbon",cat:"hat",name:"리본",icon:"🎀",price:500,rarity:"rare"},
+{id:"hat_fox",cat:"hat",name:"여우귀",icon:"🦊",price:800,rarity:"rare"},
+{id:"hat_crown",cat:"hat",name:"황금왕관",icon:"👑",price:2000,rarity:"epic"},
+{id:"hat_devil",cat:"hat",name:"악마뿔",icon:"😈",price:1500,rarity:"epic"},
+{id:"hat_angel",cat:"hat",name:"천사링",icon:"😇",price:1500,rarity:"epic"},
+{id:"skin_blue",cat:"skin",name:"오션블루",icon:"🔵",price:300,rarity:"normal",color:"#4488ff"},
+{id:"skin_red",cat:"skin",name:"체리레드",icon:"🔴",price:300,rarity:"normal",color:"#ff6b6b"},
+{id:"skin_green",cat:"skin",name:"민트",icon:"🟢",price:300,rarity:"normal",color:"#44bb88"},
+{id:"skin_gold",cat:"skin",name:"골드",icon:"🟡",price:500,rarity:"rare",color:"#ffaa44"},
+{id:"skin_rainbow",cat:"skin",name:"레인보우",icon:"🌈",price:2000,rarity:"rare",color:"rainbow"},
+{id:"skin_dark",cat:"skin",name:"다크매터",icon:"🌑",price:5000,rarity:"epic",color:"#111"},
+{id:"face_happy",cat:"face",name:"행복",icon:"😊",price:200,rarity:"normal"},
+{id:"face_cool",cat:"face",name:"쿨",icon:"😎",price:300,rarity:"normal"},
+{id:"face_angry",cat:"face",name:"화남",icon:"😤",price:300,rarity:"normal"},
+{id:"face_star",cat:"face",name:"스타",icon:"🤩",price:500,rarity:"rare"},
+{id:"face_fire",cat:"face",name:"불꽃",icon:"🔥",price:800,rarity:"rare"},
+{id:"face_galaxy",cat:"face",name:"갤럭시",icon:"🌌",price:3000,rarity:"epic"},
+{id:"fx_sparkle",cat:"effect",name:"반짝이",icon:"✨",price:400,rarity:"normal"},
+{id:"fx_heart",cat:"effect",name:"하트",icon:"💖",price:400,rarity:"normal"},
+{id:"fx_star",cat:"effect",name:"별",icon:"⭐",price:500,rarity:"rare"},
+{id:"fx_rainbow",cat:"effect",name:"무지개",icon:"🌈",price:1000,rarity:"rare"},
+{id:"fx_lightning",cat:"effect",name:"번개",icon:"⚡",price:2000,rarity:"epic"},
+{id:"fx_galaxy",cat:"effect",name:"은하수",icon:"🌠",price:4000,rarity:"epic"}
+];
+var currentShopTab="hat";
+function loadCoinData(){try{pumpCoins=parseInt(localStorage.getItem("pumpCoins"))||0;ownedItems=JSON.parse(localStorage.getItem("pumpOwned"))||[];equippedItems=JSON.parse(localStorage.getItem("pumpEquipped"))||{hat:null,skin:null,face:null,effect:null}}catch(e){pumpCoins=0;ownedItems=[];equippedItems={hat:null,skin:null,face:null,effect:null}}}
+function saveCoinData(){try{localStorage.setItem("pumpCoins",pumpCoins);localStorage.setItem("pumpOwned",JSON.stringify(ownedItems));localStorage.setItem("pumpEquipped",JSON.stringify(equippedItems))}catch(e){}}
+function addCoins(amount){pumpCoins+=amount;sessionCoins+=amount;saveCoinData();updateCoinDisplays()}
+function updateCoinDisplays(){var hud=document.getElementById("coinHudAmt");if(hud)hud.textContent=pumpCoins.toLocaleString();var shop=document.getElementById("shopCoinAmt");if(shop)shop.textContent=pumpCoins.toLocaleString()}
+function spawnCoinFloat(x,y,amount){var el=document.createElement("div");el.className="coin-float";el.textContent="+"+amount+"🪙";el.style.left=x+"px";el.style.top=y+"px";document.body.appendChild(el);setTimeout(function(){el.remove()},1200)}
+function onCorrectAnswer(){addCoins(10);var kp=document.getElementById("keypadArea");if(kp){var r=kp.getBoundingClientRect();spawnCoinFloat(r.left+Math.random()*r.width,r.top-20,10)}}
+function onComboBonus(combo){var bonus=0;if(combo===5)bonus=50;else if(combo===10)bonus=150;else if(combo===20)bonus=300;else if(combo%10===0&&combo>20)bonus=200;if(bonus>0){addCoins(bonus);var el=document.getElementById("coinHudAmt");if(el){spawnCoinFloat(el.getBoundingClientRect().left,el.getBoundingClientRect().top+20,bonus)}}}
+function onStageCleared(){addCoins(200);spawnCoinFloat(window.innerWidth/2,window.innerHeight/2-50,200)}
+function onNewHighScore(){addCoins(500);spawnCoinFloat(window.innerWidth/2,window.innerHeight/2,500)}
+function onGameEnd(){var el=document.getElementById("goCoinVal");if(el)el.textContent="+"+sessionCoins+" 🪙";var hud=document.getElementById("coinHud");if(hud)hud.style.display="none"}
+function onGameStart(){sessionCoins=0;var hud=document.getElementById("coinHud");if(hud)hud.style.display="flex";updateCoinDisplays();checkDailyBonus()}
+function checkDailyBonus(){try{var last=localStorage.getItem("pumpLastPlay");var today=new Date().toDateString();if(last!==today){addCoins(100);localStorage.setItem("pumpLastPlay",today);spawnCoinFloat(window.innerWidth/2,100,100)}}catch(e){}}
+/* Shop UI Functions */
+function openShop(){loadCoinData();updateCoinDisplays();renderShopItems();updateCharPreview();document.getElementById("shopOverlay").classList.add("open")}
+function closeShop(){document.getElementById("shopOverlay").classList.remove("open")}
+function switchShopTab(tab){currentShopTab=tab;var tabs=document.querySelectorAll(".shop-tab");tabs.forEach(function(t,i){var cats=["hat","skin","face","effect"];t.classList.toggle("active",cats[i]===tab)});renderShopItems()}
+function renderShopItems(){var grid=document.getElementById("shopItemGrid");if(!grid)return;grid.innerHTML="";var items=SHOP_ITEMS.filter(function(it){return it.cat===currentShopTab});items.forEach(function(item){var owned=ownedItems.indexOf(item.id)>-1;var equipped=equippedItems[item.cat]===item.id;var card=document.createElement("div");card.className="item-card"+(equipped?" equipped":"")+(item.rarity==="rare"?" rare":"")+(item.rarity==="epic"?" epic":"");card.onclick=function(){onItemClick(item)};card.innerHTML='<div class="item-icon">'+item.icon+"</div>"+'<div class="item-name">'+item.name+"</div>"+(equipped?'<div class="item-owned">착용중</div>':owned?'<div class="item-owned">보유중</div>':'<div class="item-price"><span class="mc"></span>'+item.price+"</div>")+(item.rarity!=="normal"?'<span class="item-rarity '+item.rarity+'">'+item.rarity.toUpperCase()+"</span>":"");grid.appendChild(card)})}
+function onItemClick(item){var owned=ownedItems.indexOf(item.id)>-1;if(owned){equipItem(item)}else{buyItem(item)}}
+function buyItem(item){if(pumpCoins<item.price){alert("코인이 부족합니다! (필요: "+item.price+", 보유: "+pumpCoins+")");return}pumpCoins-=item.price;ownedItems.push(item.id);saveCoinData();equipItem(item);updateCoinDisplays();showRewardPopup(item)}
+function equipItem(item){if(equippedItems[item.cat]===item.id){equippedItems[item.cat]=null}else{equippedItems[item.cat]=item.id}saveCoinData();renderShopItems();updateCharPreview()}
+function updateCharPreview(){var preview=document.getElementById("charEmoji");var label=document.getElementById("charEquipLabel");if(!preview)return;var parts=[];var skin=equippedItems.skin;var face=equippedItems.face;var hat=equippedItems.hat;var fx=equippedItems.effect;if(hat){var h=SHOP_ITEMS.find(function(i){return i.id===hat});if(h)parts.push(h.icon)}if(face){var f=SHOP_ITEMS.find(function(i){return i.id===face});if(f){preview.textContent=f.icon}else{preview.textContent="👾"}}else{preview.textContent="👾"}if(hat){var hatItem=SHOP_ITEMS.find(function(i){return i.id===hat});if(hatItem)label.textContent=hatItem.icon+" "+hatItem.name+" 착용중"}else if(skin){var skinItem=SHOP_ITEMS.find(function(i){return i.id===skin});if(skinItem)label.textContent=skinItem.name+" 스킨 적용중"}else{label.textContent="기본 캐릭터"}}
+/* Reward Popup */
+var lastRewardItem=null;
+function showRewardPopup(item){lastRewardItem=item;document.getElementById("rewardTitle").textContent="✨ NEW ITEM ✨";document.getElementById("rewardIcon").textContent=item.icon;document.getElementById("rewardName").textContent=item.name;document.getElementById("rewardDesc").textContent=(item.rarity==="epic"?"EPIC":"RARE")+" 등급";document.getElementById("rewardPopupOverlay").classList.add("open")}
+function equipRewardItem(){if(lastRewardItem){equippedItems[lastRewardItem.cat]=lastRewardItem.id;saveCoinData();updateCharPreview();renderShopItems()}closeRewardPopup()}
+function closeRewardPopup(){document.getElementById("rewardPopupOverlay").classList.remove("open");lastRewardItem=null}
+/* Hook into existing game functions */
+var _origHandleSuccess=typeof handleSuccess==="function"?handleSuccess:null;
+var _origStartGame=typeof startGame==="function"?startGame:null;
+var _origShowGameOver=typeof showGameOver==="function"?showGameOver:null;
+var _origCheckKillStreak=typeof checkKillStreak==="function"?checkKillStreak:null;
+var _origShowTierUp=typeof showTierUp==="function"?showTierUp:null;
+if(_origHandleSuccess){handleSuccess=function(){_origHandleSuccess.apply(this,arguments);onCorrectAnswer()}}
+if(_origStartGame){startGame=function(){_origStartGame.apply(this,arguments);onGameStart()}}
+if(_origShowGameOver){showGameOver=function(){_origShowGameOver.apply(this,arguments);onGameEnd();var best=parseInt(localStorage.getItem("pumpBest"))||0;if(score>best)onNewHighScore()}}
+if(_origCheckKillStreak){checkKillStreak=function(){_origCheckKillStreak.apply(this,arguments);if(typeof comboCount!=="undefined")onComboBonus(comboCount)}}
+if(_origShowTierUp){showTierUp=function(){_origShowTierUp.apply(this,arguments);onStageCleared()}}
+/* Init */
+loadCoinData();updateCoinDisplays();
+(function initStartScreenCoin(){var bestEl=document.getElementById("bestScoreStart");if(bestEl){var coinEl=document.createElement("div");coinEl.style.cssText="margin-top:6px;font-size:11px;color:#ffcc00;font-family:Press Start 2P,monospace";coinEl.textContent="🪙 "+pumpCoins.toLocaleString()+" 코인";bestEl.parentNode.insertBefore(coinEl,bestEl.nextSibling)}})();
 </script>
+
+<!-- SHOP OVERLAY -->
+<div class="shop-overlay" id="shopOverlay">
+<div class="shop-header">
+<div class="shop-title">상 점</div>
+<div class="shop-coin"><div class="shop-coin-icon">C</div><span class="shop-coin-amt" id="shopCoinAmt">0</span></div>
+</div>
+<div class="char-preview-box">
+<div class="char-stage-box" id="charPreview"><span style="font-size:48px" id="charEmoji">👾</span></div>
+<div class="char-preview-label" id="charEquipLabel">기본 캐릭터</div>
+</div>
+<div class="shop-tabs" id="shopTabs">
+<div class="shop-tab active" onclick="switchShopTab('hat')">모자</div>
+<div class="shop-tab" onclick="switchShopTab('skin')">스킨</div>
+<div class="shop-tab" onclick="switchShopTab('face')">표정</div>
+<div class="shop-tab" onclick="switchShopTab('effect')">효과</div>
+</div>
+<div class="item-grid" id="shopItemGrid"></div>
+<button class="shop-close" onclick="closeShop()">닫 기</button>
+</div>
+<!-- REWARD POPUP -->
+<div class="reward-popup-overlay" id="rewardPopupOverlay">
+<div class="reward-popup">
+<div class="reward-title" id="rewardTitle">NEW ITEM</div>
+<div class="reward-item-big" id="rewardIcon">👑</div>
+<div class="reward-name" id="rewardName">아이템</div>
+<div class="reward-desc" id="rewardDesc">설명</div>
+<div><button class="reward-equip-btn" onclick="equipRewardItem()">바로 착용</button><button class="reward-close-btn" onclick="closeRewardPopup()">닫기</button></div>
+</div>
+</div>
 </body>
 </html>
