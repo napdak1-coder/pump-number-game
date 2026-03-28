@@ -206,10 +206,10 @@
 .cyber-version{position:absolute;top:16px;left:16px;font-family:'Press Start 2P',monospace;font-size:6px;color:rgba(255,0,100,0.4);border:1px solid rgba(255,0,100,0.15);padding:3px 8px;border-radius:3px;z-index:3}
 @keyframes cyberGlitchText{0%,100%{text-shadow:3px 0 #00ffcc,-3px 0 #0088ff}10%{text-shadow:-3px 2px #00ffcc,3px -2px #0088ff}20%{text-shadow:3px 0 #00ffcc,-3px 0 #0088ff}30%{text-shadow:0 0 #00ffcc,0 0 #0088ff}}
   .char-bg{display:none}
-  .start-frame{display:block}
-  .px-row{display:none}
+  .start-frame{display:flex;flex-direction:column;align-items:center;background:transparent!important;border:none!important;box-shadow:none!important;max-width:100%;width:100%}
+  .px-row{display:none!important}
   .start-monster{display:flex;align-items:center;justify-content:center;width:80px;height:80px;border:2px solid #ff0066;background:rgba(255,0,100,0.03);z-index:2;margin-bottom:10px;font-size:40px}
-  body.peach .char-bg{display:block}
+  body.peach .char-bg{display:none!important}
   .start-screen.hidden{opacity:0;pointer-events:none}
   .game-title{font-family:'Press Start 2P',monospace;font-size:min(12vw,42px);font-weight:900;color:#ff0066;text-shadow:3px 0 #00ffcc,-3px 0 #0088ff;letter-spacing:4px;animation:cyberGlitchText 3s steps(1) infinite;-webkit-font-smoothing:none;image-rendering:pixelated;z-index:2}
   .game-subtitle{font-family:'Press Start 2P',monospace;font-size:7px;color:#00ffcc;opacity:0.4;letter-spacing:2px;margin-top:6px;margin-bottom:8px;z-index:2}
@@ -637,9 +637,7 @@
   body.peach .tier-up-popup{text-shadow:0 0 25px currentColor,4px 4px 0 rgba(0,0,0,.5) !important;font-family:'Press Start 2P',monospace !important}
 
   /* 시작 화면 */
-  body.peach .start-screen{
-    background:linear-gradient(160deg,#fff7ed,#ffedd5,#fef3c7) !important;
-  }
+  body.peach .start-screen{background:#0a000a!important}
   /* 캐릭터 배경 */
   body.peach .char-bg{position:absolute;inset:0;overflow:hidden;z-index:1;pointer-events:none}
   body.peach .char-row{position:absolute;left:0;right:0;display:flex;justify-content:space-evenly;align-items:flex-end}
@@ -650,32 +648,19 @@
   body.peach .pxdog{width:28px;height:32px;position:relative;flex-shrink:0}
   body.peach .pxdog canvas{width:28px;height:32px;image-rendering:pixelated}
   /* 중앙 프레임 */
-  body.peach .start-frame{
-    border:4px solid #fb923c;
-    box-shadow:0 0 0 4px #fff7ed,0 0 0 8px #ea580c,0 8px 24px rgba(234,88,12,.12);
-    background:rgba(255,255,255,.82);backdrop-filter:blur(14px);
-    border-radius:6px;padding:28px 24px;width:82%;text-align:center;
-    z-index:10;position:relative;
-  }
-  body.peach .game-title{color:#c2410c;text-shadow:2px 2px 0 #fed7aa;font-size:min(18vw,72px) !important}
-  body.peach .game-subtitle{color:#ea580c;letter-spacing:4px;font-weight:700}
-  body.peach .best-score-display{color:rgba(120,53,15,.4);font-size:11px;letter-spacing:2px}
-  body.peach .start-btn{
-    background:#ea580c !important;border:none !important;border-radius:6px !important;
-    padding:14px 44px;font-size:18px;font-weight:900;color:#fff !important;
-    letter-spacing:6px;box-shadow:0 4px 0 #9a3412 !important;
-  }
+  body.peach .start-frame{border:none!important;box-shadow:none!important;background:transparent!important;backdrop-filter:none!important;border-radius:0;padding:28px 24px;width:82%;text-align:center;z-index:10;position:relative}
+  body.peach .game-title{font-family:'Press Start 2P',monospace!important;color:#ff0066!important;text-shadow:3px 0 #00ffcc,-3px 0 #0088ff!important;font-size:min(12vw,42px)!important;animation:cyberGlitchText 3s steps(1) infinite}
+  body.peach .game-subtitle{font-family:'Press Start 2P',monospace!important;color:#00ffcc!important;opacity:0.4;font-size:7px!important;letter-spacing:2px}
+  body.peach .best-score-display{display:none!important}
+  body.peach .start-btn{font-family:'Press Start 2P',monospace!important;background:transparent!important;border:2px solid #ff0066!important;border-radius:4px!important;color:#ff0066!important;box-shadow:0 0 15px rgba(255,0,100,0.3),inset 0 0 15px rgba(255,0,100,0.1)!important;padding:14px 50px;font-size:14px;letter-spacing:2px}
   body.peach .start-btn:active{transform:translateY(3px);box-shadow:0 1px 0 #9a3412 !important}
   /* 수식 미니 픽셀 박스 */
-  body.peach .px-row{display:flex;gap:4px;justify-content:center;margin:12px 0}
-  body.peach .px{width:30px;height:30px;border:3px solid;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;border-radius:3px;animation:numDance 1s ease infinite;font-family:'Courier New',monospace}
+  body.peach .px-row{display:none!important}
+  body.peach .px{display:none!important}
   @keyframes numDance{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
   /* 몬스터 아이콘 */
   body.peach .start-monster{font-size:60px;animation:bob 1.5s ease infinite}
-  @keyframes bob{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-8px) rotate(-3deg)}75%{transform:translateY(-4px) rotate(3deg)}}
-
-  /* 숨고르기 */
-  body.peach .breathe-overlay{background:rgba(8,24,40,.92)}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-8px) rotate(-3deg)}75%{transfobody.peach .start-monster{font-size:40px!important;width:80px;height:80px;border:2px solid #ff0066;background:rgba(255,0,100,0.03)!important;display:flex;align-items:center;justify-content:center;animation:none!important}rlay{background:rgba(8,24,40,.92)}
   body.peach .breathe-stage{color:#50b8a8}
   body.peach .breathe-text{color:#60d8e0;text-shadow:0 0 15px rgba(96,216,224,.2),2px 2px 0 rgba(0,0,0,.3)}
   body.peach .breathe-sub{color:rgba(80,184,168,.25)}
